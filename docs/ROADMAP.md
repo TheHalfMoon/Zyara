@@ -18,7 +18,10 @@ Deliver:
 - source/provenance ledger;
 - security/privacy threat model;
 - synthetic data strategy;
-- analytics event taxonomy.
+- analytics event taxonomy;
+- AI tool permission model;
+- secure sandbox policy for any agent/code execution;
+- voice/audio data-classification and retention policy.
 
 Exit gate:
 
@@ -27,7 +30,8 @@ Exit gate:
 - no production secrets in repo;
 - Arabic/English shell proven;
 - baseline authorization tests;
-- donor adoption process documented.
+- donor adoption process documented;
+- sandbox workloads cannot obtain unrestricted production credentials or patient-store access.
 
 ## Phase 1 — Provider graph and public discovery foundation
 
@@ -160,15 +164,51 @@ Deliver:
 - multilingual evaluation harness;
 - urgent/red-flag escalation;
 - model/prompt versioning;
-- abstention behavior.
-
-Then add voice input after the text pathway is proven.
+- abstention behavior;
+- approved-source retrieval/RAG with provenance where needed.
 
 Exit gate:
 
 - safety benchmark passes agreed thresholds;
 - hallucinated provider/availability/insurance facts blocked by tool-first design;
-- Arabic evaluation included.
+- Arabic evaluation included;
+- retrieval-backed claims preserve source provenance;
+- arbitrary code/tool execution is not available to patient-navigation AI.
+
+## Phase 7A — Voice navigation and secure agent runtime
+
+Deliver voice only after the text pathway is proven:
+
+- microphone permission and explicit recording-state UX;
+- ASR provider abstraction;
+- local/private ASR option using OpenWhispr/OpenSuperWhisper patterns where practical;
+- optional approved cloud-ASR adapters;
+- Arabic, English, French, German and Spanish transcription support;
+- Arabic/English code-switching evaluation;
+- transcript confidence and correction workflow;
+- transcript/provider/model provenance;
+- raw-audio retention controls with no-retention default when audio is unnecessary;
+- optional spoken response/TTS after transcription flow is stable.
+
+Deliver secure AI execution separately:
+
+- OpenSandbox-style isolated workload contract;
+- deny-by-default or allowlisted egress policy;
+- scoped/ephemeral credentials;
+- typed tool schemas and audit fields;
+- timeout, cleanup and resource-budget controls;
+- human approval gates for destructive/high-impact operations;
+- internal-agent orchestration patterns informed by Munder Difflin/fullstack-agent;
+- circuit breakers for loops, repeated failures and budget exhaustion.
+
+Exit gate:
+
+- text and voice share the same canonical safety/search/booking pipeline;
+- supported-language ASR benchmarks exist;
+- patient audio/transcript handling matches consent and privacy policy;
+- sandbox isolation, egress and cleanup failure cases are tested;
+- no unconstrained multi-agent workflow can make an autonomous patient-facing clinical recommendation;
+- sensitive agent actions are reconstructable from audit logs.
 
 ## Phase 8 — Integration platform
 
@@ -233,7 +273,9 @@ Deliver as evidence demands:
 - SLAs;
 - country adapters;
 - French/German/Spanish launch completion;
-- international provider verification/insurance/map adapters.
+- international provider verification/insurance/map adapters;
+- enterprise ASR/model policy controls;
+- sandbox/runtime policy controls for provider/internal copilots.
 
 ## Pilot strategy
 
@@ -249,7 +291,8 @@ Pilot should prove:
 - review participation;
 - clinic willingness to pay;
 - integration economics;
-- AI navigation safety/usefulness.
+- AI navigation safety/usefulness;
+- voice transcription quality for Saudi Arabic and Arabic/English code-switching before broad voice rollout.
 
 ## North-star and guardrail metrics
 
@@ -274,7 +317,10 @@ Pilot should prove:
 - provider-data dispute rate;
 - verified-review fraud rate;
 - AI unsafe-routing rate;
+- voice transcript correction/error rate for medical intent;
+- unauthorized tool/sandbox access attempts;
+- sandbox policy violations;
 - privacy/security incidents;
 - booking duplicate/error rate.
 
-Do not optimize raw clicks at the expense of care relevance or trust.
+Do not optimize raw clicks, agent autonomy, or conversational smoothness at the expense of care relevance, privacy, or trust.
