@@ -30,6 +30,8 @@ Preferred positioning:
 - Arabic must be native RTL, not an afterthought.
 - Reviews should be tied to verified patient encounters whenever possible.
 - AI recommends appropriate care pathways/providers; it must not present itself as a doctor or autonomously diagnose/treat.
+- Voice is a first-class patient input surface and should support privacy-preserving local transcription where practical.
+- Agent/tool execution must be sandboxed and least-privilege; unrestricted agents must never become a shortcut around clinical safety or health-data authorization.
 - Health data requires consent, provenance, strict access control, auditability, and Saudi PDPL-aware design.
 
 ## Canonical planning documents
@@ -44,8 +46,9 @@ Read in this order:
 6. [`docs/AI_SEARCH_TRUST.md`](docs/AI_SEARCH_TRUST.md) — AI, search, ranking, reviews, safety.
 7. [`docs/PROVIDER_BUSINESS.md`](docs/PROVIDER_BUSINESS.md) — provider portal, analytics, pricing model.
 8. [`docs/PRIVACY_INTEROP.md`](docs/PRIVACY_INTEROP.md) — privacy, security, FHIR/interoperability.
-9. [`docs/ROADMAP.md`](docs/ROADMAP.md) — dependency-ordered delivery plan and gates.
-10. [`docs/SOURCES.md`](docs/SOURCES.md) — 85-source donor/reference landscape plus healthcare-native additions.
+9. [`docs/VOICE_AGENT_RUNTIME.md`](docs/VOICE_AGENT_RUNTIME.md) — voice/ASR, RAG, agent orchestration, sandbox execution and safety boundaries.
+10. [`docs/ROADMAP.md`](docs/ROADMAP.md) — dependency-ordered delivery plan and gates.
+11. [`docs/SOURCES.md`](docs/SOURCES.md) — 90-source donor/reference landscape plus healthcare-native additions.
 
 ## Product surfaces
 
@@ -55,6 +58,7 @@ Read in this order:
 - Health map
 - Provider/facility profiles
 - AI text/voice navigation
+- Privacy-aware local or approved-cloud voice transcription
 - Insurance-aware discovery
 - Real-time or request-based booking
 - Verified reviews
@@ -78,6 +82,7 @@ Read in this order:
 - Monthly reports
 - HIS/EHR/PMS/calendar integrations
 - Enterprise roles, audit, SSO and API access
+- Permissioned provider/admin copilots where they create measurable operational value
 
 ## Product principle
 
@@ -87,4 +92,4 @@ The first defensible wedge is:
 
 **Search + Map + AI Navigation + Trust**
 
-Booking creates conversion. Patient history creates retention. Provider analytics and integrations create revenue and switching costs.
+Voice reduces friction. Booking creates conversion. Patient history creates retention. Provider analytics and integrations create revenue and switching costs. Sandboxed automation can improve operations without becoming a backdoor around healthcare safety or privacy controls.

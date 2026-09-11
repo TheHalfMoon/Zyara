@@ -18,8 +18,9 @@ Do not reduce the concept to a scheduling marketplace. Preserve the complete pro
 6. `docs/AI_SEARCH_TRUST.md`
 7. `docs/PROVIDER_BUSINESS.md`
 8. `docs/PRIVACY_INTEROP.md`
-9. `docs/ROADMAP.md`
-10. `docs/SOURCES.md`
+9. `docs/VOICE_AGENT_RUNTIME.md`
+10. `docs/ROADMAP.md`
+11. `docs/SOURCES.md`
 
 ## Non-negotiable founder decisions
 
@@ -32,6 +33,8 @@ Do not reduce the concept to a scheduling marketplace. Preserve the complete pro
 - Languages: Arabic, English, French, German, Spanish.
 - Arabic is first-class RTL.
 - AI is a healthcare-navigation layer, not an autonomous clinician.
+- Voice is a first-class patient input surface, with privacy-preserving local transcription preferred where practical.
+- Agent/tool execution must be isolated from sensitive patient data and production infrastructure by explicit policy and sandbox boundaries.
 - Verified-visit reviews are preferred over open anonymous internet reviews.
 - FHIR-aligned domain modeling and data provenance are required early.
 - Privacy, consent, tenant isolation and auditability are architecture constraints, not future polish.
@@ -52,6 +55,12 @@ Before writing production code, produce a repository-native execution plan that 
 - booking integration abstraction;
 - notification abstraction;
 - AI orchestration and safety policy;
+- voice capture/transcription architecture for Arabic, English, French, German and Spanish;
+- local/offline ASR and optional cloud-ASR provider abstraction;
+- audio retention, consent and transcript provenance policy;
+- secure agent/tool sandbox architecture and egress/credential policy;
+- agent orchestration policy that separates non-clinical automation from clinical recommendation logic;
+- RAG/retrieval grounding architecture and source provenance;
 - localization/RTL architecture;
 - analytics/event taxonomy;
 - security/privacy threat model;
@@ -72,6 +81,9 @@ Avoid:
 - copying entire donor applications into the product;
 - mixing patient clinical data with public marketplace/search data without explicit boundaries;
 - AI-generated clinical claims without provenance;
+- unconstrained autonomous agents making clinical routing decisions;
+- giving AI sandboxes unrestricted network, production credentials or patient-record access;
+- retaining raw voice recordings by default when a transcript is sufficient;
 - paid ranking disguised as relevance;
 - storing sensitive health data merely because it might be useful later;
 - building a custom closed clinical data model that prevents FHIR interoperability;
@@ -92,6 +104,8 @@ For each source proposed for direct code reuse, Astro must record:
 7. reason to reuse rather than reimplement;
 8. upgrade/fork maintenance strategy.
 
+If reuse depends on a founder-held permission beyond the public upstream license, record the permission basis and scope separately rather than assuming that the public license terms were changed.
+
 Do not import a donor dependency or code tree without this record.
 
 ## Initial implementation target
@@ -107,6 +121,8 @@ The first useful release should prove the core flywheel in one Saudi launch geog
 7. verified post-visit review loop;
 8. provider analytics;
 9. safe AI navigation over the same structured graph.
+
+Text AI navigation should be proven before voice becomes a production dependency. Voice can then reuse the exact same structured intent/search/safety pipeline rather than creating a second clinical reasoning path.
 
 Patient longitudinal health records and deeper FHIR clinical integrations are foundational, but should follow the discovery/booking trust loop in dependency order rather than block the first public search experience.
 
