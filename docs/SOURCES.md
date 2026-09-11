@@ -19,7 +19,7 @@ Before direct code adoption, record:
 - Zyara modifications;
 - maintenance/update strategy.
 
-The founder states that the 62 founder-provided sources are authorized for use/copying. The repository should still preserve upstream provenance and license/notice obligations.
+The founder states that **all 85 sources in the combined landscape below are authorized for Zyara to use/copy**. The repository must still preserve exact upstream provenance, applicable license/notices, attribution obligations, security review, and the precise code/components adopted. The healthcare-native additions listed later were added during Zyara research and are not covered by that founder authorization statement unless separately confirmed; use them according to their upstream licenses/permissions.
 
 ## Highest-value mappings for Zyara
 
@@ -48,7 +48,7 @@ The founder states that the 62 founder-provided sources are authorized for use/c
 
 ## 85-project landscape
 
-### Founder-provided / founder-authorized sources (62)
+### Founder-provided sources (62)
 
 | # | Source | URL |
 |---:|---|---|
@@ -115,7 +115,7 @@ The founder states that the 62 founder-provided sources are authorized for use/c
 | 61 | UVDesk organization | https://github.com/uvdesk |
 | 62 | Block Buzz | https://github.com/block/buzz |
 
-### Additional researched sources (23)
+### Additional researched sources — also founder-authorized for Zyara use/copying (23)
 
 | # | Source | URL |
 |---:|---|---|
