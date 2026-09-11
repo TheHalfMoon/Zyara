@@ -2,7 +2,7 @@
 
 Snapshot: 2026-09-11.
 
-This repository records **85 general source/reference projects** supplied or researched for the broader platform landscape, plus healthcare-native additions below.
+This repository records **90 unique general source/reference projects** supplied or researched for the broader platform landscape, plus healthcare-native additions below.
 
 ## Governance rule
 
@@ -19,7 +19,11 @@ Before direct code adoption, record:
 - Zyara modifications;
 - maintenance/update strategy.
 
-The founder states that **all 85 sources in the combined landscape below are authorized for Zyara to use/copy**. The repository must still preserve exact upstream provenance, applicable license/notices, attribution obligations, security review, and the precise code/components adopted. The healthcare-native additions listed later were added during Zyara research and are not covered by that founder authorization statement unless separately confirmed; use them according to their upstream licenses/permissions.
+The founder states that **all 90 unique sources in the combined landscape below are authorized for Zyara to use/copy**. This includes the five newly added unique sources in this revision, and explicitly re-confirms authorization for OpenRAG, which was already source #15 and therefore is not counted twice.
+
+Founder authorization does not remove the need to preserve exact upstream provenance, applicable public license/notices, attribution obligations, security review, and the precise code/components adopted. If Zyara relies on a founder-held permission that is broader or different from an upstream public license, the donor-adoption record must preserve documentary evidence of that permission and its scope before direct incorporation.
+
+The healthcare-native additions listed later were added during Zyara research and are not covered by the 90-source founder authorization statement unless separately confirmed; use them according to their upstream licenses/permissions.
 
 ## Highest-value mappings for Zyara
 
@@ -43,10 +47,13 @@ The founder states that **all 85 sources in the combined landscape below are aut
 | Enterprise metadata/workflows | Odoo, Frappe Framework, Corteza, Hasura |
 | Collaboration/admin patterns | Huly, Mattermost, Element, Zulip, Outline, AppFlowy, AFFiNE, Block Buzz |
 | AI/RAG/context | OpenRAG, Onyx, AnythingLLM, Graphify, code-graph-rag |
+| Voice/local ASR | OpenWhispr, OpenSuperWhisper |
+| Internal agent orchestration | Munder Difflin, fullstack-agent |
+| Sandboxed AI/tool execution | OpenSandbox |
 | Rules | GoRules |
 | Local integration testing | LocalStack |
 
-## 85-project landscape
+## 90-project landscape
 
 ### Founder-provided sources (62)
 
@@ -143,9 +150,107 @@ The founder states that **all 85 sources in the combined landscape below are aut
 | 84 | Prometheus | https://github.com/prometheus/prometheus |
 | 85 | Frappe Framework | https://github.com/frappe/frappe |
 
+### Newly added founder-authorized sources (5 unique)
+
+| # | Source | URL | Upstream license observed on 2026-09-11 | Primary Zyara role |
+|---:|---|---|---|---|
+| 86 | Munder Difflin | https://github.com/chaitanyagiri/munder-difflin | MIT | Internal multi-agent orchestration, memory/mailbox/blackboard, approvals, circuit breakers, budgets/telemetry |
+| 87 | fullstack-agent | https://github.com/jaredrhod/fullstack-agent | AGPL-3.0-or-later in upstream README/repository metadata | Modular agent stack, persistent memory, voice integration, component assembly patterns |
+| 88 | OpenSandbox | https://github.com/opensandbox-group/OpenSandbox | Apache-2.0 | Secure AI/tool sandboxing, Docker/Kubernetes runtime, egress controls, credential injection, MCP/SDK patterns |
+| 89 | OpenWhispr | https://github.com/OpenWhispr/openwhispr | MIT | Cross-platform local/private ASR, voice UX, Whisper/Parakeet patterns, multilingual dictation, API/MCP patterns |
+| 90 | OpenSuperWhisper | https://github.com/Starmel/OpenSuperWhisper | MIT | Lightweight real-time local transcription, Whisper/Parakeet engine patterns, model/microphone/shortcut UX |
+
+### Explicitly re-confirmed existing source
+
+`langflow-ai/openrag` is already #15 above. On 2026-09-11 the founder explicitly re-confirmed permission to copy/use its code. It remains one unique source and therefore does not increase the count from 90 to 91.
+
+Observed upstream role: comprehensive RAG platform built around Langflow, Docling and OpenSearch. Observed upstream public license: Apache-2.0.
+
+## Source-specific planning notes for the 2026-09-11 additions
+
+### Munder Difflin
+
+Study/adapt only the patterns that improve internal Zyara operations:
+
+- supervisor/router orchestration;
+- atomic mailbox/task handoff;
+- shared blackboard/event-log concepts;
+- long-term operational memory;
+- approval queues;
+- circuit breakers;
+- agent budgets and telemetry;
+- isolated workspaces/worktrees.
+
+Do **not** use free-form multi-agent consensus as patient-facing clinical evidence.
+
+### fullstack-agent
+
+Study/adapt:
+
+- modular composition of memory + voice + interface capabilities;
+- install/configuration flow patterns;
+- replaceable components and user-owned state;
+- agent identity/memory separation.
+
+Because upstream publicly identifies AGPL-3.0-or-later, direct code incorporation into any differently licensed Zyara component must rely on either AGPL compliance or documented separate permission with sufficient scope. The founder has stated that such code is authorized for use/copying; Astro must preserve the specific permission evidence if relying on it beyond the public license.
+
+### OpenSandbox
+
+Priority donor/reference for:
+
+- sandbox lifecycle APIs;
+- Docker/Kubernetes execution;
+- command/filesystem/code-interpreter interfaces;
+- network ingress/egress policy;
+- scoped credential injection;
+- strong workload isolation patterns;
+- agent evaluation runners;
+- MCP integration.
+
+Use for non-clinical internal AI/tool execution with least privilege. No sandbox gets unrestricted production patient-store access.
+
+### OpenWhispr
+
+Priority donor/reference for:
+
+- privacy-first local transcription;
+- cross-platform audio capture;
+- Whisper/Parakeet-style local ASR;
+- optional cloud/BYOK provider abstraction;
+- multilingual dictation/translation;
+- transcript/notes/API/MCP patterns.
+
+Zyara should reuse patterns, not inherit an unrestricted general desktop agent into the healthcare recommendation path.
+
+### OpenSuperWhisper
+
+Study/adapt:
+
+- real-time recording/transcription flow;
+- Whisper/Parakeet engine selection;
+- local model download/management;
+- microphone selection;
+- push/hold-to-record UX;
+- language autodetection;
+- audio-file queue processing.
+
+Current upstream is macOS-focused; Zyara must keep its patient voice architecture platform-neutral.
+
+### OpenRAG
+
+Continue using as an AI/RAG source for:
+
+- ingestion/document processing;
+- retrieval architecture;
+- grounded internal knowledge assistants;
+- provider policy/support knowledge;
+- provenance-aware retrieval evaluation.
+
+Generic RAG output is not authoritative medical advice. Patient-facing retrieval must use approved, versioned sources with provenance and safety evaluation.
+
 ## Healthcare-native additions
 
-These are specifically relevant to Zyara's health domain and should be considered in addition to the 85 general sources:
+These are specifically relevant to Zyara's health domain and should be considered in addition to the 90 general sources:
 
 | Source | URL | Study/reuse purpose |
 |---|---|---|
@@ -194,5 +299,6 @@ For every capability, ask:
 5. What is its license/notice/security burden?
 6. Will adopting it make upgrades easier or harder?
 7. Can it be isolated behind an adapter?
+8. Does direct reuse require documentary evidence of founder-held permission beyond the upstream public license?
 
 The highest-value custom Zyara code should concentrate on healthcare graph semantics, multilingual healthcare discovery, explainable ranking, verified trust, provider integrations, patient continuity and safe AI navigation.
