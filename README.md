@@ -34,7 +34,13 @@ Preferred positioning:
 - Agent/tool execution must be sandboxed and least-privilege; unrestricted agents must never become a shortcut around clinical safety or health-data authorization.
 - Health data requires consent, provenance, strict access control, auditability, and Saudi PDPL-aware design.
 
-## Canonical planning documents
+## Canonical execution plan
+
+The converged planning set is in [`docs/canonical/`](docs/canonical/README.md). Start with the [master build plan](docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md), then the [Muse execution handoff](docs/canonical/ZYARA_MUSE_EXECUTION_HANDOFF.md). It contains 13 canonical plans, 26 architecture decisions, 12 phases, 24 slices and 60 task contracts. The [research evidence](docs/research/README.md) covers 44 product/platform entries, 61 feature dimensions and 115 source entries, including SpecGrain.
+
+This repository remains a planning repository: no product implementation or product-test success is claimed. Canonical decisions supersede older implementation suggestions while preserving the founder constraints and source-authorization record below.
+
+## Founder foundation documents
 
 Read in this order:
 

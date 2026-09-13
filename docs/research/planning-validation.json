@@ -1,0 +1,167 @@
+{
+    "checked_at":  "2026-09-13T20:44:14.0289743Z",
+    "status":  "PASS",
+    "checks":  [
+                   {
+                       "name":  "document:ZYARA_CANONICAL_BUILD_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_COMPETITOR_INTELLIGENCE.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_APPOINTMENT_SYSTEM_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_PRODUCT_REQUIREMENTS.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_ARCHITECTURE_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_DATA_AND_FHIR_MODEL.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_AI_SEARCH_VOICE_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_PROVIDER_PLATFORM_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_SOURCE_QUALIFICATION.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_TEST_AND_EVIDENCE_PLAN.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_ROADMAP.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "document:ZYARA_MUSE_EXECUTION_HANDOFF.md",
+                       "passed":  true,
+                       "detail":  "Required substantive canonical document"
+                   },
+                   {
+                       "name":  "task-count-unique",
+                       "passed":  true,
+                       "detail":  "Tasks=60"
+                   },
+                   {
+                       "name":  "task-fields",
+                       "passed":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "dependency-references",
+                       "passed":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "dependency-DAG",
+                       "passed":  true,
+                       "detail":  "Topological nodes=60"
+                   },
+                   {
+                       "name":  "phase-slice-counts",
+                       "passed":  true,
+                       "detail":  "Phases=12; slices=24"
+                   },
+                   {
+                       "name":  "no-implementation-claims",
+                       "passed":  true,
+                       "detail":  "All task states remain planned"
+                   },
+                   {
+                       "name":  "handoff-task-parity",
+                       "passed":  true,
+                       "detail":  "Markdown task headings=60"
+                   },
+                   {
+                       "name":  "requirement-coverage",
+                       "passed":  true,
+                       "detail":  "Covered=R01 R02 R03 R04 R05 R06 R07 R08 R09 R10 R11 R12 R13 R14 R15 R16 R17 R18 R19 R20"
+                   },
+                   {
+                       "name":  "source-count-parity",
+                       "passed":  true,
+                       "detail":  "Metadata=115; dispositions=115"
+                   },
+                   {
+                       "name":  "source-pins",
+                       "passed":  true,
+                       "detail":  "Invalid observed pins=; unresolved sources are explicitly unpinned"
+                   },
+                   {
+                       "name":  "competitor-feature-matrix",
+                       "passed":  true,
+                       "detail":  "Products=44; features=61; cells=2684; errors="
+                   },
+                   {
+                       "name":  "matrix-markdown-parity",
+                       "passed":  true,
+                       "detail":  "Displayed cells=2684; mismatches="
+                   },
+                   {
+                       "name":  "local-markdown-links",
+                       "passed":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "utf8-replacement-characters",
+                       "passed":  true,
+                       "detail":  ""
+                   },
+                   {
+                       "name":  "convergence-questions",
+                       "passed":  true,
+                       "detail":  "Explicit answers=30"
+                   },
+                   {
+                       "name":  "ADR-count",
+                       "passed":  true,
+                       "detail":  "ADRs=26"
+                   }
+               ],
+    "counts":  {
+                   "canonical_plans":  13,
+                   "tasks":  60,
+                   "phases":  12,
+                   "slices":  24,
+                   "source_entries":  115,
+                   "competitor_entries":  44,
+                   "features":  61,
+                   "cells":  2684,
+                   "adrs":  26
+               },
+    "limitations":  [
+                        "Documentation/contract validation only; no product tests or live booking performed.",
+                        "Local link existence checked; external links were sourced during research, not all re-requested by this validator.",
+                        "Metadata qualification is not exhaustive code/license/security certification."
+                    ]
+}

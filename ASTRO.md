@@ -2,6 +2,8 @@
 
 This file is the entry point for Astro or any implementation-planning agent.
 
+The 2026-09-13 planning mission has produced a converged [canonical build plan](docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md) and [Muse handoff](docs/canonical/ZYARA_MUSE_EXECUTION_HANDOFF.md). Read those first for current architecture, scheduling semantics, phase order and task contracts. The foundation below preserves founder intent; the new canonical set supersedes conflicting implementation suggestions, not founder constraints. Planning validation is recorded in [the evidence report](docs/research/PLANNING_VALIDATION.md).
+
 ## Mission
 
 Turn the canonical planning documents in this repository into an executable, dependency-ordered software delivery plan for **Zyara**, a Saudi-first global healthcare discovery, navigation, booking, trust, and patient-journey platform.

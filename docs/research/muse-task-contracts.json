@@ -1,0 +1,3115 @@
+{
+  "schema": "zyara-planning-task-contract-v1",
+  "status": "PLANNED_NOT_IMPLEMENTED",
+  "checked": "2026-09-13",
+  "note": "Portable task contracts informed by SpecGrain methods, not a native SpecGrain import or readiness/verification claim.",
+  "tasks": [
+    {
+      "id": "M001",
+      "title": "Establish the reproducible synthetic development foundation",
+      "phase": "P00",
+      "slice": "S00A",
+      "objective": "Establish the reproducible synthetic development foundation",
+      "rationale": "Muse needs a runnable, bounded baseline before feature work.",
+      "dependencies": [],
+      "change_surface": [
+        "apps/web",
+        "apps/api",
+        "apps/worker",
+        "packages/domain",
+        "packages/contracts",
+        "infra/dev",
+        ".github/workflows",
+        "docs/evidence/M001"
+      ],
+      "source_refs": [
+        "A01",
+        "A02",
+        "A03",
+        "A25",
+        "S017",
+        "S115"
+      ],
+      "requirement_ids": [
+        "R14",
+        "R20"
+      ],
+      "implementation_requirements": "Recheck live branch/worktree and canonical plan digests. Create a minimal TypeScript workspace with Next.js/React web, Fastify API, worker, PostgreSQL/PostGIS dev service and one readiness endpoint. Select supported Node/package-manager versions, lock dependencies, inspect install scripts/advisories/licenses and generate SBOM. Define module import boundaries. Evaluate SpecGrain compatibility as optional method tooling; no native state/CLI claims unless separately verified.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Clean checkout installs from lockfile and starts local synthetic stack",
+        "Readiness distinguishes unavailable database from healthy process",
+        "CI runs type/lint/focused smoke checks and records exact versions"
+      ],
+      "tests": [
+        "Clean-environment startup and DB-down readiness",
+        "Dependency/advisory/secret scan and import-boundary check"
+      ],
+      "security_privacy": "No real PHI or provider secrets; local-only defaults; least-privilege dev credentials not reusable in production.",
+      "observability": "Readiness result and build version; no environment/secret dump.",
+      "localization": "Create five locale identifiers and RTL direction contract; no feature strings required yet.",
+      "failure_modes": "Unsupported runtime, failing install script, missing DB, accidental product-scope expansion.",
+      "evidence": [
+        "Lockfile/SBOM and license decisions",
+        "Startup/CI logs with commands and versions",
+        "Observed paths and base/result SHAs; SpecGrain method decision"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Revert this bounded scaffold; preserve founder docs and user changes.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M002",
+      "title": "Implement account, tenant and branch authorization primitives",
+      "phase": "P00",
+      "slice": "S00A",
+      "objective": "Implement account, tenant and branch authorization primitives",
+      "rationale": "Every later path needs a trustworthy actor and tenant context.",
+      "dependencies": [
+        "M001"
+      ],
+      "change_surface": [
+        "packages/identity",
+        "packages/authorization",
+        "apps/api",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A12",
+        "A13",
+        "S077",
+        "S078"
+      ],
+      "requirement_ids": [
+        "R07",
+        "R14"
+      ],
+      "implementation_requirements": "Integrate OIDC abstraction with Keycloak synthetic realm; model membership/branch roles and account-versus-patient distinction. Add RLS and policy guards; provider/admin MFA contract and session revocation. Keep healthcare identity separate from login.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Cross-tenant/branch reads and writes are denied",
+        "Revoked membership loses access on next authorized request",
+        "Provider privileged actions require assurance policy"
+      ],
+      "tests": [
+        "Tenant/branch policy matrix with synthetic actors",
+        "Revocation/session and migration-role isolation tests"
+      ],
+      "security_privacy": "Deny by default; no body-supplied tenant authority; tokens minimized and never logged.",
+      "observability": "Authorization-denial codes and membership-change audit.",
+      "localization": "Localized authentication/permission errors in five locales; mixed-script names retained.",
+      "failure_modes": "Stale session, invalid tenant, accidental global administrator clinical access.",
+      "evidence": [
+        "Policy matrix/results",
+        "RLS fixtures and audit samples"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Disable affected roles/endpoints; revoke sessions and roll back permission migration safely.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M003",
+      "title": "Complete the Saudi launch governance and data-flow package",
+      "phase": "P00",
+      "slice": "S00B",
+      "objective": "Complete the Saudi launch governance and data-flow package",
+      "rationale": "Synthetic implementation can proceed, but real patient launch needs named accountability.",
+      "dependencies": [
+        "M001"
+      ],
+      "change_surface": [
+        "docs/governance",
+        "docs/privacy",
+        "docs/safety",
+        "docs/vendor-register"
+      ],
+      "source_refs": [
+        "A16",
+        "A22",
+        "A26",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R07",
+        "R14",
+        "R19"
+      ],
+      "implementation_requirements": "Assign role owners; produce purpose/data-flow inventory, DPIA draft, retention schedule, processor/region inventory, consent/notice drafts, clinical intended-use review and pilot provider agreement. Obtain accountable legal/clinical decisions for actual pilot before M029; record unresolved signoffs as explicit blockers.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every dataset has purpose/owner/region/retention decision or launch blocker",
+        "Clinical navigation and delegate policies have named reviewers",
+        "M029 gate can mechanically distinguish approved from pending"
+      ],
+      "tests": [
+        "Document completeness/rights-workflow walkthrough",
+        "Synthetic emergency/contact and incident tabletop"
+      ],
+      "security_privacy": "No fabricated legal conclusions or transfer exemptions; minimize all proposed processing.",
+      "observability": "Versioned approvals, expiry dates and owner action queue.",
+      "localization": "Five-locale notice/template inventory and Arabic legal/clinical review requirement.",
+      "failure_modes": "Unavailable counsel, unapproved hosting, misleading SaMD assumptions or unclear guardian authority.",
+      "evidence": [
+        "Signed decisions where available; explicit pending gate register",
+        "Data-flow/DPIA and incident tabletop record"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Keep all environments synthetic and disable gated features until actual signoffs.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M004",
+      "title": "Enforce module ownership and durable event delivery",
+      "phase": "P00",
+      "slice": "S00B",
+      "objective": "Enforce module ownership and durable event delivery",
+      "rationale": "Booking and notifications must survive crashes without duplicate side effects.",
+      "dependencies": [
+        "M001",
+        "M002"
+      ],
+      "change_surface": [
+        "packages/domain",
+        "packages/events",
+        "apps/worker",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A06",
+        "A20",
+        "S083",
+        "S084",
+        "S112"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R14",
+        "R20"
+      ],
+      "implementation_requirements": "Implement transaction unit-of-work, append-only audit interface, outbox/inbox tables, versioned event envelope, scoped consumers and pg-boss wakeups. Keep event data minimal and DB tasks discoverable if queue wakes are lost.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Commit writes domain state and outbox together",
+        "Duplicate delivery has one logical effect",
+        "Incompatible event version is quarantined"
+      ],
+      "tests": [
+        "Crash before/after commit and duplicate consumer tests",
+        "Cross-tenant event-routing and worker-restart tests"
+      ],
+      "security_privacy": "No patient text in generic event body; audit reader scoped.",
+      "observability": "Outbox age, retry count, dead-letter queue and correlation IDs.",
+      "localization": "Stable event codes; localized operator explanations generated at UI.",
+      "failure_modes": "Worker outage, poison message, consumer replay, lost wakeup.",
+      "evidence": [
+        "Fault-injection logs",
+        "Event/audit schema and consumer contract evidence"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Stop consumers and replay from durable cursor after fix; never bulk resend blindly.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M005",
+      "title": "Deliver the five-locale accessible interface foundation",
+      "phase": "P00",
+      "slice": "S00B",
+      "objective": "Deliver the five-locale accessible interface foundation",
+      "rationale": "Arabic and accessibility must shape forms and navigation from the beginning.",
+      "dependencies": [
+        "M001"
+      ],
+      "change_surface": [
+        "apps/web",
+        "packages/ui",
+        "packages/i18n",
+        "tests/accessibility"
+      ],
+      "source_refs": [
+        "A21",
+        "WCAG"
+      ],
+      "requirement_ids": [
+        "R02",
+        "R06"
+      ],
+      "implementation_requirements": "Build routing/catalogs, logical CSS layout, bidi-safe IDs/phones, date/time/zone formatting, form labels/errors, accessible modal/list/confirmation components and reduced-motion states. Add glossary workflow for clinical terms.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Arabic RTL works without mirrored icons that change meaning",
+        "Keyboard/screenreader can complete a synthetic form",
+        "All five locales have catalog completeness and date examples"
+      ],
+      "tests": [
+        "RTL screenshot/manual screenreader review",
+        "Zoom/keyboard/bidi and missing-key checks"
+      ],
+      "security_privacy": "No patient data in visual snapshots; accessible consent cannot be preselected.",
+      "observability": "Missing-key telemetry without user inputs; UI error boundary counts.",
+      "localization": "Arabic, English, French, German, Spanish; Gregorian canonical with labeled Hijri display option.",
+      "failure_modes": "Long German labels, mixed Arabic numbers, ambiguous dates, modal focus loss.",
+      "evidence": [
+        "Locale screenshots and accessibility checklist",
+        "Human language-review log"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Revert component changes and keep accessible list/text fallback.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M006",
+      "title": "Create the provider graph and identifier model",
+      "phase": "P01",
+      "slice": "S01A",
+      "objective": "Create the provider graph and identifier model",
+      "rationale": "Search quality depends on branch/service/role truth.",
+      "dependencies": [
+        "M002",
+        "M004"
+      ],
+      "change_surface": [
+        "packages/graph",
+        "db/migrations",
+        "tests/graph"
+      ],
+      "source_refs": [
+        "A03",
+        "A04",
+        "A10",
+        "FHIR",
+        "S113"
+      ],
+      "requirement_ids": [
+        "R03",
+        "R10"
+      ],
+      "implementation_requirements": "Model organization, location, practitioner, role, service, taxonomy and insurer assertion edges with opaque IDs, effective dates, external namespaces and referential constraints. Include shared schedulable human identity within authorized domain.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "One practitioner can have several branch roles without duplicated identity",
+        "Service can exist without a primary doctor",
+        "Invalid hierarchy cycles and cross-tenant writes fail"
+      ],
+      "tests": [
+        "Graph cardinality/cycle/identifier tests",
+        "Synthetic FHIR resource mapping fixtures"
+      ],
+      "security_privacy": "Public versus private evidence fields separated; patient IDs absent.",
+      "observability": "Graph integrity failures and source coverage.",
+      "localization": "Multilingual labels/aliases preserve original source spelling.",
+      "failure_modes": "Duplicate names, organization merger, reused external identifier.",
+      "evidence": [
+        "Schema diagram and fixtures",
+        "Migration and constraint results"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Reversible migrations; quarantine conflicts rather than destructive merge.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M007",
+      "title": "Build provenance-aware graph import and correction",
+      "phase": "P01",
+      "slice": "S01A",
+      "objective": "Build provenance-aware graph import and correction",
+      "rationale": "Unverified imports need correction and freshness instead of silent overwrites.",
+      "dependencies": [
+        "M006"
+      ],
+      "change_surface": [
+        "packages/graph-import",
+        "apps/worker",
+        "apps/api"
+      ],
+      "source_refs": [
+        "A04",
+        "A10",
+        "S113",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R03",
+        "R13"
+      ],
+      "implementation_requirements": "Implement rights/source registry, staged CSV/API import, assertion validity/observed times, field ownership, dedupe suggestions, reviewed merge/unmerge, withdrawal and projection events. Establish refresh queues.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every material assertion shows source and last check",
+        "Conflicting identities require review",
+        "Withdrawal and unmerge preserve history and emit projection updates"
+      ],
+      "tests": [
+        "Stale assertion and conflicting import tests",
+        "Merge/unmerge/id-reuse and malformed batch tests"
+      ],
+      "security_privacy": "No unauthorized scraping; private credential evidence excluded from public projection.",
+      "observability": "Import rejects, freshness age and correction queue latency.",
+      "localization": "Arabic/transliteration alias conflicts; locale-specific addresses.",
+      "failure_modes": "Source rights expire, ID changes, clinic closure, partial batch failure.",
+      "evidence": [
+        "Import validation reports",
+        "Provenance/correction audit and rights inventory"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Rollback batch via assertion supersession; never erase historical IDs.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M008",
+      "title": "Implement provider claiming and verification workflow",
+      "phase": "P01",
+      "slice": "S01B",
+      "objective": "Implement provider claiming and verification workflow",
+      "rationale": "A public badge must mean a specific checked fact.",
+      "dependencies": [
+        "M005",
+        "M007"
+      ],
+      "change_surface": [
+        "packages/verification",
+        "apps/web/provider",
+        "apps/api"
+      ],
+      "source_refs": [
+        "GOV",
+        "A24"
+      ],
+      "requirement_ids": [
+        "R03",
+        "R13",
+        "R17"
+      ],
+      "implementation_requirements": "Verify authorized representative, role registration and facility/service evidence; states pending/attested/checked/disputed/expired/withdrawn. Add reviewer queue, recheck cadence and claim disputes. Block booking for mandatory expired credentials.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Badge describes evidence scope",
+        "Expiry/suspension disables affected service supply",
+        "Claim dispute cannot hand control to an unverified actor"
+      ],
+      "tests": [
+        "Reviewer-role/expiry and competing-claim tests",
+        "Public projection evidence-redaction tests"
+      ],
+      "security_privacy": "Verification files private, access audited; sales cannot override decisions.",
+      "observability": "Review turnaround, expiring evidence and blocked services.",
+      "localization": "Arabic names/official evidence support; five-locale badge explanations.",
+      "failure_modes": "Stolen claim, outdated registration, role privilege absent.",
+      "evidence": [
+        "Synthetic claim/expiry walkthrough",
+        "Verification policy and audit"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Freeze sensitive edits, remove unsupported badge and preserve appeal trail.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M009",
+      "title": "Build service and practice onboarding configuration",
+      "phase": "P01",
+      "slice": "S01B",
+      "objective": "Build service and practice onboarding configuration",
+      "rationale": "Safe booking requires service-specific configuration before hours look bookable.",
+      "dependencies": [
+        "M006",
+        "M008"
+      ],
+      "change_surface": [
+        "packages/services",
+        "apps/web/provider",
+        "packages/contracts"
+      ],
+      "source_refs": [
+        "A07",
+        "A11",
+        "C10",
+        "C13",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R10",
+        "R17"
+      ],
+      "implementation_requirements": "Collect all organization/branch/role/service/insurance/contact/accessibility fields plus appointment types, durations, buffers, intake/policy versions and integration ownership. Separate completeness scores from mandatory blockers.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Missing duration/resource/authority blocks publish",
+        "Insurance acceptance is branch/network/service dated",
+        "Synthetic receptionist can configure initial and follow-up types"
+      ],
+      "tests": [
+        "Required-field and role-permission tests",
+        "Partial onboarding save/resume and expired assertion tests"
+      ],
+      "security_privacy": "Restrict patient intake fields; public profile never exposes private evidence.",
+      "observability": "Completeness blocker counts and time-to-ready.",
+      "localization": "Five-locale service labels and Arabic-native form review.",
+      "failure_modes": "False completeness score, unsupported service privileges, wrong coordinates.",
+      "evidence": [
+        "Completed synthetic provider configuration",
+        "Blocker/permission evidence"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Unpublish affected service version and restore prior approved configuration.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M010",
+      "title": "Run the fixed search-engine and cost decision benchmark",
+      "phase": "P01",
+      "slice": "S01B",
+      "objective": "Run the fixed search-engine and cost decision benchmark",
+      "rationale": "Choose an engine using Saudi multilingual retrieval needs.",
+      "dependencies": [
+        "M006",
+        "M007"
+      ],
+      "change_surface": [
+        "experiments/search",
+        "docs/evidence/M010",
+        "packages/search-contract"
+      ],
+      "source_refs": [
+        "A05",
+        "S017",
+        "S082",
+        "S103",
+        "S104"
+      ],
+      "requirement_ids": [
+        "R02",
+        "R04",
+        "R20"
+      ],
+      "implementation_requirements": "Compare PostgreSQL baseline, OpenSearch candidate and license-qualified Meilisearch community scope on the same >=300 judged intents. Record top-5 relevance, locale gaps, name/alias precision, geofilter correctness, p95 latency and projected pilot cost. Adopt OpenSearch only if target and approved cost budget pass; otherwise PG baseline and dated revisit.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "One engine chosen with scored tradeoff and reproducible corpus",
+        "No unsupported benchmark claims",
+        "Five-locale/Arabic subgroup results and failure samples included"
+      ],
+      "tests": [
+        "Held-out retrieval and geospatial correctness",
+        "Repeated warm/cold latency with documented environment"
+      ],
+      "security_privacy": "Synthetic/public rights-cleared data; no live symptom logs.",
+      "observability": "Benchmark environment/version and metrics, not cherry-picked averages.",
+      "localization": "Arabic forms/transliteration and all five locale cohorts.",
+      "failure_modes": "License gate fails, overstemming names, missing insurer branch, cost exceeds budget.",
+      "evidence": [
+        "Corpus/judgments and run logs",
+        "ADR A05 decision and package/license record"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Keep PG fallback; preserve corpus and failed results for review.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M011",
+      "title": "Implement structured search and transparent ranking",
+      "phase": "P02",
+      "slice": "S02A",
+      "objective": "Implement structured search and transparent ranking",
+      "rationale": "Patients need relevant care options without knowing a provider name.",
+      "dependencies": [
+        "M005",
+        "M010",
+        "M009",
+        "M003"
+      ],
+      "change_surface": [
+        "packages/search",
+        "apps/api",
+        "apps/web/search"
+      ],
+      "source_refs": [
+        "A05",
+        "A23",
+        "RANKING",
+        "C02",
+        "C19"
+      ],
+      "requirement_ids": [
+        "R01",
+        "R02",
+        "R04"
+      ],
+      "implementation_requirements": "Index approved public projections; support names/specialty/service/location/insurer/language/accessibility, curated symptom navigation only under M003 policy. Separate hard constraints from preferred filters and best/soonest/nearest sorts; explain unknowns and zero results.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Paid tier never influences organic score",
+        "Unknown insurance is not guaranteed coverage",
+        "Filter relaxation requires patient choice"
+      ],
+      "tests": [
+        "Ranking invariant and search relevance regression",
+        "Expired/withdrawn projection and empty-result tests"
+      ],
+      "security_privacy": "No raw free-text query retention by default; public cache excludes patient context.",
+      "observability": "Redacted intent categories, zero-results and index freshness.",
+      "localization": "Five-locale aliases and RTL search/filter controls.",
+      "failure_modes": "Stale index, unsafe synonym mapping, hidden preference relaxation.",
+      "evidence": [
+        "Search fixture results",
+        "Ranking input allowlist and explanation screenshots"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Disable affected query expansion; deterministic name/service search remains.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M012",
+      "title": "Deliver trustworthy profiles and accessible map/list discovery",
+      "phase": "P02",
+      "slice": "S02A",
+      "objective": "Deliver trustworthy profiles and accessible map/list discovery",
+      "rationale": "Patients must understand where care occurs and what is verified.",
+      "dependencies": [
+        "M005",
+        "M008",
+        "M011"
+      ],
+      "change_surface": [
+        "apps/web/profiles",
+        "apps/web/map",
+        "packages/geospatial"
+      ],
+      "source_refs": [
+        "A04",
+        "A21",
+        "S104",
+        "C29"
+      ],
+      "requirement_ids": [
+        "R03",
+        "R04",
+        "R06"
+      ],
+      "implementation_requirements": "Build branch/service/provider profiles, evidence freshness, entrance/accessibility, insurer caveats, booking-mode labels and synchronized map/list. Qualify tiles/geocoding terms separately from renderer. Browsing remains anonymous.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "List offers all map actions",
+        "Verified fields display exact scope/freshness",
+        "Precise location permission is optional"
+      ],
+      "tests": [
+        "Map/list filter parity and geospatial fixtures",
+        "Keyboard, low-bandwidth and location-denied tests"
+      ],
+      "security_privacy": "No home/patient locations in public indexes or URLs.",
+      "observability": "Profile/directions/phone clicks as distinct minimized events.",
+      "localization": "Native Arabic layout, multilingual names and unambiguous address/date formats.",
+      "failure_modes": "Wrong branch pin, tile outage, unverified price or insurance.",
+      "evidence": [
+        "Five-locale profile screenshots",
+        "Tile/data rights and accessible flow evidence"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Use list/address fallback and suppress inaccurate coordinates.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M013",
+      "title": "Implement typed eligibility and resource recipes",
+      "phase": "P02",
+      "slice": "S02B",
+      "objective": "Implement typed eligibility and resource recipes",
+      "rationale": "Free time is not sufficient for a safe booking.",
+      "dependencies": [
+        "M004",
+        "M009"
+      ],
+      "change_surface": [
+        "packages/scheduling/rules",
+        "packages/scheduling/resources",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A07",
+        "A09",
+        "FHIR",
+        "C16"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R10",
+        "R14"
+      ],
+      "implementation_requirements": "Implement finite capacity units and service/type version recipes; restricted explainable rules return ALLOW/DENY/NEEDS_INPUT/NEEDS_STAFF_REVIEW/SOURCE_UNAVAILABLE. Cover every rule family in scheduling plan; provider-authored clinical requirements need accountable approval.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Missing referral returns explicit next step",
+        "Multi-resource recipe preserves qualifications",
+        "Rule/type changes produce a new immutable version"
+      ],
+      "tests": [
+        "Age-at-visit, returning, insurer/referral/order and interval tests",
+        "Rule precedence/missing-data and resource substitution tests"
+      ],
+      "security_privacy": "Collect only material clinical fields; no arbitrary provider code or LLM eligibility.",
+      "observability": "Rule result codes/version and missing-input rates without answers.",
+      "localization": "Five-locale explanations, Arabic medical terminology reviewed.",
+      "failure_modes": "Hidden failure, unknown treated false, unqualified substitution, duration mismatch.",
+      "evidence": [
+        "Rule catalog and golden cases",
+        "Version/provenance and privacy evidence"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Disable problematic rule/service and route to staff review.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M014",
+      "title": "Implement recurring schedules and hybrid availability",
+      "phase": "P02",
+      "slice": "S02B",
+      "objective": "Implement recurring schedules and hybrid availability",
+      "rationale": "Candidates must combine real service/resource constraints and correct civil time.",
+      "dependencies": [
+        "M013",
+        "M004"
+      ],
+      "change_surface": [
+        "packages/scheduling/availability",
+        "apps/worker",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A08",
+        "A04",
+        "S091",
+        "S111"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R10",
+        "R20"
+      ],
+      "implementation_requirements": "Implement bounded weekly recurrence, dated exceptions/blocks, holidays/leave, notice/horizon/cutoff, alignment and buffers. Precompute patient-free windows; dynamically check exact availability. Store UTC plus IANA zone and revisions; reject DST gaps and disambiguate folds.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Candidate full duration/buffers fits every resource",
+        "Hard blocks dominate opens",
+        "Stale candidate versions require recheck"
+      ],
+      "tests": [
+        "Riyadh and Berlin/New York DST cases",
+        "Override, sick leave, horizon and multi-capacity tests"
+      ],
+      "security_privacy": "Public cache contains no patient context; private eligibility results not shared.",
+      "observability": "Candidate latency, cache age and invalidation lag.",
+      "localization": "Gregorian canonical; labeled Hijri display, explicit zone/date.",
+      "failure_modes": "DST shift, duration change, stale projection, combinatorial overload.",
+      "evidence": [
+        "Availability golden fixtures",
+        "Timezone/override results and performance baseline"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Invalidate projections, rebuild from rules; keep authoritative book recheck.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M015",
+      "title": "Prove atomic resource holds and expiry invariants",
+      "phase": "P02",
+      "slice": "S02B",
+      "objective": "Prove atomic resource holds and expiry invariants",
+      "rationale": "Double-booking protection must exist before patient booking.",
+      "dependencies": [
+        "M013",
+        "M014",
+        "M004"
+      ],
+      "change_surface": [
+        "packages/scheduling/reservations",
+        "db/migrations",
+        "tests/concurrency"
+      ],
+      "source_refs": [
+        "A09",
+        "A06",
+        "POSTGRES"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R10",
+        "R20"
+      ],
+      "implementation_requirements": "Use half-open range exclusions, deterministic resource locks, explicit capacity units, inline expired-hold cleanup and DB time. Idempotency digest distinguishes replay from changed request; cap holds and extensions. No Redis-only lock or now()-based index predicate.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "At most one active allocation per unit/interval",
+        "Multi-resource hold is all-or-none",
+        "Expired hold cannot redeem with worker stopped"
+      ],
+      "tests": [
+        "100 concurrent capacity-one attempts and mixed-resource races",
+        "Boundary expiry, duplicate key/different body, deadlock/retry and crash tests"
+      ],
+      "security_privacy": "Authorize holder/tenant; protect hold abuse without excluding accessibility needs.",
+      "observability": "Conflict, expiry lag, deadlock and leaked-reservation metrics.",
+      "localization": "Localized held/expiry/needs-reconfirmation copy and zone display.",
+      "failure_modes": "Worker lag, partial allocation, concurrent cleanup, clock boundary.",
+      "evidence": [
+        "DB constraint inspection",
+        "Repeatable race histories and invariant queries"
+      ],
+      "risk": "medium; raise to high for identity, permissions or reservation changes",
+      "recovery": "Disable new holds, retain booked ledger; repair only through audited commands.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M016",
+      "title": "Implement authoritative native booking operations",
+      "phase": "P03",
+      "slice": "S03A",
+      "objective": "Implement authoritative native booking operations",
+      "rationale": "Patients must receive confirmation only after committed truth.",
+      "dependencies": [
+        "M015",
+        "M002"
+      ],
+      "change_surface": [
+        "packages/scheduling/appointments",
+        "apps/api",
+        "packages/contracts"
+      ],
+      "source_refs": [
+        "A07",
+        "A09",
+        "A11",
+        "FHIR"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R07",
+        "R20"
+      ],
+      "implementation_requirements": "Create durable BookingOperation and native book command; convert hold or book directly with eligibility/version recheck, patient duplicate guard, snapshot and outbox. Provide resume/status endpoint and stable outcomes.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Booked response follows committed appointment/resources",
+        "Retried operation returns same result",
+        "Material changes require renewed confirmation"
+      ],
+      "tests": [
+        "Crash before/after commit and lost-response tests",
+        "Two-device same/different-key and direct/hold race tests"
+      ],
+      "security_privacy": "Bind action to authorized patient/delegate and exact challenge; no model authority.",
+      "observability": "Pending/conflict/commit latency and operation correlation.",
+      "localization": "Five-locale outcome contract; exact date/time/zone.",
+      "failure_modes": "False success, duplicate patient visit, changed provider/policy during confirm.",
+      "evidence": [
+        "Booking transaction logs and operation-resume evidence",
+        "Invariant test results"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Stop new booking, preserve status/cancel recovery and reconcile operations.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M017",
+      "title": "Deliver minimal-identity patient booking and request UX",
+      "phase": "P03",
+      "slice": "S03A",
+      "objective": "Deliver minimal-identity patient booking and request UX",
+      "rationale": "Reduce friction while keeping patient and acting person explicit.",
+      "dependencies": [
+        "M016",
+        "M005",
+        "M012",
+        "M002",
+        "M003"
+      ],
+      "change_surface": [
+        "apps/web/booking",
+        "packages/patient",
+        "packages/identity"
+      ],
+      "source_refs": [
+        "A21",
+        "A22",
+        "C11",
+        "C33"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R06",
+        "R07",
+        "R15"
+      ],
+      "implementation_requirements": "Show availability before signup; verify contact at action. Implement exact confirmation challenge, minimal patient profile, policy/intake step, native instant/request/call/redirect modes and limited verified delegate scheduling under approved policy. Keep external clinical records out.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every mode uses honest outcome language",
+        "Request shows deadline/owner without false reservation",
+        "Delegate grant revocation blocks next action"
+      ],
+      "tests": [
+        "End-to-end all modes and network resume",
+        "Shared phone, unauthorized delegate and contact-verification tests"
+      ],
+      "security_privacy": "No national ID for browsing; purpose-specific data share; clinical delegation separate.",
+      "observability": "Funnel stage and pending requests, not raw forms.",
+      "localization": "Human-reviewed five-locale booking flow and RTL confirmation.",
+      "failure_modes": "Lost network, missing referral, guardian unapproved, redirect return without proof.",
+      "evidence": [
+        "Synthetic patient/delegate walkthroughs",
+        "Locale/accessibility and consent evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Fallback to manual search/request; disable unapproved delegate route.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M018",
+      "title": "Implement safe cancellation and rescheduling",
+      "phase": "P03",
+      "slice": "S03A",
+      "objective": "Implement safe cancellation and rescheduling",
+      "rationale": "Changing care must not accidentally destroy an existing appointment.",
+      "dependencies": [
+        "M016",
+        "M017"
+      ],
+      "change_surface": [
+        "packages/scheduling/changes",
+        "apps/web/booking",
+        "apps/api"
+      ],
+      "source_refs": [
+        "A09",
+        "A11",
+        "C16"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R15",
+        "R20"
+      ],
+      "implementation_requirements": "Implement versioned cancel and native replacement transaction, preserving reason/service and compatible intake; explicit cutoff/assistance. Safe links use GET to display and POST to act. Emit replacement events and invalidate reminders/candidates.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Original survives failed replacement",
+        "Mail-link preview cannot cancel",
+        "Reschedule not double-counted as lost care"
+      ],
+      "tests": [
+        "Concurrent change/cancel, policy revision and replacement conflict",
+        "Expired link, scanner GET and idempotent replay tests"
+      ],
+      "security_privacy": "Scoped expiring action tokens; optional cancellation reason private.",
+      "observability": "Change outcomes, original-retained and duplicate-action metrics.",
+      "localization": "Five-locale policy/time/cutoff explanations.",
+      "failure_modes": "Cutoff reached, conflict, already cancelled, wrong patient link.",
+      "evidence": [
+        "Transaction/UX evidence for failure branches",
+        "Token/authorization tests"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable self-service mutation while retaining assistance and existing appointments.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M019",
+      "title": "Deliver provider calendar and attendance operations",
+      "phase": "P03",
+      "slice": "S03B",
+      "objective": "Deliver provider calendar and attendance operations",
+      "rationale": "Reception needs a trustworthy calendar, not a parallel writer.",
+      "dependencies": [
+        "M016",
+        "M018",
+        "M009",
+        "M005"
+      ],
+      "change_surface": [
+        "apps/web/provider-calendar",
+        "packages/scheduling/operations"
+      ],
+      "source_refs": [
+        "A07",
+        "A13",
+        "C10",
+        "C11"
+      ],
+      "requirement_ids": [
+        "R09",
+        "R10",
+        "R17"
+      ],
+      "implementation_requirements": "Build day/week/month/list filters by branch/practitioner/resource; create/change through canonical commands, privacy mode, request decision, check-in queue, status dimensions and bulk absence preview. Drag/drop requires versioned confirmation.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Calendar cannot bypass capacity/rules",
+        "Staff sees permitted patient fields only",
+        "Bulk absence produces per-appointment outcomes and consented alternatives"
+      ],
+      "tests": [
+        "Role matrix and concurrent drag/drop conflict",
+        "Bulk partial failure, check-in status and keyboard/list tests"
+      ],
+      "security_privacy": "Reception clinical visibility restricted; operations completion distinct from clinical record.",
+      "observability": "Request age, check-in lag, bulk failures and sync-health indicators.",
+      "localization": "Five locales, RTL navigation, color-independent status labels.",
+      "failure_modes": "Provider leaves, day cancelled, stale UI revision, wrong branch.",
+      "evidence": [
+        "Calendar/accessibility screenshots",
+        "Synthetic staff rehearsal and audit"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Read-only calendar and staff assistance; preserve unresolved batch state.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M020",
+      "title": "Implement consent-aware email/SMS orchestration",
+      "phase": "P03",
+      "slice": "S03B",
+      "objective": "Implement consent-aware email/SMS orchestration",
+      "rationale": "Appointment updates must be reliable without leaking sensitive context.",
+      "dependencies": [
+        "M004",
+        "M016",
+        "M018",
+        "M003",
+        "M005"
+      ],
+      "change_surface": [
+        "packages/communication",
+        "apps/worker",
+        "apps/web/preferences"
+      ],
+      "source_refs": [
+        "A15",
+        "GOV",
+        "C11",
+        "C12"
+      ],
+      "requirement_ids": [
+        "R15",
+        "R14"
+      ],
+      "implementation_requirements": "Build in-app/email/SMS templates, consent/purpose/channel preferences, verified destinations, locale/zone quiet hours, dedupe, revision-aware suppression, bounded retries and delivery callbacks. Procure approved sender/channel for live gate; use fakes during build.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Cancellation suppresses queued stale reminder",
+        "Delivery does not change booked state",
+        "Unconsented fallback channel never sends"
+      ],
+      "tests": [
+        "Retry/callback replay, invalid destination and quiet-hour tests",
+        "Consent revoked at send, shared-phone preview and late cancellation race"
+      ],
+      "security_privacy": "Generic previews, scoped secure links; no specialty or dependent names in external preview.",
+      "observability": "Delivery/suppression/failure metrics by template and channel, no message bodies.",
+      "localization": "Five-locale templates and patient timezone, Arabic SMS length/cost tests.",
+      "failure_modes": "SMS provider down, duplicate callback, wrong number, in-flight obsolete message.",
+      "evidence": [
+        "Fake-provider deterministic tests",
+        "Template/consent review and vendor gate evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause channel sending; retain in-app updates and authorized manual contact.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M021",
+      "title": "Build attendance evidence and review eligibility",
+      "phase": "P04",
+      "slice": "S04A",
+      "objective": "Build attendance evidence and review eligibility",
+      "rationale": "A review needs defensible attendance without allowing provider suppression.",
+      "dependencies": [
+        "M019",
+        "M002"
+      ],
+      "change_surface": [
+        "packages/trust/attendance",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A24",
+        "FHIR",
+        "C02"
+      ],
+      "requirement_ids": [
+        "R13",
+        "R19"
+      ],
+      "implementation_requirements": "Store source/actor/confidence and corrections for completed/no-show outcomes; derive one-visit review eligibility. Add patient attendance dispute and independent evidence-review path; imported attendance needs matching and provenance.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Reminder delivery never grants eligibility",
+        "Provider no-show can be appealed",
+        "Corrected attendance re-evaluates dependent review state"
+      ],
+      "tests": [
+        "Completed/no-show correction and dispute cases",
+        "Cross-patient evidence and duplicate eligibility tests"
+      ],
+      "security_privacy": "Evidence private; trust reviewer separated from provider/sales authority.",
+      "observability": "Unknown attendance coverage, disputes and correction rate.",
+      "localization": "Five-locale eligibility/appeal text, no accusatory no-show wording.",
+      "failure_modes": "Provider mislabels attendance, duplicate encounter, erroneous source mapping.",
+      "evidence": [
+        "Eligibility decision traces",
+        "Synthetic appeal and source-quality fixtures"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Suspend eligibility publication, preserve evidence and appeal access.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M022",
+      "title": "Implement verified experience reviews and replies",
+      "phase": "P04",
+      "slice": "S04A",
+      "objective": "Implement verified experience reviews and replies",
+      "rationale": "Reviews create trust only with clear dimensions and independent control.",
+      "dependencies": [
+        "M021",
+        "M005"
+      ],
+      "change_surface": [
+        "packages/trust/reviews",
+        "apps/web/reviews",
+        "apps/web/provider"
+      ],
+      "source_refs": [
+        "A24",
+        "C02",
+        "C09"
+      ],
+      "requirement_ids": [
+        "R13"
+      ],
+      "implementation_requirements": "One patient/visit review; practitioner/facility experience dimensions, internal identity/public anonymity, edit/delete history, moderation and protected provider replies. Invite every eligible visit without sentiment gating.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Negative compliant review cannot be removed by provider",
+        "Anonymous display reveals no patient ID",
+        "Provider reply cannot expose private care facts"
+      ],
+      "tests": [
+        "Permission/moderation/edit and reply checks",
+        "Low-count aggregates and duplicate submission tests"
+      ],
+      "security_privacy": "Redact sensitive public text; preserve lawful minimal audit; no clinical-outcome score.",
+      "observability": "Invitation coverage, moderation latency, appeal outcome and review freshness.",
+      "localization": "Five-locale moderation guidance and Arabic text handling.",
+      "failure_modes": "Doxxing, provider pressure, duplicate reviews, biased invitations.",
+      "evidence": [
+        "Moderation policy/workflows",
+        "Permission and public-projection evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Quarantine unsafe text, retain appeal; disable reply publication if necessary.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M023",
+      "title": "Add review fraud review and ranking governance",
+      "phase": "P04",
+      "slice": "S04A",
+      "objective": "Add review fraud review and ranking governance",
+      "rationale": "Commercial incentives and small samples can distort patient trust.",
+      "dependencies": [
+        "M022",
+        "M011"
+      ],
+      "change_surface": [
+        "packages/trust/governance",
+        "packages/search/ranking",
+        "apps/web/admin"
+      ],
+      "source_refs": [
+        "A23",
+        "A24",
+        "C02"
+      ],
+      "requirement_ids": [
+        "R04",
+        "R13",
+        "R18"
+      ],
+      "implementation_requirements": "Version aggregate confidence/shrinkage and freshness; audit rank inputs, review manipulation signals and independent appeals. Fraud flags require proportionate review and do not deny medical access.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Paid tier absent from score dependency graph",
+        "Small samples display uncertainty/count",
+        "Fraud flag cannot silently erase compliant negative review"
+      ],
+      "tests": [
+        "Ranking invariant and aggregate golden tests",
+        "Moderator/sales separation and appeal reversal tests"
+      ],
+      "security_privacy": "Minimize fraud signals, no invasive cross-provider health tracking.",
+      "observability": "Rank policy version, moderation override audit and fairness summaries.",
+      "localization": "Locale fairness checks and translated explanation labels.",
+      "failure_modes": "Biased moderation, sparse review confidence, sales override.",
+      "evidence": [
+        "Ranking governance report",
+        "Aggregate fixtures and role-denial results"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Remove faulty optional rank factor; retain transparent deterministic relevance.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M024",
+      "title": "Implement minimized operational metric definitions",
+      "phase": "P04",
+      "slice": "S04B",
+      "objective": "Implement minimized operational metric definitions",
+      "rationale": "Provider ROI needs honest denominators and missingness.",
+      "dependencies": [
+        "M004",
+        "M016",
+        "M019",
+        "M020",
+        "M021"
+      ],
+      "change_surface": [
+        "packages/analytics",
+        "packages/events",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A14",
+        "S052",
+        "C19",
+        "C20"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R14"
+      ],
+      "implementation_requirements": "Implement event definitions for impressions/clicks/availability/starts/bookings/requests/changes/attendance and source attribution. Separate request/redirect from authoritative booking, unknown external from abandon and missing attendance from no-show.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every KPI has grain/denominator/source/coverage",
+        "No-show excludes unknown outcomes",
+        "Reschedule is not double-counted loss"
+      ],
+      "tests": [
+        "Synthetic funnel reconciliation and duplicate-event tests",
+        "Privacy/small-cell and late-correction tests"
+      ],
+      "security_privacy": "No raw symptom/query/PHI logging; suppress small groups and complementary cells.",
+      "observability": "Pipeline lag, source coverage and reconciliation mismatch.",
+      "localization": "Locale/channel dimensions without exposing individual profiles.",
+      "failure_modes": "Late events, missing outcome, identity join inflation, reidentifiable slices.",
+      "evidence": [
+        "Metric dictionary and calculated fixture outputs",
+        "Privacy review and reconciliation evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Stop suspect reports; rebuild aggregates from approved events.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M025",
+      "title": "Deliver provider monthly reports and B2B entitlements",
+      "phase": "P04",
+      "slice": "S04B",
+      "objective": "Deliver provider monthly reports and B2B entitlements",
+      "rationale": "Clinics should pay for operations value without a ranking boost.",
+      "dependencies": [
+        "M024",
+        "M019",
+        "M022"
+      ],
+      "change_surface": [
+        "apps/web/provider-reports",
+        "packages/commerce",
+        "packages/analytics"
+      ],
+      "source_refs": [
+        "A14",
+        "A23",
+        "C27"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R18"
+      ],
+      "implementation_requirements": "Build monthly report with coverage, request backlog, conversion, attendance, capacity and three action recommendations; source-derived operational advice only. Add branch/group entitlements and manual B2B invoice tracking before payment automation. No patient fee or commission.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Report totals reconcile to metric fixtures",
+        "Subscription state cannot change rank/reviews",
+        "Lapsed billing preserves existing patient appointment access"
+      ],
+      "tests": [
+        "Report reconciliation and entitlement separation tests",
+        "Missing-data/empty-cohort and export-permission tests"
+      ],
+      "security_privacy": "Scoped provider reports; no identifiable cross-provider demand export.",
+      "observability": "Report usage, subscription state changes and support cost fields.",
+      "localization": "Five-locale reports, SAR currency formatting where monetary values supplied.",
+      "failure_modes": "Misleading ROI, small sample, billing suspension blocking cancellation.",
+      "evidence": [
+        "Sample synthetic monthly report",
+        "Entitlement/ranking separation evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Revert commercial entitlements; keep core appointment continuity.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M026",
+      "title": "Prove the complete synthetic patient-to-review loop",
+      "phase": "P05",
+      "slice": "S05A",
+      "objective": "Prove the complete synthetic patient-to-review loop",
+      "rationale": "An integrated flywheel must work before real patient traffic.",
+      "dependencies": [
+        "M017",
+        "M018",
+        "M019",
+        "M020",
+        "M022",
+        "M025"
+      ],
+      "change_surface": [
+        "tests/e2e",
+        "fixtures/synthetic",
+        "docs/evidence/M026"
+      ],
+      "source_refs": [
+        "R20",
+        "S096",
+        "WCAG"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R06",
+        "R11",
+        "R13",
+        "R20"
+      ],
+      "implementation_requirements": "Create rights-cleared synthetic Saudi clinics/patients/services and execute intent/search/profile/booking/change/attendance/review/report journeys in all locales and low-bandwidth/accessibility variants. Include request-only provider and missing insurer/referral cases.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every pilot path completes with correct evidence",
+        "No false confirmation or unauthorized access in corpus",
+        "Report reflects actual synthetic attendance"
+      ],
+      "tests": [
+        "Full journey and failure-branch tests",
+        "Screenreader/RTL/manual patient and receptionist rehearsal"
+      ],
+      "security_privacy": "Synthetic identities only; fixtures have no real national IDs or phone delivery.",
+      "observability": "Correlated event chain from intent to report without health text.",
+      "localization": "Five-locale completeness and Arabic native reviewer signoff.",
+      "failure_modes": "Disconnected modules, misleading status, inaccessible confirmation, missing outcome.",
+      "evidence": [
+        "End-to-end run traces and screenshots",
+        "Reviewer signoffs and defect closure"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Keep live launch disabled; repair bounded failing path and rerun affected corpus.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M027",
+      "title": "Pass reliability, restoration and release-control gates",
+      "phase": "P05",
+      "slice": "S05A",
+      "objective": "Pass reliability, restoration and release-control gates",
+      "rationale": "Recovery must preserve appointments and external-operation truth.",
+      "dependencies": [
+        "M026",
+        "M015",
+        "M004"
+      ],
+      "change_surface": [
+        "tests/reliability",
+        "infra/runbooks",
+        "docs/evidence/M027"
+      ],
+      "source_refs": [
+        "A06",
+        "A09",
+        "A20",
+        "POSTGRES"
+      ],
+      "requirement_ids": [
+        "R14",
+        "R20"
+      ],
+      "implementation_requirements": "Run load/race/fault tests at agreed pilot budgets, restore encrypted backup in isolated environment, verify outbox/inbox consistency and kill switches. Define on-call, RPO/RTO evidence and rollout/rollback procedures.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Native invariants hold under specified concurrency",
+        "Restored operations do not duplicate notifications/bookings",
+        "RPO/RTO and service budgets measured or launch blocker recorded"
+      ],
+      "tests": [
+        "Load/worker/database failure and restore drills",
+        "Constraint migration, kill-switch and notification replay tests"
+      ],
+      "security_privacy": "No production patient data in drills; protected backup access and keys.",
+      "observability": "SLO dashboards, outbox lag, reservation leak and alert routing.",
+      "localization": "Localized degraded states and staff runbooks for Arabic operations.",
+      "failure_modes": "Database restore rollback, delayed worker, overload, unsupported vendor SLO.",
+      "evidence": [
+        "Raw measurement and restore timing",
+        "Runbook/alert rehearsal records"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Freeze new writes, restore known revision and reconcile durable state before reopen.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M028",
+      "title": "Qualify pilot clinics and rehearse real operating procedures",
+      "phase": "P05",
+      "slice": "S05B",
+      "objective": "Qualify pilot clinics and rehearse real operating procedures",
+      "rationale": "A technically correct service fails without maintained supply and responsible staff.",
+      "dependencies": [
+        "M009",
+        "M019",
+        "M025",
+        "M003",
+        "M027"
+      ],
+      "change_surface": [
+        "docs/pilot",
+        "provider-onboarding-config",
+        "docs/evidence/M028"
+      ],
+      "source_refs": [
+        "GOV",
+        "C29",
+        "C30",
+        "C31",
+        "C32",
+        "C33"
+      ],
+      "requirement_ids": [
+        "R03",
+        "R09",
+        "R12",
+        "R17"
+      ],
+      "implementation_requirements": "Recruit proposed 10–20 clinics in defined catchment; secure rights/agreements and named verification, reception and escalation owners. Rehearse native/request scheduling, closure, changed insurance and attendance disputes with synthetic cases. Record actual supply/coverage instead of assuming recruitment.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Each enabled service has evidence and named owner",
+        "Staff can resolve unknown/request/cancel cases",
+        "Unsupported clinics use honest lower-capability mode"
+      ],
+      "tests": [
+        "Synthetic onsite/authorized remote workflow rehearsal",
+        "Onboarding completeness and authority audit"
+      ],
+      "security_privacy": "Signed processing/verification rights; no access to real records for rehearsal.",
+      "observability": "Configuration readiness, support time and staff response performance.",
+      "localization": "Arabic reception workflow and five-locale patient assets.",
+      "failure_modes": "Clinic no API, untrained staff, stale credentials, incomplete hours.",
+      "evidence": [
+        "Signed readiness checklist",
+        "Rehearsal outcomes and unresolved clinic blockers"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Unpublish unready services; preserve existing patient assistance where applicable.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M029",
+      "title": "Run the bounded live pilot with safety stop conditions",
+      "phase": "P05",
+      "slice": "S05B",
+      "objective": "Run the bounded live pilot with safety stop conditions",
+      "rationale": "The flywheel and patient preference require actual evidence.",
+      "dependencies": [
+        "M028",
+        "M027",
+        "M003",
+        "M026"
+      ],
+      "change_surface": [
+        "docs/pilot-results",
+        "docs/governance",
+        "apps/config"
+      ],
+      "source_refs": [
+        "A26",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R14",
+        "R20"
+      ],
+      "implementation_requirements": "Enable only signed-off services/cohort; target eight weeks after baseline, >=100 authoritative completed visits with attendance coverage reported. Compare patient task success and clinic operations against baseline; do not manufacture unavailable data. Stop on false confirmations, material privacy incident or unresolved critical safety failure.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "All real-data legal/clinical/vendor gates are approved before traffic",
+        "Pilot measures defined outcomes with denominators/uncertainty",
+        "Stop conditions trigger controlled suspension and support"
+      ],
+      "tests": [
+        "Production-safe monitoring verification",
+        "Consent/support/incident tabletop, no offensive tests"
+      ],
+      "security_privacy": "Approved real-data scope only; minimize study data and consent appropriately.",
+      "observability": "Confirmed/unknown outcomes, cancellation, attendance coverage, support cost and incidents.",
+      "localization": "Arabic/English field cohorts plus five-locale production readiness.",
+      "failure_modes": "Insufficient sample, supply gap, false confirmation, staff failure.",
+      "evidence": [
+        "Dated pilot dataset/report with missingness",
+        "Gate approvals and incident/stop log"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause acquisition/new bookings per risk; maintain existing-care support and status/cancel paths.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M030",
+      "title": "Decide pilot continuation and validate provider willingness to pay",
+      "phase": "P05",
+      "slice": "S05B",
+      "objective": "Decide pilot continuation and validate provider willingness to pay",
+      "rationale": "Expansion needs paid operating value and reliable access, not traffic vanity.",
+      "dependencies": [
+        "M029",
+        "M025"
+      ],
+      "change_surface": [
+        "docs/pilot-decision",
+        "docs/pricing",
+        "docs/roadmap"
+      ],
+      "source_refs": [
+        "A23",
+        "A26",
+        "C27"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R18",
+        "R20"
+      ],
+      "implementation_requirements": "Review thresholds, confidence, support economics and participant feedback; obtain >=3 accepted paid proposals/renewals as proposed commercial gate. Record go/iterate/stop and specific bounded repair tasks. No adoption percentage or revenue forecast without data.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Decision cites measured reliability/access/attendance and economics",
+        "Paid commitments distinguished from stated interest",
+        "Failed gate produces repair scope rather than automatic expansion"
+      ],
+      "tests": [
+        "Metric recomputation and cohort sensitivity review",
+        "Independent decision/claim audit"
+      ],
+      "security_privacy": "Only aggregate reports shared; commercial incentives do not waive safety or reviews.",
+      "observability": "Unit economics, retention intent, actual paid commitment and unresolved cost.",
+      "localization": "Arabic provider interview analysis and human-reviewed report text.",
+      "failure_modes": "Insufficient willingness to pay, integration costs exceed margins, selection bias.",
+      "evidence": [
+        "Pilot decision memo with source tables",
+        "Paid commitment evidence under restricted access"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Continue bounded pilot or pause growth; do not add patient fees to hide economics.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M031",
+      "title": "Create preference-aware waitlist enrollment",
+      "phase": "P06",
+      "slice": "S06A",
+      "objective": "Create preference-aware waitlist enrollment",
+      "rationale": "Patients need earlier care without losing control of clinician/site/time preferences.",
+      "dependencies": [
+        "M030",
+        "M013",
+        "M017"
+      ],
+      "change_surface": [
+        "packages/waitlist",
+        "apps/web/waitlist",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A07",
+        "A24",
+        "C10",
+        "C13",
+        "C20"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R08",
+        "R14"
+      ],
+      "implementation_requirements": "Model date/time windows, preferred/alternate clinicians/locations, type, accessibility/language, channel consent, original booking and explicit switch permission. Establish clinician-set priority bands and FIFO within band.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Preferences distinguish hard constraints and acceptable alternatives",
+        "Enrollment does not cancel original visit",
+        "Priority basis and overrides are auditable"
+      ],
+      "tests": [
+        "Preference/eligibility and duplicate enrollment tests",
+        "Permission/quiet-hours and original-appointment preservation tests"
+      ],
+      "security_privacy": "No opaque no-show/revenue-based allocation; minimize condition data.",
+      "observability": "Queue age, eligible pool and priority override counts.",
+      "localization": "Local timezone windows and five-locale preference forms.",
+      "failure_modes": "Ineligible enrollment, shared phone, original changed, preference ambiguity.",
+      "evidence": [
+        "Preference fixture results",
+        "Fairness policy and consent screenshots"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause matching, retain preferences and original care.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M032",
+      "title": "Implement expiring offers and safe cancellation refill",
+      "phase": "P06",
+      "slice": "S06A",
+      "objective": "Implement expiring offers and safe cancellation refill",
+      "rationale": "A waitlist fill must be an actual secured appointment.",
+      "dependencies": [
+        "M031",
+        "M015",
+        "M018",
+        "M020"
+      ],
+      "change_surface": [
+        "packages/waitlist/offers",
+        "apps/worker",
+        "apps/api"
+      ],
+      "source_refs": [
+        "A09",
+        "A15",
+        "C13",
+        "C16",
+        "C20"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R08",
+        "R15",
+        "R20"
+      ],
+      "implementation_requirements": "Sequential matching creates a real hold where supported, scoped expiring offer and explicit acceptance; native replacement atomically releases later booking. No-hold sources send honest availability invitations. Track original-cancel outcome separately.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "One offer cannot allocate one unit twice",
+        "Expired acceptance retains original booking",
+        "Quiet hours preserve a fair response opportunity"
+      ],
+      "tests": [
+        "Concurrent accept/expiry/cancel tests",
+        "Delayed delivery, unsupported hold and worker outage tests"
+      ],
+      "security_privacy": "Possession links scoped; no sensitive message previews or unfair risk score.",
+      "observability": "Offer/delivery/accept/fill/expiry and original-cancel-failure metrics.",
+      "localization": "Five-locale replacement explanation with exact dates/zone.",
+      "failure_modes": "Late accept, duplicate callback, slot taken, no response, old cancellation fails.",
+      "evidence": [
+        "Race logs and original-preserved evidence",
+        "Fairness/channel review"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Stop offers, expire holds safely, preserve later appointments.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M033",
+      "title": "Model clinician-originated follow-up and recall plans",
+      "phase": "P06",
+      "slice": "S06B",
+      "objective": "Model clinician-originated follow-up and recall plans",
+      "rationale": "Recall requires an accountable clinical source rather than inferred advice.",
+      "dependencies": [
+        "M030",
+        "M021",
+        "M013"
+      ],
+      "change_surface": [
+        "packages/access-work",
+        "packages/clinical-contracts",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A10",
+        "A15",
+        "FHIR",
+        "C27"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R14",
+        "R19"
+      ],
+      "implementation_requirements": "Create plan issuer/source/window/service/prerequisites/stop conditions and state machine. Support approved dental/preventive/rehab/follow-up templates; patient declines and clinical escalation explicit. Booking does not close clinical completion.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Only authorized issuer sets clinical window",
+        "Completed/cancelled/superseded plans suppress obsolete work",
+        "Missed visit can reopen only within approved policy"
+      ],
+      "tests": [
+        "Plan/window/version and completion-correction tests",
+        "Unauthorized issuer and duplicated plan tests"
+      ],
+      "security_privacy": "Clinical fields scoped separately from marketing; source provenance required.",
+      "observability": "Due/overdue/unreachable counts with clinical owner.",
+      "localization": "Five-locale clinician-origin wording; dates/intervals unambiguous.",
+      "failure_modes": "AI-invented recall, expired order, duplicate campaign, missing escalation owner.",
+      "evidence": [
+        "Plan transition fixtures",
+        "Issuer/purpose and stop-rule evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause automated contacts and route due work to responsible clinic.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M034",
+      "title": "Orchestrate consented recall and recovery campaigns",
+      "phase": "P06",
+      "slice": "S06B",
+      "objective": "Orchestrate consented recall and recovery campaigns",
+      "rationale": "Contact attempts should close access work without harassment or duplicate messaging.",
+      "dependencies": [
+        "M033",
+        "M020",
+        "M032"
+      ],
+      "change_surface": [
+        "packages/access-work/campaigns",
+        "apps/worker",
+        "apps/web/provider"
+      ],
+      "source_refs": [
+        "A15",
+        "C27",
+        "C28",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R15"
+      ],
+      "implementation_requirements": "Implement capped channel attempts, dedupe, quiet hours, opt-out, response states and direct booking links. Separate clinical recall from optional missed/cancelled/abandoned-booking recovery; abandonment outreach requires explicit lawful opt-in.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Revocation stops future optional contact",
+        "Current plan/appointment state checked at send",
+        "Overdue clinical work reaches designated human owner"
+      ],
+      "tests": [
+        "Retry/opt-out/late completion and dedupe tests",
+        "Unreachable patient and quiet-hours boundary tests"
+      ],
+      "security_privacy": "No blanket marketing consent; templates minimize health content.",
+      "observability": "Contact opportunity, delivered, booked, completed and suppressed by reason.",
+      "localization": "Five-locale templates with respectful Arabic tone.",
+      "failure_modes": "Duplicate recalls, unreachable recipient, invalid consent, clinical urgency unowned.",
+      "evidence": [
+        "Campaign simulation with stop conditions",
+        "Consent/clinical-owner signoff"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause campaign, retain work queue and permitted manual clinical route.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M035",
+      "title": "Create referral and order-to-schedule work queues",
+      "phase": "P06",
+      "slice": "S06B",
+      "objective": "Create referral and order-to-schedule work queues",
+      "rationale": "Providers need to see whether authorized care requests reach appointments.",
+      "dependencies": [
+        "M033",
+        "M013",
+        "M019"
+      ],
+      "change_surface": [
+        "packages/access-work/referrals",
+        "apps/web/provider",
+        "packages/clinical-contracts"
+      ],
+      "source_refs": [
+        "A10",
+        "FHIR",
+        "S109"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R12",
+        "R19"
+      ],
+      "implementation_requirements": "Model ServiceRequest/Task-aligned issuer, patient binding, service/window, documents, prior authorization status and scheduling owner. Staff validates prerequisites; record received/needs-info/ready/contacted/booked/completed/declined/expired. No autonomous clinical ordering.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Order/referral source and scope preserved",
+        "Invalid prerequisites route to review",
+        "Booking and clinical fulfillment remain distinct"
+      ],
+      "tests": [
+        "Expired/mismatched referral and missing authorization tests",
+        "Patient match conflict and partial completion tests"
+      ],
+      "security_privacy": "Restricted clinical attachments; scheduling staff see minimum work status.",
+      "observability": "Referral age, conversion, unmet prerequisites and closure coverage.",
+      "localization": "Five-locale patient request messages; clinical codes retain original text.",
+      "failure_modes": "Wrong patient/order, unreviewed preparation, missing partner rights.",
+      "evidence": [
+        "Synthetic referral-to-book evidence",
+        "FHIR boundary and role tests"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Quarantine ambiguous referrals; clinic clinical owner resolves.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M036",
+      "title": "Build the adapter capability and certification harness",
+      "phase": "P07",
+      "slice": "S07A",
+      "objective": "Build the adapter capability and certification harness",
+      "rationale": "Vendor names and FHIR labels cannot substitute for tested scheduling semantics.",
+      "dependencies": [
+        "M030",
+        "M016",
+        "M004"
+      ],
+      "change_surface": [
+        "packages/integration/contracts",
+        "tests/adapter-contract",
+        "docs/adapter-certification"
+      ],
+      "source_refs": [
+        "A11",
+        "C13",
+        "C19",
+        "C20",
+        "C23"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R12",
+        "R20"
+      ],
+      "implementation_requirements": "Implement versioned capability vector and per-field authority schema; fake native/read-only/read-write/event adapters, health/TTL and typed outcomes. Define certification fixtures for identifiers, hold/write/modify/cancel/status, retry and permission limitations.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Unsupported capabilities cannot be silently emulated",
+        "Clinical-read permission grants no booking write",
+        "Every adapter has named owner/version/source contract"
+      ],
+      "tests": [
+        "Contract suite for all capability combinations",
+        "Unknown source/version and tenant-routing denial tests"
+      ],
+      "security_privacy": "Scoped credential references, minimum patient data and explicit rights.",
+      "observability": "Capability changes, freshness, circuit breaker and contract errors.",
+      "localization": "Patient mode/error explanations consistent across locales.",
+      "failure_modes": "Vendor API changes, unsupported order types, unknown cancellation semantics.",
+      "evidence": [
+        "Executable fake-adapter report",
+        "Certification checklist and authority matrix"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Downgrade to request/call; disable unsupported writes.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M037",
+      "title": "Implement durable external booking and change operations",
+      "phase": "P07",
+      "slice": "S07A",
+      "objective": "Implement durable external booking and change operations",
+      "rationale": "A lost response must not produce duplicate external appointments.",
+      "dependencies": [
+        "M036",
+        "M016",
+        "M018"
+      ],
+      "change_surface": [
+        "packages/integration/operations",
+        "apps/worker",
+        "apps/api"
+      ],
+      "source_refs": [
+        "A09",
+        "A11",
+        "C13",
+        "C23"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R12",
+        "R20"
+      ],
+      "implementation_requirements": "Persist command/correlation before send; handle authoritative success/rejection/outcome_unknown, find-by-correlation, bounded retry only with supported idempotency and serialized cancel intent. External reschedule respects original-preserving capability.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Timeout stays pending, not failed/booked",
+        "Blind create retry impossible when unsupported",
+        "Late success honors pending cancellation intent"
+      ],
+      "tests": [
+        "Remote commit then lost response",
+        "Duplicate events, ambiguous patient/time match and external cancel failure"
+      ],
+      "security_privacy": "Tenant-bound secrets and operation access; staff escalation minimal data.",
+      "observability": "Unknown outcome age, retries, reconciliation attempts and false-confirmation sentinel.",
+      "localization": "Five-locale pending/assistance text and original/new appointment display.",
+      "failure_modes": "Late success, no correlation search, remote double writer, partial replacement.",
+      "evidence": [
+        "Fault histories proving no false success",
+        "Staff resolution/recovery walkthrough"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause adapter creates; query/reconcile before any compensation.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M038",
+      "title": "Implement the first negotiated FHIR/IHE scheduling adapter",
+      "phase": "P07",
+      "slice": "S07A",
+      "objective": "Implement the first negotiated FHIR/IHE scheduling adapter",
+      "rationale": "Interoperability should follow a partner's actual profile.",
+      "dependencies": [
+        "M036",
+        "M037",
+        "M035"
+      ],
+      "change_surface": [
+        "packages/integration/fhir",
+        "tests/fhir",
+        "fixtures/fhir"
+      ],
+      "source_refs": [
+        "A10",
+        "S091",
+        "S099",
+        "S102",
+        "S109",
+        "S114"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R19",
+        "R20"
+      ],
+      "implementation_requirements": "Use R4 and negotiated IHE find/optional hold/book/modify/cancel/find-existing semantics in an authorized sandbox or synthetic conformant server. Validate identifiers/status mapping, supported resources, OperationOutcome and capability profiles. Partner production enablement remains M040 gated.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "All supported operations pass profile/round-trip tests",
+        "Generic POST never assumed conflict-safe",
+        "Unsupported R5/extension fields rejected or explicitly mapped"
+      ],
+      "tests": [
+        "Official validator and contract tests",
+        "Hold expiry, canceled/replaced and status-loss fixtures"
+      ],
+      "security_privacy": "SMART/OAuth scopes or partner-approved auth; patient binding and consent enforced.",
+      "observability": "Validation errors, response latency and profile/version mismatch.",
+      "localization": "Preserve Unicode names and timezone offsets; display source limitations.",
+      "failure_modes": "FHIR endpoint lacks scheduling write, vendor type IDs absent, validator package unavailable.",
+      "evidence": [
+        "Validator reports and sandbox contract evidence",
+        "Exact profile/adapter version and rights"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Use read-only/request mode until capability certified.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M039",
+      "title": "Implement legacy SIU ingestion and batch/calendar fallback",
+      "phase": "P07",
+      "slice": "S07B",
+      "objective": "Implement legacy SIU ingestion and batch/calendar fallback",
+      "rationale": "Hospitals without modern APIs still need honest discovery and access.",
+      "dependencies": [
+        "M036",
+        "M007",
+        "M004"
+      ],
+      "change_surface": [
+        "packages/integration/hl7v2",
+        "packages/integration/imports",
+        "tests/integration"
+      ],
+      "source_refs": [
+        "A11",
+        "HL7",
+        "S075",
+        "S110"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R14"
+      ],
+      "implementation_requirements": "Implement one negotiated SIU read/mirror profile with S12/S13/S14/S15/S23/S24/S26 semantics, source IDs/ACK handling and current-state repair. Add minimal busy-only calendar and validated CSV/SFTP import contracts; refine into separate bounded work packets before executing each transport. No instant write claim from read-only feeds.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "SIU notification does not imply booking command capability",
+        "Block/unblock and ID rekey preserve source ownership",
+        "Batch/calendar freshness cannot authorize external instant booking"
+      ],
+      "tests": [
+        "Duplicate/out-of-order SIU and malformed batch fixtures",
+        "Calendar token reset and busy-only privacy checks"
+      ],
+      "security_privacy": "Secure approved transport/agent credentials; no event descriptions or PHI in calendar exports.",
+      "observability": "ACK/error, feed lag, batch rejects and mirror drift.",
+      "localization": "Partner timezone/encoding tests including Arabic names.",
+      "failure_modes": "Old IDs reused, partial file, missing SIU, transport ACK mistaken success.",
+      "evidence": [
+        "Negotiated profile and fixture results",
+        "Transport/privacy/authority evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Quarantine feed and downgrade patient mode; retain last checked label.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M040",
+      "title": "Certify reconciliation, adapter rollout and integration operations",
+      "phase": "P07",
+      "slice": "S07B",
+      "objective": "Certify reconciliation, adapter rollout and integration operations",
+      "rationale": "Two-way access requires repair, not just a happy-path API call.",
+      "dependencies": [
+        "M037",
+        "M038",
+        "M039",
+        "M027"
+      ],
+      "change_surface": [
+        "packages/integration/reconciliation",
+        "apps/web/provider-sync",
+        "docs/runbooks"
+      ],
+      "source_refs": [
+        "A11",
+        "A20",
+        "C13",
+        "C23"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R20"
+      ],
+      "implementation_requirements": "Implement inbox replay/order rules, periodic reconciliation/cursors, tombstones, rekey review, conflict queue and adapter circuit-breaker rollout. Certify each real partner/service against contract evidence; enable writes only after authorized test and operational signoff.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Lost/reordered events converge to authority",
+        "Unknown operations reach human owner within target",
+        "Unsupported/uncertified branches remain lower mode"
+      ],
+      "tests": [
+        "Gap repair/full resync/replay and restore tests",
+        "Partner downtime, rekey and capacity-conflict authorized sandbox tests"
+      ],
+      "security_privacy": "No production probing; scoped partner environment and redacted evidence.",
+      "observability": "Drift, stale TTL, unknown-age SLO and reconciliation backlog.",
+      "localization": "Five-locale sync/assistance indicators for patient and staff.",
+      "failure_modes": "Reconcile loop, stale cursor, vendor semantics changed, unstaffed backlog.",
+      "evidence": [
+        "Per-adapter signed capability certificate",
+        "Failure/restore reports and on-call runbook"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable writes per adapter/version; reconcile before reenabling.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M041",
+      "title": "Implement the reviewed navigation safety and intent contract",
+      "phase": "P08",
+      "slice": "S08A",
+      "objective": "Implement the reviewed navigation safety and intent contract",
+      "rationale": "Patient-facing AI must route safely with a controlled intended use.",
+      "dependencies": [
+        "M030",
+        "M011",
+        "M003"
+      ],
+      "change_surface": [
+        "packages/navigation/safety",
+        "packages/navigation/intent",
+        "fixtures/ai"
+      ],
+      "source_refs": [
+        "A16",
+        "GOV",
+        "AI-PAPER"
+      ],
+      "requirement_ids": [
+        "R01",
+        "R14"
+      ],
+      "implementation_requirements": "Finalize clinician-reviewed service navigation/urgent-risk policy, typed intent/uncertainty and approved knowledge versions. Run minimum 500 navigation plus 100 critical/adversarial synthetic scenarios; define abstention/human escalation and provider processing restrictions.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "All designated critical cases escalate safely in gate corpus",
+        "No diagnosis/treatment authority introduced",
+        "Material uncertainty produces clarification or abstention"
+      ],
+      "tests": [
+        "Clinical reviewer golden cases and disagreement review",
+        "Synthetic untrusted-content/tool-boundary tests"
+      ],
+      "security_privacy": "Approved processing regions/terms; no raw prompts in routine traces.",
+      "observability": "Safe abstention/critical case outcomes and version labels without transcript capture.",
+      "localization": "At least 200 Arabic cases plus four locale cohorts; Saudi dialect/code-switch coverage.",
+      "failure_modes": "Unsafe reassurance, missing context, malicious provider text, model outage.",
+      "evidence": [
+        "Clinical safety case and held-out evaluation",
+        "Intended-use/regulatory signoff for enabled scope"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable generative navigation; retain deterministic search/call paths.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M042",
+      "title": "Connect text navigation to typed provider and scheduling tools",
+      "phase": "P08",
+      "slice": "S08A",
+      "objective": "Connect text navigation to typed provider and scheduling tools",
+      "rationale": "LLM explanations must resolve to current structured facts.",
+      "dependencies": [
+        "M041",
+        "M036",
+        "M016",
+        "M013"
+      ],
+      "change_surface": [
+        "packages/navigation/tools",
+        "apps/api",
+        "apps/web/navigation"
+      ],
+      "source_refs": [
+        "A16",
+        "A11",
+        "S015",
+        "C02"
+      ],
+      "requirement_ids": [
+        "R01",
+        "R05",
+        "R14"
+      ],
+      "implementation_requirements": "Implement scoped search/facts/availability/eligibility/status tools and write proposals; server renders verified result cards. Validate IDs against authorized tool results, freshness and current candidate versions; model cannot supply its own tenant privilege or confirmation.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "No invented provider/price/insurance/time/booking facts",
+        "Tool denial cannot be overridden by retrieved text",
+        "Model outage leaves usable search"
+      ],
+      "tests": [
+        "Fabricated ID/expired candidate and unknown fact tests",
+        "Authorization/schema/timeout and injection-containment synthetic tests"
+      ],
+      "security_privacy": "Minimal inputs; no default clinical-history RAG; typed allowlist only.",
+      "observability": "Fact mismatch, tool error and safe fallback counters.",
+      "localization": "Five-locale intent slots/explanations and Arabic entity resolution.",
+      "failure_modes": "Hallucinated availability, invalid argument, stale provider, unauthorized patient.",
+      "evidence": [
+        "Tool contract logs with synthetic data",
+        "Grounded result and privacy review"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Turn off affected tools; retain read-only deterministic UI.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M043",
+      "title": "Enforce exact action confirmation across AI and UI",
+      "phase": "P08",
+      "slice": "S08A",
+      "objective": "Enforce exact action confirmation across AI and UI",
+      "rationale": "Conversational agreement must bind the exact current action.",
+      "dependencies": [
+        "M042",
+        "M017",
+        "M018"
+      ],
+      "change_surface": [
+        "packages/navigation/confirmation",
+        "packages/contracts",
+        "apps/web/navigation"
+      ],
+      "source_refs": [
+        "A16",
+        "A09"
+      ],
+      "requirement_ids": [
+        "R01",
+        "R05",
+        "R07"
+      ],
+      "implementation_requirements": "Bind confirmation challenge to patient/delegate/provider/service/site/time/zone/policy/version and operation digest. Require explicit accepted challenge for booking/cancel/reschedule; invalidate material changes. Preserve idempotency across repeated language and disconnected clients.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Unconfirmed write never executes",
+        "Changed material detail requires new confirmation",
+        "Repeated agreement returns the same operation"
+      ],
+      "tests": [
+        "Changed provider/time/policy, replay and expired challenge tests",
+        "Cancel/reschedule authorization and network-loss tests"
+      ],
+      "security_privacy": "Server checks authority independently of model; no implicit consent from transcript claims.",
+      "observability": "Challenge issued/accepted/expired and rejected-write reason metrics.",
+      "localization": "Human-reviewed exact summaries in five locales; no ambiguous relative dates.",
+      "failure_modes": "Model claims prior consent, double-click, stale screen, wrong dependent.",
+      "evidence": [
+        "Cross-surface confirmation evidence",
+        "Zero-unconfirmed-write corpus report"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable conversational writes; use ordinary verified confirmation UI.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M044",
+      "title": "Evaluate private and approved-cloud ASR",
+      "phase": "P08",
+      "slice": "S08B",
+      "objective": "Evaluate private and approved-cloud ASR",
+      "rationale": "Speech accuracy must be measured on Saudi terms and critical entities.",
+      "dependencies": [
+        "M041",
+        "M003",
+        "M001"
+      ],
+      "change_surface": [
+        "experiments/asr",
+        "fixtures/voice",
+        "docs/evidence/M044"
+      ],
+      "source_refs": [
+        "A17",
+        "S089",
+        "S090",
+        "S106",
+        "S107",
+        "S108",
+        "AI-PAPER"
+      ],
+      "requirement_ids": [
+        "R16",
+        "R14"
+      ],
+      "implementation_requirements": "Evaluate whisper.cpp/faster-whisper and qualified cloud alternatives with consented actor-read synthetic corpus; separately qualify model weights. Measure WER, critical entity accuracy, time normalization, calibration, latency/device memory and cost. Casablanca is supplementary, not Saudi validation.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Critical-entity accuracy target >=95% on held-out scripts or remediation gate",
+        "Low-confidence critical fields always require correction",
+        "Approved fallback never silently changes processing region"
+      ],
+      "tests": [
+        "Saudi dialect/code-switch/provider/drug-name and five-language cases",
+        "Noise, device/network and privacy deletion tests"
+      ],
+      "security_privacy": "No real PHI; explicit recording consent; default temporary audio deletion.",
+      "observability": "Runtime/version, critical error categories, cost and deletion verification.",
+      "localization": "Najdi/Hijazi/Eastern representation plus Arabic-English and FR/DE/ES cohorts.",
+      "failure_modes": "Drug/name confusion, false confidence, inaccessible microphone, cloud policy breach.",
+      "evidence": [
+        "Corpus provenance and subgroup metrics",
+        "Weight/runtime license and private/cloud decision"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Retain text entry; disable failing ASR route and purge temporary audio.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M045",
+      "title": "Deliver correctable voice navigation and booking",
+      "phase": "P08",
+      "slice": "S08B",
+      "objective": "Deliver correctable voice navigation and booking",
+      "rationale": "Voice must use the same safe engine, not a parallel booking agent.",
+      "dependencies": [
+        "M044",
+        "M042",
+        "M043",
+        "M005"
+      ],
+      "change_surface": [
+        "apps/web/voice",
+        "packages/voice",
+        "packages/navigation"
+      ],
+      "source_refs": [
+        "A17",
+        "A16",
+        "S089",
+        "S090"
+      ],
+      "requirement_ids": [
+        "R16",
+        "R01",
+        "R05"
+      ],
+      "implementation_requirements": "Push-to-talk, visible mic/cancel, editable transcript and exact entity readback feed canonical intent/tools. TTS/text show exact provider/location/date/time and require current action challenge. No passive recording.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Text and voice produce identical authorized operation contract",
+        "Critical names/time corrected or confirmed before action",
+        "Audio expires after processing by default"
+      ],
+      "tests": [
+        "Low-confidence correction and code-switch journeys",
+        "Duplicate utterance, interruption, network loss and unauthorized action tests"
+      ],
+      "security_privacy": "Ephemeral audio, approved processing route, explicit microphone permission.",
+      "observability": "Transcription-to-correction funnel and safe action outcomes without raw audio.",
+      "localization": "Five-language voice/text fallback and Arabic pronunciation review.",
+      "failure_modes": "Misheard yes/time/drug, interrupted TTS, unsupported device, ASR timeout.",
+      "evidence": [
+        "Synthetic end-to-end voice recordings only with consent",
+        "Entity/confirmation and deletion evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable microphone path; keep text and assisted access fully usable.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M046",
+      "title": "Validate dental multi-resource service configuration",
+      "phase": "P09",
+      "slice": "S09A",
+      "objective": "Validate dental multi-resource service configuration",
+      "rationale": "Dentistry exposes shared-chair/assistant/buffer constraints early.",
+      "dependencies": [
+        "M040",
+        "M013",
+        "M015",
+        "M019"
+      ],
+      "change_surface": [
+        "packages/scheduling/recipes",
+        "fixtures/dental",
+        "apps/web/provider"
+      ],
+      "source_refs": [
+        "A07",
+        "A09",
+        "C16",
+        "C17"
+      ],
+      "requirement_ids": [
+        "R10",
+        "R12"
+      ],
+      "implementation_requirements": "Implement approved dental recipes for dentist/hygienist/chair/assistant and procedure-specific duration/cleanup, qualified substitutions and branch filters. Use existing reservation primitives rather than special unsafe calendar writes.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "All required units reserved together",
+        "Cleanup prevents adjacent conflict",
+        "Named clinician substitution requires acceptance"
+      ],
+      "tests": [
+        "Chair/assistant conflict and variable-duration races",
+        "Sick leave/substitute and external capability tests"
+      ],
+      "security_privacy": "Clinical eligibility and preparation approved by dental owner; staff sees minimum.",
+      "observability": "Resource bottleneck and failed recipe reason metrics.",
+      "localization": "Arabic dental service taxonomy and five-locale preparation labels.",
+      "failure_modes": "Available dentist but no chair, unqualified assistant, old duration.",
+      "evidence": [
+        "Dental clinician review and synthetic recipe evidence",
+        "Atomicity/performance tests"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Unpublish unsupported recipe; preserve existing bookings and staff review.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M047",
+      "title": "Validate imaging, laboratory and nursing service workflows",
+      "phase": "P09",
+      "slice": "S09A",
+      "objective": "Validate imaging, laboratory and nursing service workflows",
+      "rationale": "Services without a primary doctor need order and equipment-aware access.",
+      "dependencies": [
+        "M046",
+        "M035",
+        "M013"
+      ],
+      "change_surface": [
+        "packages/scheduling/recipes",
+        "fixtures/imaging-lab",
+        "apps/web/provider"
+      ],
+      "source_refs": [
+        "A07",
+        "A10",
+        "C23",
+        "FHIR"
+      ],
+      "requirement_ids": [
+        "R10",
+        "R19"
+      ],
+      "implementation_requirements": "Add provider-approved machine/technician/room, phlebotomy/chair and nurse/service-capacity recipes; validate order/referral, preparation and clinical review prerequisites. Interpretation can be a separate linked task.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Service can book without physician as primary actor",
+        "Missing clinical clearance routes to staff",
+        "Capacity pools respect finite units"
+      ],
+      "tests": [
+        "MRI/ultrasound/lab/nurse synthetic recipes",
+        "Order expiry, preparation change, machine downtime and capacity races"
+      ],
+      "security_privacy": "No automated medical suitability decisions; restricted order documents.",
+      "observability": "Equipment utilization, blocked prerequisite and downtime impact.",
+      "localization": "Multilingual modality/preparation text, Arabic review by provider.",
+      "failure_modes": "Equipment free but order invalid, technician absent, fasting misunderstanding.",
+      "evidence": [
+        "Clinical-owner template approval",
+        "Multi-resource/order failure evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Request-only mode for unvalidated services; preserve clinical escalation.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M048",
+      "title": "Implement bounded recurring and linked-care scheduling",
+      "phase": "P09",
+      "slice": "S09A",
+      "objective": "Implement bounded recurring and linked-care scheduling",
+      "rationale": "Series and pathways need explicit partial success and dependency semantics.",
+      "dependencies": [
+        "M046",
+        "M047",
+        "M033",
+        "M018"
+      ],
+      "change_surface": [
+        "packages/scheduling/series",
+        "packages/access-work",
+        "fixtures/series"
+      ],
+      "source_refs": [
+        "A08",
+        "A10",
+        "FHIR",
+        "C18"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R10",
+        "R19"
+      ],
+      "implementation_requirements": "Create Series/AppointmentLink with approved cadence/windows and prerequisites; bounded native atomic batch or explicit partial/rolling confirmation. Support rehab and lab-specialist/pre-op/post-op relationships; exclude surgical clearance/OR optimization.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Requested series never presented as all booked without proof",
+        "Changed predecessor creates reviewed impact task",
+        "Occurrences preserve local time across DST"
+      ],
+      "tests": [
+        "Partial series conflicts and rolling-horizon tests",
+        "Predecessor change, cancellation and DST fixtures"
+      ],
+      "security_privacy": "Each patient/clinical-plan scope checked; no inference of new care plan.",
+      "observability": "Series completion, partial allocation and broken prerequisite counts.",
+      "localization": "Five-locale series summary with per-occurrence date/zone.",
+      "failure_modes": "One occurrence unavailable, provider leaves, clinical window shifts.",
+      "evidence": [
+        "Series/graph fixtures and partial-success UX",
+        "Clinical plan boundary review"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Stop series expansion; preserve confirmed occurrences and manual review.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M049",
+      "title": "Enable approved telehealth and request-first home visits",
+      "phase": "P09",
+      "slice": "S09B",
+      "objective": "Enable approved telehealth and request-first home visits",
+      "rationale": "Remote and home services add jurisdiction, address and travel constraints.",
+      "dependencies": [
+        "M040",
+        "M047",
+        "M013",
+        "M020"
+      ],
+      "change_surface": [
+        "packages/scheduling/modalities",
+        "packages/access-work/dispatch",
+        "apps/web/booking"
+      ],
+      "source_refs": [
+        "A11",
+        "A15",
+        "GOV",
+        "C04",
+        "C35"
+      ],
+      "requirement_ids": [
+        "R05",
+        "R10",
+        "R14"
+      ],
+      "implementation_requirements": "Book approved provider-hosted telehealth with jurisdiction/consent/technical checks. Home visits remain request-first until staff validates team/vehicle/equipment/address/radius/travel windows. No autonomous route optimization or cross-country clinical assumption.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Telehealth eligibility includes current patient jurisdiction",
+        "Home window clearly request until dispatch confirms",
+        "Travel/setup occupancy prevents impossible native route adjacency"
+      ],
+      "tests": [
+        "Jurisdiction/consent and secure-link expiry tests",
+        "Out-of-radius, ambiguous address, prior/next travel and team absence tests"
+      ],
+      "security_privacy": "Home address private, generic messages; provider telehealth processing rights.",
+      "observability": "Request-to-dispatch time, technical failures and travel feasibility rejects.",
+      "localization": "Arabic address confirmation and five-locale modality instructions.",
+      "failure_modes": "Wrong jurisdiction, incorrect entrance, inaccessible video, underestimated travel.",
+      "evidence": [
+        "Provider/licensing approval and synthetic modality cases",
+        "Link/privacy and dispatch review"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Use assisted provider contact; do not falsely confirm unsupported modality.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M050",
+      "title": "Implement group sessions and linked family appointments",
+      "phase": "P09",
+      "slice": "S09B",
+      "objective": "Implement group sessions and linked family appointments",
+      "rationale": "Shared sessions and family logistics must not merge patient identity or privacy.",
+      "dependencies": [
+        "M048",
+        "M017",
+        "M013"
+      ],
+      "change_surface": [
+        "packages/scheduling/groups",
+        "packages/patient/delegation",
+        "apps/web/booking"
+      ],
+      "source_refs": [
+        "A22",
+        "A09",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R07",
+        "R10",
+        "R14"
+      ],
+      "implementation_requirements": "Reserve individual capacity units per participant and per-person eligibility/consent. Link separate family appointments to authorized booker and show partial confirmations. No shared medical record visibility from shared booking.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every attendee has independent eligibility/seat",
+        "Family linkage grants no clinical scope",
+        "Partial failure preserves successful appointments and explicit choice"
+      ],
+      "tests": [
+        "Group capacity and participant removal races",
+        "Mixed guardian permissions and partial family confirmation tests"
+      ],
+      "security_privacy": "Per-person notifications/visibility; minor/sensitive-service policy enforced.",
+      "observability": "Seats versus sessions and partial-family result counts.",
+      "localization": "Five-locale whom-is-this-for and partial-success messages.",
+      "failure_modes": "One dependent unapproved, group full, canceled participant, shared phone.",
+      "evidence": [
+        "Group/family identity and capacity evidence",
+        "Privacy/guardian signoff"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable batch action; continue individual authorized booking.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M051",
+      "title": "Establish separate clinical consent and storage boundaries",
+      "phase": "P10",
+      "slice": "S10A",
+      "objective": "Establish separate clinical consent and storage boundaries",
+      "rationale": "Timeline must not inherit marketplace permissions.",
+      "dependencies": [
+        "M040",
+        "M003",
+        "M002"
+      ],
+      "change_surface": [
+        "packages/clinical-consent",
+        "packages/clinical-storage",
+        "db/migrations"
+      ],
+      "source_refs": [
+        "A10",
+        "A19",
+        "A22",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R14",
+        "R19"
+      ],
+      "implementation_requirements": "Create clinical purpose/scopes, patient/delegate grants, segregated storage/keys/access policy, retention and revocation/export workflows. Record partner data rights and controller roles before import.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Booking staff cannot read clinical timeline by default",
+        "Revocation blocks future reads/imports",
+        "Every clinical access records purpose and source"
+      ],
+      "tests": [
+        "Clinical versus operational role matrix",
+        "Consent revocation, export and deletion/backup policy tests"
+      ],
+      "security_privacy": "Separate clinical zone and vetted processors; no default AI access.",
+      "observability": "Consent/revocation/access-denial audit without clinical body.",
+      "localization": "Five-locale granular notices and Arabic clinical/privacy review.",
+      "failure_modes": "Broad inherited role, invalid guardian grant, unlawful retention.",
+      "evidence": [
+        "Signed clinical data flow/rights review",
+        "Policy tests and revocation evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable clinical reads/imports, preserve lawful source records per policy.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M052",
+      "title": "Implement patient matching and validated FHIR imports",
+      "phase": "P10",
+      "slice": "S10A",
+      "objective": "Implement patient matching and validated FHIR imports",
+      "rationale": "A correct clinical document attached to the wrong person is unsafe.",
+      "dependencies": [
+        "M051",
+        "M038",
+        "M007"
+      ],
+      "change_surface": [
+        "packages/clinical-import",
+        "packages/patient-matching",
+        "fixtures/fhir"
+      ],
+      "source_refs": [
+        "A10",
+        "FHIR",
+        "S092",
+        "S102",
+        "S114"
+      ],
+      "requirement_ids": [
+        "R19",
+        "R14"
+      ],
+      "implementation_requirements": "Bind patient identities with source-specific evidence; quarantine ambiguous matches. Validate selected FHIR resources/profiles, references, versions, pagination, deletions and provenance. Maintain correction/unmerge lineage and restricted operator review.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Shared phone/name alone cannot merge patients",
+        "Unknown reference/version goes to quarantine",
+        "Import stores source and immutable revision"
+      ],
+      "tests": [
+        "Identity collision/rekey/unmerge and duplicate import tests",
+        "Validator/profile and consent-revoked-mid-import tests"
+      ],
+      "security_privacy": "Least-privilege partner scopes; no public PHI validation service.",
+      "observability": "Match confidence/ambiguity, validation rejects and import lag.",
+      "localization": "Unicode names, original clinical code text and timezone.",
+      "failure_modes": "Wrong MRN namespace, duplicate chart, stale consent, source deletion.",
+      "evidence": [
+        "Validator/matching fixtures",
+        "Quarantine/correction and provenance evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Pause import and quarantine affected bindings; do not delete source hospital data.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M053",
+      "title": "Deliver the provenance-labeled patient timeline",
+      "phase": "P10",
+      "slice": "S10A",
+      "objective": "Deliver the provenance-labeled patient timeline",
+      "rationale": "Continuity should explain where information came from and who can see it.",
+      "dependencies": [
+        "M052",
+        "M021",
+        "M005"
+      ],
+      "change_surface": [
+        "apps/web/timeline",
+        "packages/clinical-query"
+      ],
+      "source_refs": [
+        "A10",
+        "A19",
+        "FHIR"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R19",
+        "R14"
+      ],
+      "implementation_requirements": "Present appointments/visits and permitted imported labs/reports/referrals/conditions/allergies/imaging references with source labels and time/version. Distinguish patient-entered/provider/imported/extracted information and corrections. No clinical advice or diagnosis generation.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Every item shows provenance",
+        "Unverified extraction not shown as clinician fact",
+        "Unauthorized/deleted/revoked items absent from reads/projections"
+      ],
+      "tests": [
+        "Mixed-source timeline and correction tests",
+        "Consent/tenant/delegate denial and pagination tests"
+      ],
+      "security_privacy": "Sensitive timeline no public cache or routine analytics text.",
+      "observability": "Import freshness, inaccessible source and permission-denial metrics.",
+      "localization": "Five-locale source labels, dates and original untranslated clinical terminology retained.",
+      "failure_modes": "Conflicting sources, missing report, wrong chronology, unsafe aggregation.",
+      "evidence": [
+        "Synthetic timeline/source fixtures",
+        "Access and accessibility evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Fall back to appointment-only history; quarantine uncertain items.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M054",
+      "title": "Add safe documents and informational medication reminders",
+      "phase": "P10",
+      "slice": "S10B",
+      "objective": "Add safe documents and informational medication reminders",
+      "rationale": "Useful continuity must preserve source prescriptions and avoid generated treatment.",
+      "dependencies": [
+        "M053",
+        "M020",
+        "M051"
+      ],
+      "change_surface": [
+        "packages/documents",
+        "packages/medication-info",
+        "apps/web/timeline"
+      ],
+      "source_refs": [
+        "A19",
+        "A15",
+        "S054",
+        "FHIR"
+      ],
+      "requirement_ids": [
+        "R08",
+        "R14",
+        "R19"
+      ],
+      "implementation_requirements": "Implement quarantined document upload/scan/render and source-linked extraction. Medication information distinguishes prescription, statement and patient entry; reminders require confirmed source schedule and clinical governance. Refine upload and reminder subcontracts before execution.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Uploaded content cannot execute",
+        "Extracted medication never auto-creates treatment instruction",
+        "Changed/stopped source suppresses obsolete reminder"
+      ],
+      "tests": [
+        "Malicious-format containment fixtures without exploit reproduction",
+        "Incorrect extraction, duplicate/stopped medication and consent tests"
+      ],
+      "security_privacy": "Private objects, short-lived authorized links; no sensitive lock-screen detail.",
+      "observability": "Scan/quarantine, extraction-review and suppressed-reminder counts.",
+      "localization": "Arabic/Latin drug-name display and explicit dose/time confirmation; five locales.",
+      "failure_modes": "Misread drug/dose, stale prescription, unsafe file, shared-phone disclosure.",
+      "evidence": [
+        "Document isolation and provenance tests",
+        "Clinical medication-scope approval"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable extraction/reminders; retain secure original document access as authorized.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M055",
+      "title": "Expand verified family and caregiver permissions",
+      "phase": "P10",
+      "slice": "S10B",
+      "objective": "Expand verified family and caregiver permissions",
+      "rationale": "Family care needs granular authority and sensitive-record exceptions.",
+      "dependencies": [
+        "M050",
+        "M051",
+        "M053",
+        "M003"
+      ],
+      "change_surface": [
+        "packages/patient/delegation",
+        "apps/web/family",
+        "packages/authorization"
+      ],
+      "source_refs": [
+        "A22",
+        "GOV",
+        "FHIR"
+      ],
+      "requirement_ids": [
+        "R07",
+        "R14"
+      ],
+      "implementation_requirements": "Implement reviewed guardian/caregiver verification, appointment versus clinical scopes, revocation/expiry/age transition and recipient preferences. Adolescent/sensitive-service policies are country-specific gates, not shared-account shortcuts.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Age/authority changes re-evaluate access",
+        "Appointment grant does not imply clinical grant",
+        "Revocation and disputed relationship fail closed"
+      ],
+      "tests": [
+        "Guardian expiry/age transition and conflicting grants",
+        "Shared phone, sensitive category and export-denial tests"
+      ],
+      "security_privacy": "Verified legal relationship and purpose; restricted evidence; accountable appeals.",
+      "observability": "Grant changes, expired authority and privacy-safe access-denial trends.",
+      "localization": "Five-locale relationship labels and Arabic family usability review.",
+      "failure_modes": "Guardian no longer authorized, coercive access, absent legal policy.",
+      "evidence": [
+        "Legal/clinical signoff",
+        "Complete delegation matrix and synthetic journeys"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Suspend disputed grants and provide verified patient/support recovery.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M056",
+      "title": "Deliver enterprise access governance and support contracts",
+      "phase": "P11",
+      "slice": "S11A",
+      "objective": "Deliver enterprise access governance and support contracts",
+      "rationale": "Hospital groups need bounded branch administration and operating accountability.",
+      "dependencies": [
+        "M040",
+        "M030",
+        "M002"
+      ],
+      "change_surface": [
+        "packages/enterprise",
+        "packages/identity",
+        "apps/web/admin",
+        "docs/contracts"
+      ],
+      "source_refs": [
+        "A12",
+        "A13",
+        "A11",
+        "S077"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R14",
+        "R18"
+      ],
+      "implementation_requirements": "Add contracted SSO/provisioning, branch delegated administration, audit export and integration capability dashboard. Define support SLA/maintenance windows and change notification; no sales waiver of core controls.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Provisioning cannot grant unreviewed clinical access",
+        "Group admin limited by branch/purpose",
+        "Revocation and audit export work under contract"
+      ],
+      "tests": [
+        "SSO/provisioning scope and revocation tests",
+        "Tenant/branch export and integration-version rollout tests"
+      ],
+      "security_privacy": "Least-privilege service accounts and encrypted scoped exports.",
+      "observability": "Provisioning failures, privileged changes and partner SLO.",
+      "localization": "Five-locale admin essentials and Arabic operational runbooks.",
+      "failure_modes": "Wrong group membership, credential rotation failure, contract mis-scope.",
+      "evidence": [
+        "Enterprise permission matrix",
+        "Signed rights/SLA and authorized sandbox tests"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Disable provisioning integration; preserve manually reviewed roles.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M057",
+      "title": "Provide governed aggregate analytics and partner APIs",
+      "phase": "P11",
+      "slice": "S11A",
+      "objective": "Provide governed aggregate analytics and partner APIs",
+      "rationale": "Enterprise value can scale without selling patient-level search histories.",
+      "dependencies": [
+        "M056",
+        "M024",
+        "M040"
+      ],
+      "change_surface": [
+        "packages/partner-api",
+        "packages/analytics",
+        "apps/web/enterprise"
+      ],
+      "source_refs": [
+        "A14",
+        "A11",
+        "A23"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R12",
+        "R14",
+        "R18"
+      ],
+      "implementation_requirements": "Expose rate-limited scope-bound APIs and suppressed aggregate demand/capacity reports with definitions/coverage. Add client key rotation and consent-aware booking attribution. Clinical APIs remain separate from public/provider data.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "API key cannot cross tenant/scope",
+        "Small-cell/complementary suppression survives filter combinations",
+        "Reports do not imply causal or clinical performance ranking"
+      ],
+      "tests": [
+        "Scope/quota/key-revocation and aggregation privacy tests",
+        "Denominator/late-data reconciliation and version-contract tests"
+      ],
+      "security_privacy": "No individual cross-provider trajectories or raw symptoms; purpose-bound exports.",
+      "observability": "API errors/quotas, suppressed cells and data freshness.",
+      "localization": "Localized labels/documentation while stable API enums/codes remain invariant.",
+      "failure_modes": "Reidentification via differencing, stale report, overbroad partner token.",
+      "evidence": [
+        "Privacy query review",
+        "Contract/reconciliation results and export audit"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Suspend affected API scope/report; rotate keys and preserve audit.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M058",
+      "title": "Prepare one evidence-backed international country pack",
+      "phase": "P11",
+      "slice": "S11A",
+      "objective": "Prepare one evidence-backed international country pack",
+      "rationale": "International readiness requires legal and healthcare operations, not only text translation.",
+      "dependencies": [
+        "M055",
+        "M056",
+        "M045"
+      ],
+      "change_surface": [
+        "packages/country-config",
+        "packages/i18n",
+        "docs/country-launch"
+      ],
+      "source_refs": [
+        "A26",
+        "A22",
+        "GOV"
+      ],
+      "requirement_ids": [
+        "R02",
+        "R07",
+        "R14"
+      ],
+      "implementation_requirements": "Select a country only after product/market decision; document licensing, identity, privacy/transfers, telecom, terminology rights, payer norms, emergencies, address/time/calendar and service eligibility. Use existing five-locale platform; no unsupported auto-enable.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Country pack has signed legal/clinical/operations gates",
+        "New locale/zone does not change existing bookings",
+        "All claims trace to current primary sources"
+      ],
+      "tests": [
+        "Country config isolation, DST/date/phone/address and emergency-content tests",
+        "Consent/guardian and adapter capability review"
+      ],
+      "security_privacy": "Region-specific processing/rights and healthcare licenses verified.",
+      "observability": "Country gate status, locale gaps and emergency content freshness.",
+      "localization": "Human review by local language/healthcare experts; Arabic remains supported.",
+      "failure_modes": "Unlicensed service jurisdiction, wrong emergency route, misunderstood dates.",
+      "evidence": [
+        "Country evidence dossier",
+        "Regulatory/procurement and localization approvals"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Keep country discovery-only or disabled until gates close.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M059",
+      "title": "Validate scale and extract only measured bottlenecks",
+      "phase": "P11",
+      "slice": "S11B",
+      "objective": "Validate scale and extract only measured bottlenecks",
+      "rationale": "Scale should preserve transactions and reduce operating risk.",
+      "dependencies": [
+        "M056",
+        "M057",
+        "M027"
+      ],
+      "change_surface": [
+        "infra/scaling",
+        "packages/integration",
+        "packages/search",
+        "docs/adr"
+      ],
+      "source_refs": [
+        "A01",
+        "A06",
+        "A09",
+        "S072",
+        "S078",
+        "S083"
+      ],
+      "requirement_ids": [
+        "R12",
+        "R20"
+      ],
+      "implementation_requirements": "Measure load/cost and isolate adapter or voice workers where justified. Evaluate Temporal/OpenFGA/warehouse only against measured requirements. Keep reservation authority in one transaction domain; test migrations/rollback and recovery.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Extraction has measurable benefit and preserved contracts",
+        "Native multi-resource invariants survive target load",
+        "No unbounded dual-write migration"
+      ],
+      "tests": [
+        "Load/cost/recovery and contract regression",
+        "Migration, reconciliation and cross-tenant isolation tests"
+      ],
+      "security_privacy": "No widened secret/data access during extraction; protected replicas/backups.",
+      "observability": "Capacity, cost, queue age and transaction contention with privacy-safe metrics.",
+      "localization": "No locale-specific degradation beyond recorded budgets.",
+      "failure_modes": "Premature services, split reservation authority, broken migration rollback.",
+      "evidence": [
+        "Before/after measurements",
+        "ADR and safe migration/recovery evidence"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Retain monolith path; reverse traffic migration without dual authority.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    },
+    {
+      "id": "M060",
+      "title": "Decide expansion readiness from evidence and unresolved risks",
+      "phase": "P11",
+      "slice": "S11B",
+      "objective": "Decide expansion readiness from evidence and unresolved risks",
+      "rationale": "Growth must not outrun trusted supply, clinical safety or economics.",
+      "dependencies": [
+        "M058",
+        "M059",
+        "M057",
+        "M055"
+      ],
+      "change_surface": [
+        "docs/expansion-decision",
+        "docs/roadmap",
+        "docs/governance"
+      ],
+      "source_refs": [
+        "A26",
+        "A23",
+        "A01"
+      ],
+      "requirement_ids": [
+        "R11",
+        "R14",
+        "R18",
+        "R20"
+      ],
+      "implementation_requirements": "Review current supply freshness, booking correctness, integration SLOs, review governance, AI/voice quality, privacy, country gates and paid retention economics. Approve bounded next cohort or record repairs; don't label unsatisfied evidence complete.",
+      "scope_out": "No unrelated platform features, copied donor platform, production data or deployment beyond this task's explicit gate.",
+      "acceptance": [
+        "Expansion has accountable signed decision",
+        "Critical safety/privacy/booking risks closed or feature disabled",
+        "Forecasts separated from measured results"
+      ],
+      "tests": [
+        "Independent evidence/claims audit",
+        "Recompute core metrics and verify gate/dependency freshness"
+      ],
+      "security_privacy": "Only aggregate decision evidence; preserve restricted legal/patient material.",
+      "observability": "Gate status and trend baselines with owner/date.",
+      "localization": "Country/locale-specific evidence not pooled to hide weaknesses.",
+      "failure_modes": "Stale certification, unsafe cohort pooling, cost overrun, unsupported market claim.",
+      "evidence": [
+        "Expansion decision with exact evidence revisions",
+        "Residual-risk register and rollback plan"
+      ],
+      "risk": "high when affecting patient data or appointment authority",
+      "recovery": "Keep current cohort bounded; pause new geography/service enablement.",
+      "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
+      "state": "PLANNED_NOT_IMPLEMENTED"
+    }
+  ]
+}
