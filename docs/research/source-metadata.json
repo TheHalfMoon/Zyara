@@ -1,0 +1,2956 @@
+[
+    {
+        "id":  1,
+        "name":  "Horilla HR",
+        "landscape_url":  "https://github.com/horilla-opensource/horilla",
+        "repo":  "horilla-opensource/horilla",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9366137Z",
+        "metadata":  {
+                         "nameWithOwner":  "horilla/horilla-hr",
+                         "url":  "https://github.com/horilla/horilla-hr",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "LGPL-2.1",
+                                             "name":  "GNU Lesser General Public License v2.1"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "2.0",
+                                                  "target":  {
+                                                                 "oid":  "e2d288940aab52af881786678b2fc86dfa5c272a",
+                                                                 "committedDate":  "2026-09-11T14:35:26Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  2,
+        "name":  "code-graph-rag",
+        "landscape_url":  "https://github.com/vitali87/code-graph-rag",
+        "repo":  "vitali87/code-graph-rag",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9531885Z",
+        "metadata":  {
+                         "nameWithOwner":  "vitali87/code-graph-rag",
+                         "url":  "https://github.com/vitali87/code-graph-rag",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "f398e5ce994df2feb454711376019c46f58b2a89",
+                                                                 "committedDate":  "2026-09-13T15:05:14Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  3,
+        "name":  "Graphify",
+        "landscape_url":  "https://github.com/Graphify-Labs/graphify",
+        "repo":  "Graphify-Labs/graphify",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9554349Z",
+        "metadata":  {
+                         "nameWithOwner":  "Graphify-Labs/graphify",
+                         "url":  "https://github.com/Graphify-Labs/graphify",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "v8",
+                                                  "target":  {
+                                                                 "oid":  "fe66389083369c3159aa391117185c8f58b4d07c",
+                                                                 "committedDate":  "2026-09-12T21:23:00Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  4,
+        "name":  "Odoo",
+        "landscape_url":  "https://github.com/odoo/odoo",
+        "repo":  "odoo/odoo",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9594369Z",
+        "metadata":  {
+                         "nameWithOwner":  "odoo/odoo",
+                         "url":  "https://github.com/odoo/odoo",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "19.0",
+                                                  "target":  {
+                                                                 "oid":  "0055716c4f2672a6a083a90c08efede14375e8b2",
+                                                                 "committedDate":  "2026-09-13T07:57:18Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  5,
+        "name":  "Baserow",
+        "landscape_url":  "https://github.com/bramw/baserow",
+        "repo":  "bramw/baserow",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9619354Z",
+        "metadata":  null,
+        "status":  "unresolved-no-repository-metadata"
+    },
+    {
+        "id":  6,
+        "name":  "ZITADEL",
+        "landscape_url":  "https://github.com/zitadel/zitadel",
+        "repo":  "zitadel/zitadel",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9675905Z",
+        "metadata":  {
+                         "nameWithOwner":  "zitadel/zitadel",
+                         "url":  "https://github.com/zitadel/zitadel",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "8ccd5b206f3bde00b30597b96279f4f81e0f7494",
+                                                                 "committedDate":  "2026-09-11T17:47:53Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  7,
+        "name":  "Apache Superset",
+        "landscape_url":  "https://github.com/apache/superset",
+        "repo":  "apache/superset",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9686235Z",
+        "metadata":  {
+                         "nameWithOwner":  "apache/superset",
+                         "url":  "https://github.com/apache/superset",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "8e66145cfed5ca0584cc71c7795814a2752522e6",
+                                                                 "committedDate":  "2026-09-13T03:30:27Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  8,
+        "name":  "EspoCRM",
+        "landscape_url":  "https://github.com/espocrm/espocrm",
+        "repo":  "espocrm/espocrm",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9963886Z",
+        "metadata":  {
+                         "nameWithOwner":  "espocrm/espocrm",
+                         "url":  "https://github.com/espocrm/espocrm",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "1effd3d0b3495ea7377d785d195d2c7f8fce9023",
+                                                                 "committedDate":  "2026-09-11T09:06:22Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  9,
+        "name":  "Nao",
+        "landscape_url":  "https://github.com/getnao/nao",
+        "repo":  "getnao/nao",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9963886Z",
+        "metadata":  {
+                         "nameWithOwner":  "getnao/nao",
+                         "url":  "https://github.com/getnao/nao",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "bb655f193205179e70b420fe51013ff47783cd3b",
+                                                                 "committedDate":  "2026-09-11T12:32:04Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  10,
+        "name":  "Erugo",
+        "landscape_url":  "https://github.com/ErugoOSS/Erugo",
+        "repo":  "ErugoOSS/Erugo",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9963886Z",
+        "metadata":  {
+                         "nameWithOwner":  "ErugoOSS/Erugo",
+                         "url":  "https://github.com/ErugoOSS/Erugo",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "922c00c2beafa5b6136ff551333d52387270be49",
+                                                                 "committedDate":  "2026-03-05T14:54:42Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  11,
+        "name":  "Huly Platform",
+        "landscape_url":  "https://github.com/hcengineering/platform",
+        "repo":  "hcengineering/platform",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:40.9963886Z",
+        "metadata":  {
+                         "nameWithOwner":  "hcengineering/platform",
+                         "url":  "https://github.com/hcengineering/platform",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "EPL-2.0",
+                                             "name":  "Eclipse Public License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "63e28dc96483967b2fc21c881b3f1023c1de7718",
+                                                                 "committedDate":  "2026-08-27T13:24:38Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  12,
+        "name":  "Papercups",
+        "landscape_url":  "https://github.com/papercups-io/papercups",
+        "repo":  "papercups-io/papercups",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:41.0088274Z",
+        "metadata":  {
+                         "nameWithOwner":  "papercups-io/papercups",
+                         "url":  "https://github.com/papercups-io/papercups",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "6a6f5adc7f0cef5813b2c2f1c0659922defaf976",
+                                                                 "committedDate":  "2022-05-10T20:59:16Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  13,
+        "name":  "Listmonk",
+        "landscape_url":  "https://github.com/knadh/listmonk",
+        "repo":  "knadh/listmonk",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:41.0108520Z",
+        "metadata":  {
+                         "nameWithOwner":  "knadh/listmonk",
+                         "url":  "https://github.com/knadh/listmonk",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "594b74056dd8a0d3a7621a32898ee38bfbe10e96",
+                                                                 "committedDate":  "2026-09-05T03:43:50Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  14,
+        "name":  "Kroki",
+        "landscape_url":  "https://github.com/yuzutech/kroki",
+        "repo":  "yuzutech/kroki",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:41.0150015Z",
+        "metadata":  {
+                         "nameWithOwner":  "yuzutech/kroki",
+                         "url":  "https://github.com/yuzutech/kroki",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "6392089abd49bddc4de10e0d24098b1197fc3134",
+                                                                 "committedDate":  "2026-08-22T12:34:33Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  15,
+        "name":  "OpenRAG",
+        "landscape_url":  "https://github.com/langflow-ai/openrag",
+        "repo":  "langflow-ai/openrag",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:41.0150015Z",
+        "metadata":  {
+                         "nameWithOwner":  "langflow-ai/openrag",
+                         "url":  "https://github.com/langflow-ai/openrag",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "ffccefbd1b3f8eaebaac315d3cab27a94007cbfa",
+                                                                 "committedDate":  "2026-09-11T23:49:22Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  16,
+        "name":  "Documenso",
+        "landscape_url":  "https://github.com/documenso/documenso",
+        "repo":  "documenso/documenso",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7329921Z",
+        "metadata":  {
+                         "nameWithOwner":  "documenso/documenso",
+                         "url":  "https://github.com/documenso/documenso",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "5603a9e59da2ae770edcc822ac08a5e3df02ad82",
+                                                                 "committedDate":  "2026-09-11T10:44:05Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  17,
+        "name":  "PostGIS",
+        "landscape_url":  "https://github.com/postgis/postgis",
+        "repo":  "postgis/postgis",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7361928Z",
+        "metadata":  {
+                         "nameWithOwner":  "postgis/postgis",
+                         "url":  "https://github.com/postgis/postgis",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-2.0",
+                                             "name":  "GNU General Public License v2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "d28cf14b5bccb8d42475bff832c16920dfcc31b0",
+                                                                 "committedDate":  "2026-09-11T09:39:13Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  18,
+        "name":  "Label Studio",
+        "landscape_url":  "https://github.com/HumanSignal/label-studio",
+        "repo":  "HumanSignal/label-studio",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7398209Z",
+        "metadata":  {
+                         "nameWithOwner":  "HumanSignal/label-studio",
+                         "url":  "https://github.com/HumanSignal/label-studio",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "517ed1c8141b499a8795f1603604e79847a8608c",
+                                                                 "committedDate":  "2026-09-11T23:04:16Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  19,
+        "name":  "Onyx",
+        "landscape_url":  "https://github.com/onyx-dot-app/onyx",
+        "repo":  "onyx-dot-app/onyx",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7425415Z",
+        "metadata":  {
+                         "nameWithOwner":  "onyx-dot-app/onyx",
+                         "url":  "https://github.com/onyx-dot-app/onyx",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "a0370f232ba4e4625131fae518b86e5530e98ec5",
+                                                                 "committedDate":  "2026-09-12T00:31:53Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  20,
+        "name":  "Peppermint",
+        "landscape_url":  "https://github.com/Peppermint-Lab/peppermint",
+        "repo":  "Peppermint-Lab/peppermint",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7476606Z",
+        "metadata":  {
+                         "nameWithOwner":  "Peppermint-Lab/peppermint",
+                         "url":  "https://github.com/Peppermint-Lab/peppermint",
+                         "isArchived":  true,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "ba6e2179f9409db76abeb9a3007a262160e24628",
+                                                                 "committedDate":  "2025-09-21T10:59:02Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  21,
+        "name":  "Rallly",
+        "landscape_url":  "https://github.com/lukevella/rallly",
+        "repo":  "lukevella/rallly",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7521096Z",
+        "metadata":  {
+                         "nameWithOwner":  "lukevella/rallly",
+                         "url":  "https://github.com/lukevella/rallly",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "8656f0e911a1d68f7007da1bf71ee588f9d2fb05",
+                                                                 "committedDate":  "2026-09-12T21:26:28Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  22,
+        "name":  "Cal.com organization",
+        "landscape_url":  "https://github.com/calcom",
+        "repo":  "calcom/cal.com",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:42.7556721Z",
+        "metadata":  {
+                         "nameWithOwner":  "calcom/cal.diy",
+                         "url":  "https://github.com/calcom/cal.diy",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "b0a34f21c91ae7803f9b7e2c59c2fbd187cce26f",
+                                                                 "committedDate":  "2026-09-12T06:43:18Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  23,
+        "name":  "Plane",
+        "landscape_url":  "https://github.com/makeplane/plane",
+        "repo":  "makeplane/plane",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7574253Z",
+        "metadata":  {
+                         "nameWithOwner":  "makeplane/plane",
+                         "url":  "https://github.com/makeplane/plane",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "preview",
+                                                  "target":  {
+                                                                 "oid":  "2f895b82dad839c730c36a5c0cbc046f1e5d6b56",
+                                                                 "committedDate":  "2026-09-10T10:31:23Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  24,
+        "name":  "PostHog",
+        "landscape_url":  "https://github.com/PostHog/posthog",
+        "repo":  "PostHog/posthog",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7574253Z",
+        "metadata":  {
+                         "nameWithOwner":  "PostHog/posthog",
+                         "url":  "https://github.com/PostHog/posthog",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "c5e08428239f8b0c550176fb408f29a88c36ee7e",
+                                                                 "committedDate":  "2026-09-13T13:50:52Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  25,
+        "name":  "Formbricks",
+        "landscape_url":  "https://github.com/formbricks/formbricks",
+        "repo":  "formbricks/formbricks",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7574253Z",
+        "metadata":  {
+                         "nameWithOwner":  "formbricks/formbricks",
+                         "url":  "https://github.com/formbricks/formbricks",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "cd1c6a3d79d6d3dca9ee97e44f2e62f44f8dc474",
+                                                                 "committedDate":  "2026-09-11T08:38:28Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  26,
+        "name":  "Paperless-ngx",
+        "landscape_url":  "https://github.com/paperless-ngx/paperless-ngx",
+        "repo":  "paperless-ngx/paperless-ngx",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7666840Z",
+        "metadata":  {
+                         "nameWithOwner":  "paperless-ngx/paperless-ngx",
+                         "url":  "https://github.com/paperless-ngx/paperless-ngx",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "dev",
+                                                  "target":  {
+                                                                 "oid":  "72ea38ab126e92fb63d68b7f5d0e6d9abaafe589",
+                                                                 "committedDate":  "2026-09-12T23:19:06Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  27,
+        "name":  "Attendize",
+        "landscape_url":  "https://github.com/Attendize/Attendize",
+        "repo":  "Attendize/Attendize",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7700246Z",
+        "metadata":  {
+                         "nameWithOwner":  "Attendize/Attendize",
+                         "url":  "https://github.com/Attendize/Attendize",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "9289acbab1583898fd85aeee66c7b613d8971deb",
+                                                                 "committedDate":  "2023-01-26T03:50:45Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  28,
+        "name":  "Flarum organization",
+        "landscape_url":  "https://github.com/flarum",
+        "repo":  "flarum/framework",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:42.7700246Z",
+        "metadata":  {
+                         "nameWithOwner":  "flarum/framework",
+                         "url":  "https://github.com/flarum/framework",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "2.x",
+                                                  "target":  {
+                                                                 "oid":  "b09289c0e041a8476b5b31f4a6a2e10090a28d91",
+                                                                 "committedDate":  "2026-09-11T15:19:12Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  29,
+        "name":  "Mautic organization",
+        "landscape_url":  "https://github.com/mautic",
+        "repo":  "mautic/mautic",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:42.7750113Z",
+        "metadata":  {
+                         "nameWithOwner":  "mautic/mautic",
+                         "url":  "https://github.com/mautic/mautic",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "7.x",
+                                                  "target":  {
+                                                                 "oid":  "e72fc1cde9f3e1824b02981d872de529937c6854",
+                                                                 "committedDate":  "2026-09-11T14:31:04Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  30,
+        "name":  "Infisical",
+        "landscape_url":  "https://github.com/Infisical/infisical",
+        "repo":  "Infisical/infisical",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:42.7767307Z",
+        "metadata":  {
+                         "nameWithOwner":  "Infisical/infisical",
+                         "url":  "https://github.com/Infisical/infisical",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "56e6895c3886d14ac6279d6ea3319e39c1571f2b",
+                                                                 "committedDate":  "2026-09-12T19:29:18Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  31,
+        "name":  "Strapi",
+        "landscape_url":  "https://github.com/strapi/strapi",
+        "repo":  "strapi/strapi",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5699429Z",
+        "metadata":  {
+                         "nameWithOwner":  "strapi/strapi",
+                         "url":  "https://github.com/strapi/strapi",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "34fdea8fb4e11afc475a0ffdc14311cce09ddded",
+                                                                 "committedDate":  "2026-09-11T17:35:30Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  32,
+        "name":  "Flagsmith",
+        "landscape_url":  "https://github.com/Flagsmith/flagsmith",
+        "repo":  "Flagsmith/flagsmith",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5763785Z",
+        "metadata":  {
+                         "nameWithOwner":  "Flagsmith/flagsmith",
+                         "url":  "https://github.com/Flagsmith/flagsmith",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "BSD-3-Clause",
+                                             "name":  "BSD 3-Clause \"New\" or \"Revised\" License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "a82c3d6c24b05fbd0be9c10244418a39382983b4",
+                                                                 "committedDate":  "2026-09-11T20:30:46Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  33,
+        "name":  "Chaskiq",
+        "landscape_url":  "https://github.com/chaskiq/chaskiq",
+        "repo":  "chaskiq/chaskiq",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5802467Z",
+        "metadata":  {
+                         "nameWithOwner":  "chaskiq/chaskiq",
+                         "url":  "https://github.com/chaskiq/chaskiq",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "46dfdd11c63c6849ecde16a0dcc54d388e2613a3",
+                                                                 "committedDate":  "2026-06-30T17:20:11Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  34,
+        "name":  "Hasura organization",
+        "landscape_url":  "https://github.com/hasura",
+        "repo":  "hasura/graphql-engine",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:44.5832320Z",
+        "metadata":  {
+                         "nameWithOwner":  "hasura/graphql-engine",
+                         "url":  "https://github.com/hasura/graphql-engine",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "06394bac23ca4604cc4a4abc0b24e927ea56aa0b",
+                                                                 "committedDate":  "2026-09-09T01:41:21Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  35,
+        "name":  "HumHub",
+        "landscape_url":  "https://github.com/humhub/humhub",
+        "repo":  "humhub/humhub",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5855351Z",
+        "metadata":  {
+                         "nameWithOwner":  "humhub/humhub",
+                         "url":  "https://github.com/humhub/humhub",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "5f22486bb19b45378cd6bcac0d8cbb47b5aadb73",
+                                                                 "committedDate":  "2026-09-11T14:36:54Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  36,
+        "name":  "Uptime Kuma",
+        "landscape_url":  "https://github.com/louislam/uptime-kuma",
+        "repo":  "louislam/uptime-kuma",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5912891Z",
+        "metadata":  {
+                         "nameWithOwner":  "louislam/uptime-kuma",
+                         "url":  "https://github.com/louislam/uptime-kuma",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "3afdc9ca86752587cc5a88147403194b5f83196d",
+                                                                 "committedDate":  "2026-09-12T05:01:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  37,
+        "name":  "Taiga organization",
+        "landscape_url":  "https://github.com/taigaio",
+        "repo":  "taigaio/taiga-back",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:44.5963429Z",
+        "metadata":  {
+                         "nameWithOwner":  "taigaio/taiga-back",
+                         "url":  "https://github.com/taigaio/taiga-back",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MPL-2.0",
+                                             "name":  "Mozilla Public License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "eb0803da0150523c990e46a4e47e7447f402b4aa",
+                                                                 "committedDate":  "2026-09-09T12:33:33Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  38,
+        "name":  "Outline",
+        "landscape_url":  "https://github.com/outline/outline",
+        "repo":  "outline/outline",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.5994460Z",
+        "metadata":  {
+                         "nameWithOwner":  "outline/outline",
+                         "url":  "https://github.com/outline/outline",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "74a992e278eeffce661532720e174e9e5c9f09e7",
+                                                                 "committedDate":  "2026-09-13T03:23:57Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  39,
+        "name":  "BigCapital",
+        "landscape_url":  "https://github.com/bigcapitalhq/bigcapital",
+        "repo":  "bigcapitalhq/bigcapital",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6039682Z",
+        "metadata":  {
+                         "nameWithOwner":  "bigcapitalhq/bigcapital",
+                         "url":  "https://github.com/bigcapitalhq/bigcapital",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "35b4810384342be32f799872bf0193554d49c17d",
+                                                                 "committedDate":  "2026-09-13T14:23:45Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  40,
+        "name":  "Corteza",
+        "landscape_url":  "https://github.com/cortezaproject/corteza",
+        "repo":  "cortezaproject/corteza",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6077428Z",
+        "metadata":  {
+                         "nameWithOwner":  "cortezaproject/corteza",
+                         "url":  "https://github.com/cortezaproject/corteza",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "2024.9.x",
+                                                  "target":  {
+                                                                 "oid":  "3835dfc4ac8bd89381753f09042ad147a4502576",
+                                                                 "committedDate":  "2026-08-27T14:29:30Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  41,
+        "name":  "Pretix",
+        "landscape_url":  "https://github.com/pretix/pretix",
+        "repo":  "pretix/pretix",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6129755Z",
+        "metadata":  {
+                         "nameWithOwner":  "pretix/pretix",
+                         "url":  "https://github.com/pretix/pretix",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "1aea5633ebffeb6fef849657eab2e421dfdad0b8",
+                                                                 "committedDate":  "2026-09-11T16:35:37Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  42,
+        "name":  "MiroTalk",
+        "landscape_url":  "https://github.com/miroslavpejic85/mirotalk",
+        "repo":  "miroslavpejic85/mirotalk",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6179803Z",
+        "metadata":  {
+                         "nameWithOwner":  "miroslavpejic85/mirotalk",
+                         "url":  "https://github.com/miroslavpejic85/mirotalk",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "5af51e0cf2fd38bc296574f8d4aff9a19ea318c5",
+                                                                 "committedDate":  "2026-09-11T07:49:06Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  43,
+        "name":  "SigLens",
+        "landscape_url":  "https://github.com/siglens/siglens",
+        "repo":  "siglens/siglens",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6179803Z",
+        "metadata":  {
+                         "nameWithOwner":  "siglens/siglens",
+                         "url":  "https://github.com/siglens/siglens",
+                         "isArchived":  true,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "e7245091af780ee5a592076278e5e3364b41b580",
+                                                                 "committedDate":  "2026-03-12T22:37:14Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  44,
+        "name":  "Stirling PDF",
+        "landscape_url":  "https://github.com/Stirling-Tools/Stirling-PDF",
+        "repo":  "Stirling-Tools/Stirling-PDF",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6242076Z",
+        "metadata":  {
+                         "nameWithOwner":  "Stirling-Tools/Stirling-PDF",
+                         "url":  "https://github.com/Stirling-Tools/Stirling-PDF",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "77b325cf1e23c047b2c708c0eaf4f3b687c7a463",
+                                                                 "committedDate":  "2026-09-11T20:47:43Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  45,
+        "name":  "Mattermost",
+        "landscape_url":  "https://github.com/mattermost/mattermost",
+        "repo":  "mattermost/mattermost",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:44.6285725Z",
+        "metadata":  {
+                         "nameWithOwner":  "mattermost/mattermost",
+                         "url":  "https://github.com/mattermost/mattermost",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "84ea31fcad59dad963097588f0316258cc7caa7d",
+                                                                 "committedDate":  "2026-09-12T18:04:35Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  46,
+        "name":  "Frappe HRMS",
+        "landscape_url":  "https://github.com/frappe/hrms",
+        "repo":  "frappe/hrms",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2253604Z",
+        "metadata":  {
+                         "nameWithOwner":  "frappe/hrms",
+                         "url":  "https://github.com/frappe/hrms",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "307f07d9eb8fc814bdcb065785b614ed3589c337",
+                                                                 "committedDate":  "2026-09-11T07:11:43Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  47,
+        "name":  "Snipe-IT",
+        "landscape_url":  "https://github.com/snipe/snipe-it",
+        "repo":  "snipe/snipe-it",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2261872Z",
+        "metadata":  {
+                         "nameWithOwner":  "grokability/snipe-it",
+                         "url":  "https://github.com/grokability/snipe-it",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "16362cc6a5cf54a77acbb0ab3cbaac79b75d85f6",
+                                                                 "committedDate":  "2026-09-13T14:54:33Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  48,
+        "name":  "AnythingLLM",
+        "landscape_url":  "https://github.com/Mintplex-Labs/anything-llm",
+        "repo":  "Mintplex-Labs/anything-llm",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2320285Z",
+        "metadata":  {
+                         "nameWithOwner":  "Mintplex-Labs/anything-llm",
+                         "url":  "https://github.com/Mintplex-Labs/anything-llm",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "3a85d3e75490f09453de7e8c440b9463f4a82019",
+                                                                 "committedDate":  "2026-09-10T18:37:56Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  49,
+        "name":  "Teable",
+        "landscape_url":  "https://github.com/teableio/teable",
+        "repo":  "teableio/teable",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2320285Z",
+        "metadata":  {
+                         "nameWithOwner":  "teableio/teable",
+                         "url":  "https://github.com/teableio/teable",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "5ef2238883cad7c3980084de9a9031135fb9734f",
+                                                                 "committedDate":  "2026-09-01T06:19:09Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  50,
+        "name":  "GoRules organization",
+        "landscape_url":  "https://github.com/gorules",
+        "repo":  "gorules/zen",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:46.2413006Z",
+        "metadata":  {
+                         "nameWithOwner":  "gorules/zen",
+                         "url":  "https://github.com/gorules/zen",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "adf7cdf44aa4381967a5bef1908b3b02789c3180",
+                                                                 "committedDate":  "2026-08-24T10:45:09Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  51,
+        "name":  "Checkmate",
+        "landscape_url":  "https://github.com/bluewave-labs/Checkmate",
+        "repo":  "bluewave-labs/Checkmate",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2469172Z",
+        "metadata":  {
+                         "nameWithOwner":  "bluewave-labs/Checkmate",
+                         "url":  "https://github.com/bluewave-labs/Checkmate",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "f41e0f06195561fe009dde3215a4dd98ac169cf6",
+                                                                 "committedDate":  "2026-09-12T22:02:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  52,
+        "name":  "Umami",
+        "landscape_url":  "https://github.com/umami-software/umami",
+        "repo":  "umami-software/umami",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2481105Z",
+        "metadata":  {
+                         "nameWithOwner":  "umami-software/umami",
+                         "url":  "https://github.com/umami-software/umami",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "ca661c7057984aa98ed4f7083d84dae2f65bfcb0",
+                                                                 "committedDate":  "2026-08-20T17:38:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  53,
+        "name":  "AppFlowy",
+        "landscape_url":  "https://github.com/AppFlowy-IO/AppFlowy",
+        "repo":  "AppFlowy-IO/AppFlowy",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2543381Z",
+        "metadata":  {
+                         "nameWithOwner":  "AppFlowy-IO/AppFlowy",
+                         "url":  "https://github.com/AppFlowy-IO/AppFlowy",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "5cf3a365dec0d59f64bad1ee4bb1050471a39b93",
+                                                                 "committedDate":  "2026-06-26T02:35:45Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  54,
+        "name":  "Gotenberg",
+        "landscape_url":  "https://github.com/gotenberg/gotenberg",
+        "repo":  "gotenberg/gotenberg",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2595922Z",
+        "metadata":  {
+                         "nameWithOwner":  "gotenberg/gotenberg",
+                         "url":  "https://github.com/gotenberg/gotenberg",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "8e850b1c932452627fba397f2005dd6fd57b9617",
+                                                                 "committedDate":  "2026-09-13T08:15:07Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  55,
+        "name":  "Akaunting",
+        "landscape_url":  "https://github.com/akaunting/akaunting",
+        "repo":  "akaunting/akaunting",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2662047Z",
+        "metadata":  {
+                         "nameWithOwner":  "akaunting/akaunting",
+                         "url":  "https://github.com/akaunting/akaunting",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "5fe7969452307a481a7363a3c158bb6983545446",
+                                                                 "committedDate":  "2026-09-13T08:58:49Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  56,
+        "name":  "AFFiNE",
+        "landscape_url":  "https://github.com/toeverything/AFFiNE",
+        "repo":  "toeverything/AFFiNE",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2702292Z",
+        "metadata":  {
+                         "nameWithOwner":  "toeverything/AFFiNE",
+                         "url":  "https://github.com/toeverything/AFFiNE",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "canary",
+                                                  "target":  {
+                                                                 "oid":  "868acf8505eb349223e367ef75070d24eb04f7ad",
+                                                                 "committedDate":  "2026-09-13T06:29:29Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  57,
+        "name":  "Grist Core",
+        "landscape_url":  "https://github.com/gristlabs/grist-core",
+        "repo":  "gristlabs/grist-core",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2722397Z",
+        "metadata":  {
+                         "nameWithOwner":  "gristlabs/grist-core",
+                         "url":  "https://github.com/gristlabs/grist-core",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "6d2ec73de4f5cd3c16eeef8db80afee9508ad79e",
+                                                                 "committedDate":  "2026-09-13T10:51:43Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  58,
+        "name":  "Element organization",
+        "landscape_url":  "https://github.com/element-hq",
+        "repo":  "element-hq/element-web",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:46.2806012Z",
+        "metadata":  {
+                         "nameWithOwner":  "element-hq/element-web",
+                         "url":  "https://github.com/element-hq/element-web",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "235ca53aa921f906c524526f820740c2af925391",
+                                                                 "committedDate":  "2026-09-11T15:53:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  59,
+        "name":  "LocalStack",
+        "landscape_url":  "https://github.com/localstack/localstack",
+        "repo":  "localstack/localstack",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2850194Z",
+        "metadata":  {
+                         "nameWithOwner":  "localstack/localstack",
+                         "url":  "https://github.com/localstack/localstack",
+                         "isArchived":  true,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "8b9a79f05846835cf4dff63ab7eefdde9df83783",
+                                                                 "committedDate":  "2026-03-23T08:51:59Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  60,
+        "name":  "Geta organization",
+        "landscape_url":  "https://github.com/Geta",
+        "repo":  "Geta",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:46.2949231Z",
+        "metadata":  null,
+        "status":  "unresolved-no-repository-metadata"
+    },
+    {
+        "id":  61,
+        "name":  "UVDesk organization",
+        "landscape_url":  "https://github.com/uvdesk",
+        "repo":  "uvdesk/community-skeleton",
+        "authorization":  "founder-90",
+        "scope_resolution":  true,
+        "checked_at":  "2026-09-13T15:55:47.9574661Z",
+        "metadata":  {
+                         "nameWithOwner":  "uvdesk/community-skeleton",
+                         "url":  "https://github.com/uvdesk/community-skeleton",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "OSL-3.0",
+                                             "name":  "Open Software License 3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "6f35040f447f7fe1dcd254e259e7b7e0a9f7a79f",
+                                                                 "committedDate":  "2025-10-01T07:16:13Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  62,
+        "name":  "Block Buzz",
+        "landscape_url":  "https://github.com/block/buzz",
+        "repo":  "block/buzz",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9611799Z",
+        "metadata":  {
+                         "nameWithOwner":  "block/buzz",
+                         "url":  "https://github.com/block/buzz",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "4cd82f513214aad11c2b742ce7cc7c681e8e32a0",
+                                                                 "committedDate":  "2026-09-13T14:04:56Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  63,
+        "name":  "Kanboard",
+        "landscape_url":  "https://github.com/kanboard/kanboard",
+        "repo":  "kanboard/kanboard",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9664535Z",
+        "metadata":  {
+                         "nameWithOwner":  "kanboard/kanboard",
+                         "url":  "https://github.com/kanboard/kanboard",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "cf53b54597b67b60140586c09c2fe6132ead013c",
+                                                                 "committedDate":  "2026-09-11T20:43:43Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  64,
+        "name":  "OpenProject",
+        "landscape_url":  "https://github.com/opf/openproject",
+        "repo":  "opf/openproject",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9700861Z",
+        "metadata":  {
+                         "nameWithOwner":  "opf/openproject",
+                         "url":  "https://github.com/opf/openproject",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "dev",
+                                                  "target":  {
+                                                                 "oid":  "a6be9b2e376655655ba98537e08929905d9e8a37",
+                                                                 "committedDate":  "2026-09-13T03:13:17Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  65,
+        "name":  "Chatwoot",
+        "landscape_url":  "https://github.com/chatwoot/chatwoot",
+        "repo":  "chatwoot/chatwoot",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9742231Z",
+        "metadata":  {
+                         "nameWithOwner":  "chatwoot/chatwoot",
+                         "url":  "https://github.com/chatwoot/chatwoot",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "2f1ed80f894ed9a3eba636ebab90ca61deec110a",
+                                                                 "committedDate":  "2026-09-11T09:14:46Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  66,
+        "name":  "LiveHelperChat",
+        "landscape_url":  "https://github.com/LiveHelperChat/livehelperchat",
+        "repo":  "LiveHelperChat/livehelperchat",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9824729Z",
+        "metadata":  {
+                         "nameWithOwner":  "LiveHelperChat/livehelperchat",
+                         "url":  "https://github.com/LiveHelperChat/livehelperchat",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "a350419d67d0e4466e7bef38ce50665a2c62a006",
+                                                                 "committedDate":  "2026-09-11T12:30:33Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  67,
+        "name":  "Zammad",
+        "landscape_url":  "https://github.com/zammad/zammad",
+        "repo":  "zammad/zammad",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9859128Z",
+        "metadata":  {
+                         "nameWithOwner":  "zammad/zammad",
+                         "url":  "https://github.com/zammad/zammad",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "d9c5ba05f32067c8dc26d929e6e3ca22b1e86cd9",
+                                                                 "committedDate":  "2026-09-11T20:07:14Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  68,
+        "name":  "Frappe Helpdesk",
+        "landscape_url":  "https://github.com/frappe/helpdesk",
+        "repo":  "frappe/helpdesk",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9893807Z",
+        "metadata":  {
+                         "nameWithOwner":  "frappe/helpdesk",
+                         "url":  "https://github.com/frappe/helpdesk",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "3ab76d795fcba7ee48d54c4897900df5781ce950",
+                                                                 "committedDate":  "2026-09-09T20:39:03Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  69,
+        "name":  "GLPI",
+        "landscape_url":  "https://github.com/glpi-project/glpi",
+        "repo":  "glpi-project/glpi",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9913925Z",
+        "metadata":  {
+                         "nameWithOwner":  "glpi-project/glpi",
+                         "url":  "https://github.com/glpi-project/glpi",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "11.0/bugfixes",
+                                                  "target":  {
+                                                                 "oid":  "912c94a4eab69ea63e34648d6a08f945d78dfb3e",
+                                                                 "committedDate":  "2026-09-11T10:03:00Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  70,
+        "name":  "NetBox",
+        "landscape_url":  "https://github.com/netbox-community/netbox",
+        "repo":  "netbox-community/netbox",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:47.9986442Z",
+        "metadata":  {
+                         "nameWithOwner":  "netbox-community/netbox",
+                         "url":  "https://github.com/netbox-community/netbox",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "07975fda347b65dbad0da51dad7fc173b9ba19f2",
+                                                                 "committedDate":  "2026-09-11T09:26:23Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  71,
+        "name":  "Backstage",
+        "landscape_url":  "https://github.com/backstage/backstage",
+        "repo":  "backstage/backstage",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:48.0046774Z",
+        "metadata":  {
+                         "nameWithOwner":  "backstage/backstage",
+                         "url":  "https://github.com/backstage/backstage",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "367c2a8aef48695e4ba2fee4eccf3d242fca554e",
+                                                                 "committedDate":  "2026-09-13T06:31:54Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  72,
+        "name":  "Temporal",
+        "landscape_url":  "https://github.com/temporalio/temporal",
+        "repo":  "temporalio/temporal",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:48.0091220Z",
+        "metadata":  {
+                         "nameWithOwner":  "temporalio/temporal",
+                         "url":  "https://github.com/temporalio/temporal",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "9ab3a9f770da20df7d94bcc0030f28eec7b0b947",
+                                                                 "committedDate":  "2026-09-11T17:18:20Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  73,
+        "name":  "Flowable",
+        "landscape_url":  "https://github.com/flowable/flowable-engine",
+        "repo":  "flowable/flowable-engine",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:48.0139105Z",
+        "metadata":  {
+                         "nameWithOwner":  "flowable/flowable-engine",
+                         "url":  "https://github.com/flowable/flowable-engine",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "dd71afc711cca1c975b512f0756488f279a068c1",
+                                                                 "committedDate":  "2026-09-11T17:30:43Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  74,
+        "name":  "Activepieces",
+        "landscape_url":  "https://github.com/activepieces/activepieces",
+        "repo":  "activepieces/activepieces",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:48.0171915Z",
+        "metadata":  {
+                         "nameWithOwner":  "activepieces/activepieces",
+                         "url":  "https://github.com/activepieces/activepieces",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "1b8274ffec6bd052f749be08c28649244705eabb",
+                                                                 "committedDate":  "2026-09-13T15:37:09Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  75,
+        "name":  "Apache Camel",
+        "landscape_url":  "https://github.com/apache/camel",
+        "repo":  "apache/camel",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:48.0221495Z",
+        "metadata":  {
+                         "nameWithOwner":  "apache/camel",
+                         "url":  "https://github.com/apache/camel",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "cccd6859599432e9a02342a0bc38f98353a1f085",
+                                                                 "committedDate":  "2026-09-13T15:45:49Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  76,
+        "name":  "Debezium",
+        "landscape_url":  "https://github.com/debezium/debezium",
+        "repo":  "debezium/debezium",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6420418Z",
+        "metadata":  {
+                         "nameWithOwner":  "debezium/debezium",
+                         "url":  "https://github.com/debezium/debezium",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "b0a4c5a63e4a8f778bb2de3e3694823ea8037d73",
+                                                                 "committedDate":  "2026-09-11T13:32:51Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  77,
+        "name":  "Keycloak",
+        "landscape_url":  "https://github.com/keycloak/keycloak",
+        "repo":  "keycloak/keycloak",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6454355Z",
+        "metadata":  {
+                         "nameWithOwner":  "keycloak/keycloak",
+                         "url":  "https://github.com/keycloak/keycloak",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "06f4cad3925fd2cd95dc81d55b58b6d0282a7806",
+                                                                 "committedDate":  "2026-09-11T12:33:12Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  78,
+        "name":  "OpenFGA",
+        "landscape_url":  "https://github.com/openfga/openfga",
+        "repo":  "openfga/openfga",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6500701Z",
+        "metadata":  {
+                         "nameWithOwner":  "openfga/openfga",
+                         "url":  "https://github.com/openfga/openfga",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "73591ef16ce508623920d5b706286ffcdfb6841b",
+                                                                 "committedDate":  "2026-09-08T20:19:22Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  79,
+        "name":  "Open Policy Agent",
+        "landscape_url":  "https://github.com/open-policy-agent/opa",
+        "repo":  "open-policy-agent/opa",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6519326Z",
+        "metadata":  {
+                         "nameWithOwner":  "open-policy-agent/opa",
+                         "url":  "https://github.com/open-policy-agent/opa",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "961849b565d2457b80c168f254325b7d5b91461e",
+                                                                 "committedDate":  "2026-09-11T20:32:53Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  80,
+        "name":  "Zulip",
+        "landscape_url":  "https://github.com/zulip/zulip",
+        "repo":  "zulip/zulip",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6584160Z",
+        "metadata":  {
+                         "nameWithOwner":  "zulip/zulip",
+                         "url":  "https://github.com/zulip/zulip",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "675c8cf9927e48b922afd4dd31dad68bb505928f",
+                                                                 "committedDate":  "2026-09-11T07:57:34Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  81,
+        "name":  "BookStack",
+        "landscape_url":  "https://github.com/BookStackApp/BookStack",
+        "repo":  "BookStackApp/BookStack",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6584160Z",
+        "metadata":  {
+                         "nameWithOwner":  "BookStackApp/BookStack",
+                         "url":  "https://github.com/BookStackApp/BookStack",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "development",
+                                                  "target":  {
+                                                                 "oid":  "2c22c3bcb8ec43ab6f9a453dbaa48e9b4007026f",
+                                                                 "committedDate":  "2026-09-12T22:35:17Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  82,
+        "name":  "Meilisearch",
+        "landscape_url":  "https://github.com/meilisearch/meilisearch",
+        "repo":  "meilisearch/meilisearch",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6648880Z",
+        "metadata":  {
+                         "nameWithOwner":  "meilisearch/meilisearch",
+                         "url":  "https://github.com/meilisearch/meilisearch",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "a955694df9f50771b3ceaf7896754cecfbaf165d",
+                                                                 "committedDate":  "2026-09-10T09:15:11Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  83,
+        "name":  "OpenTelemetry Collector",
+        "landscape_url":  "https://github.com/open-telemetry/opentelemetry-collector",
+        "repo":  "open-telemetry/opentelemetry-collector",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6687048Z",
+        "metadata":  {
+                         "nameWithOwner":  "open-telemetry/opentelemetry-collector",
+                         "url":  "https://github.com/open-telemetry/opentelemetry-collector",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "a35b7a8db49df923c5add3dc34872b6e0b3af683",
+                                                                 "committedDate":  "2026-09-11T22:10:45Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  84,
+        "name":  "Prometheus",
+        "landscape_url":  "https://github.com/prometheus/prometheus",
+        "repo":  "prometheus/prometheus",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6722266Z",
+        "metadata":  {
+                         "nameWithOwner":  "prometheus/prometheus",
+                         "url":  "https://github.com/prometheus/prometheus",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "46ef3704189798f58af5dd4ac7d2f87ac8880f30",
+                                                                 "committedDate":  "2026-09-11T14:00:07Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  85,
+        "name":  "Frappe Framework",
+        "landscape_url":  "https://github.com/frappe/frappe",
+        "repo":  "frappe/frappe",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6748845Z",
+        "metadata":  {
+                         "nameWithOwner":  "frappe/frappe",
+                         "url":  "https://github.com/frappe/frappe",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "6f325556ca911e4bb7b096b4e15691eb86750ee3",
+                                                                 "committedDate":  "2026-09-13T12:10:45Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  86,
+        "name":  "Munder Difflin",
+        "landscape_url":  "https://github.com/chaitanyagiri/munder-difflin",
+        "repo":  "chaitanyagiri/munder-difflin",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6795872Z",
+        "metadata":  {
+                         "nameWithOwner":  "chaitanyagiri/munder-difflin",
+                         "url":  "https://github.com/chaitanyagiri/munder-difflin",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "417d8decf08c4e4da484a5c3c35aa6e8925e5989",
+                                                                 "committedDate":  "2026-09-11T07:49:25Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  87,
+        "name":  "fullstack-agent",
+        "landscape_url":  "https://github.com/jaredrhod/fullstack-agent",
+        "repo":  "jaredrhod/fullstack-agent",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6830370Z",
+        "metadata":  {
+                         "nameWithOwner":  "jaredrhod/fullstack-agent",
+                         "url":  "https://github.com/jaredrhod/fullstack-agent",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "5bb159f47dbd6fa8f108651d0532a43aef16346b",
+                                                                 "committedDate":  "2026-08-30T13:48:08Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  88,
+        "name":  "OpenSandbox",
+        "landscape_url":  "https://github.com/opensandbox-group/OpenSandbox",
+        "repo":  "opensandbox-group/OpenSandbox",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6830370Z",
+        "metadata":  {
+                         "nameWithOwner":  "opensandbox-group/OpenSandbox",
+                         "url":  "https://github.com/opensandbox-group/OpenSandbox",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "d8cfce39dc1d846e580510ca44f44c495cbe95c4",
+                                                                 "committedDate":  "2026-09-13T00:56:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  89,
+        "name":  "OpenWhispr",
+        "landscape_url":  "https://github.com/OpenWhispr/openwhispr",
+        "repo":  "OpenWhispr/openwhispr",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6911667Z",
+        "metadata":  {
+                         "nameWithOwner":  "OpenWhispr/openwhispr",
+                         "url":  "https://github.com/OpenWhispr/openwhispr",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "4335972b96a62caab0c822b3b9549a1a4fdbb351",
+                                                                 "committedDate":  "2026-09-11T23:43:04Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  90,
+        "name":  "OpenSuperWhisper",
+        "landscape_url":  "https://github.com/Starmel/OpenSuperWhisper",
+        "repo":  "Starmel/OpenSuperWhisper",
+        "authorization":  "founder-90",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:49.6911667Z",
+        "metadata":  {
+                         "nameWithOwner":  "Starmel/OpenSuperWhisper",
+                         "url":  "https://github.com/Starmel/OpenSuperWhisper",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "develop",
+                                                  "target":  {
+                                                                 "oid":  "c8e6fe79d6851078940f459ab7dbc8ee39e2a97d",
+                                                                 "committedDate":  "2026-09-07T17:19:49Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  91,
+        "name":  "Medplum",
+        "landscape_url":  "https://github.com/medplum/medplum",
+        "repo":  "medplum/medplum",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3384326Z",
+        "metadata":  {
+                         "nameWithOwner":  "medplum/medplum",
+                         "url":  "https://github.com/medplum/medplum",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "fbc8e7b4b6b113bca7645b46193d2c43e5510bb4",
+                                                                 "committedDate":  "2026-09-11T23:02:23Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  92,
+        "name":  "HAPI FHIR",
+        "landscape_url":  "https://github.com/hapifhir/hapi-fhir",
+        "repo":  "hapifhir/hapi-fhir",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3435096Z",
+        "metadata":  {
+                         "nameWithOwner":  "hapifhir/hapi-fhir",
+                         "url":  "https://github.com/hapifhir/hapi-fhir",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "1e4aa0103171cdabb259272334c050f2963e1b4f",
+                                                                 "committedDate":  "2026-09-13T12:57:46Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  93,
+        "name":  "OpenEMR",
+        "landscape_url":  "https://github.com/openemr/openemr",
+        "repo":  "openemr/openemr",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3471632Z",
+        "metadata":  {
+                         "nameWithOwner":  "openemr/openemr",
+                         "url":  "https://github.com/openemr/openemr",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "93b90501758da9378d886715cdfa0e2c1b53a01d",
+                                                                 "committedDate":  "2026-09-13T15:42:01Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  94,
+        "name":  "OpenMRS Core",
+        "landscape_url":  "https://github.com/openmrs/openmrs-core",
+        "repo":  "openmrs/openmrs-core",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3523578Z",
+        "metadata":  {
+                         "nameWithOwner":  "openmrs/openmrs-core",
+                         "url":  "https://github.com/openmrs/openmrs-core",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "f06c26ac7b79955b69db402d76f0cd8300799d7e",
+                                                                 "committedDate":  "2026-09-12T20:52:07Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  95,
+        "name":  "Bahmni",
+        "landscape_url":  "https://github.com/Bahmni/bahmni-core",
+        "repo":  "Bahmni/bahmni-core",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3545063Z",
+        "metadata":  {
+                         "nameWithOwner":  "Bahmni/bahmni-core",
+                         "url":  "https://github.com/Bahmni/bahmni-core",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "AGPL-3.0",
+                                             "name":  "GNU Affero General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "91fc913573561c49de0044e3b5ee805a9aafba28",
+                                                                 "committedDate":  "2026-09-09T04:16:24Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  96,
+        "name":  "Synthea",
+        "landscape_url":  "https://github.com/synthetichealth/synthea",
+        "repo":  "synthetichealth/synthea",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3601897Z",
+        "metadata":  {
+                         "nameWithOwner":  "synthetichealth/synthea",
+                         "url":  "https://github.com/synthetichealth/synthea",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "d9d07a6eef91ee5144293b42ab64224d84d124f8",
+                                                                 "committedDate":  "2026-08-18T16:11:48Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  97,
+        "name":  "OHIF",
+        "landscape_url":  "https://github.com/OHIF/Viewers",
+        "repo":  "OHIF/Viewers",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3642195Z",
+        "metadata":  {
+                         "nameWithOwner":  "OHIF/Viewers",
+                         "url":  "https://github.com/OHIF/Viewers",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "2f2d015a87b32f049840ceb1dc300c5ebb3a540b",
+                                                                 "committedDate":  "2026-09-10T19:05:06Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  98,
+        "name":  "Orthanc",
+        "landscape_url":  "https://github.com/orthanc-mirrors/orthanc",
+        "repo":  "orthanc-mirrors/orthanc",
+        "authorization":  "existing-healthcare-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3693671Z",
+        "metadata":  {
+                         "nameWithOwner":  "orthanc-mirrors/orthanc",
+                         "url":  "https://github.com/orthanc-mirrors/orthanc",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "dec0d0f3e22e4f2a716cc311f338331dd3bfbfc6",
+                                                                 "committedDate":  "2026-09-09T16:23:13Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  99,
+        "name":  "Medplum Scheduling Demo",
+        "landscape_url":  "https://github.com/medplum/medplum-scheduling-demo",
+        "repo":  "medplum/medplum-scheduling-demo",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3752871Z",
+        "metadata":  {
+                         "nameWithOwner":  "medplum/medplum-scheduling-demo",
+                         "url":  "https://github.com/medplum/medplum-scheduling-demo",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "09326d450e9c2a8cf9289dab512e7220644324a0",
+                                                                 "committedDate":  "2026-01-23T18:52:30Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  100,
+        "name":  "OpenMRS Appointment Scheduling",
+        "landscape_url":  "https://github.com/openmrs/openmrs-module-appointmentscheduling",
+        "repo":  "openmrs/openmrs-module-appointmentscheduling",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3808178Z",
+        "metadata":  {
+                         "nameWithOwner":  "openmrs/openmrs-module-appointmentscheduling",
+                         "url":  "https://github.com/openmrs/openmrs-module-appointmentscheduling",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "3fbc1804b0ffa3e6a2d1599f2730a1c66c90a847",
+                                                                 "committedDate":  "2026-09-03T15:24:08Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  101,
+        "name":  "Easy!Appointments",
+        "landscape_url":  "https://github.com/alextselegidis/easyappointments",
+        "repo":  "alextselegidis/easyappointments",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3875834Z",
+        "metadata":  {
+                         "nameWithOwner":  "alextselegidis/easyappointments",
+                         "url":  "https://github.com/alextselegidis/easyappointments",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "GPL-3.0",
+                                             "name":  "GNU General Public License v3.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "450ba15db5e734503274ade049d7bb9bebd2ad33",
+                                                                 "committedDate":  "2026-09-09T13:35:15Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  102,
+        "name":  "FHIR Validator",
+        "landscape_url":  "https://github.com/hapifhir/org.hl7.fhir.core",
+        "repo":  "hapifhir/org.hl7.fhir.core",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3912181Z",
+        "metadata":  {
+                         "nameWithOwner":  "hapifhir/org.hl7.fhir.core",
+                         "url":  "https://github.com/hapifhir/org.hl7.fhir.core",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "e9cb40e7b4ea03a4ad489d3b77543ee50e657d12",
+                                                                 "committedDate":  "2026-09-11T01:39:17Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  103,
+        "name":  "OpenSearch",
+        "landscape_url":  "https://github.com/opensearch-project/OpenSearch",
+        "repo":  "opensearch-project/OpenSearch",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3944511Z",
+        "metadata":  {
+                         "nameWithOwner":  "opensearch-project/OpenSearch",
+                         "url":  "https://github.com/opensearch-project/OpenSearch",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "b62087db6667bed188403f90986bc59f72b127f7",
+                                                                 "committedDate":  "2026-09-11T11:43:13Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  104,
+        "name":  "MapLibre GL JS",
+        "landscape_url":  "https://github.com/maplibre/maplibre-gl-js",
+        "repo":  "maplibre/maplibre-gl-js",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.3978109Z",
+        "metadata":  {
+                         "nameWithOwner":  "maplibre/maplibre-gl-js",
+                         "url":  "https://github.com/maplibre/maplibre-gl-js",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "80a6f38119b20b400567d0a02e1636645ad67f18",
+                                                                 "committedDate":  "2026-09-12T05:48:25Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  105,
+        "name":  "libphonenumber",
+        "landscape_url":  "https://github.com/google/libphonenumber",
+        "repo":  "google/libphonenumber",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:51.4008600Z",
+        "metadata":  {
+                         "nameWithOwner":  "google/libphonenumber",
+                         "url":  "https://github.com/google/libphonenumber",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "Apache-2.0",
+                                             "name":  "Apache License 2.0"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "806ee32e8c8c74ca339d8c91a6d86ef58687c9f4",
+                                                                 "committedDate":  "2026-09-10T02:59:06Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  106,
+        "name":  "whisper.cpp",
+        "landscape_url":  "https://github.com/ggml-org/whisper.cpp",
+        "repo":  "ggml-org/whisper.cpp",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7238739Z",
+        "metadata":  {
+                         "nameWithOwner":  "ggml-org/whisper.cpp",
+                         "url":  "https://github.com/ggml-org/whisper.cpp",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "1da4dc82fa7996d4edda05890dca65aeceaafd6d",
+                                                                 "committedDate":  "2026-09-11T14:13:24Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  107,
+        "name":  "faster-whisper",
+        "landscape_url":  "https://github.com/SYSTRAN/faster-whisper",
+        "repo":  "SYSTRAN/faster-whisper",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7274864Z",
+        "metadata":  {
+                         "nameWithOwner":  "SYSTRAN/faster-whisper",
+                         "url":  "https://github.com/SYSTRAN/faster-whisper",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "ed9a06cd89a93e47838f564998a6c09b655d7f43",
+                                                                 "committedDate":  "2025-11-19T14:40:46Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  108,
+        "name":  "Whisper",
+        "landscape_url":  "https://github.com/openai/whisper",
+        "repo":  "openai/whisper",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7301391Z",
+        "metadata":  {
+                         "nameWithOwner":  "openai/whisper",
+                         "url":  "https://github.com/openai/whisper",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "86098128c0b4f24f0e2aa2994de830614b474227",
+                                                                 "committedDate":  "2026-08-31T17:19:19Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  109,
+        "name":  "IHE Scheduling",
+        "landscape_url":  "https://github.com/IHE/ITI.Scheduling",
+        "repo":  "IHE/ITI.Scheduling",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7331600Z",
+        "metadata":  {
+                         "nameWithOwner":  "IHE/ITI.Scheduling",
+                         "url":  "https://github.com/IHE/ITI.Scheduling",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "CC-BY-4.0",
+                                             "name":  "Creative Commons Attribution 4.0 International"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "979d4bcdb33cc20fb31be6b787cfedb77c2875bc",
+                                                                 "committedDate":  "2025-03-20T20:11:23Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  110,
+        "name":  "HAPI HL7v2",
+        "landscape_url":  "https://github.com/hapifhir/hapi-hl7v2",
+        "repo":  "hapifhir/hapi-hl7v2",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7371721Z",
+        "metadata":  {
+                         "nameWithOwner":  "hapifhir/hapi-hl7v2",
+                         "url":  "https://github.com/hapifhir/hapi-hl7v2",
+                         "isArchived":  false,
+                         "licenseInfo":  null,
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "de1503651040e592d529d43980c06b19b89e2c27",
+                                                                 "committedDate":  "2026-03-26T15:02:36Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  111,
+        "name":  "iCalendar recurrence",
+        "landscape_url":  "https://github.com/jkbrzt/rrule",
+        "repo":  "jkbrzt/rrule",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7416113Z",
+        "metadata":  {
+                         "nameWithOwner":  "jkbrzt/rrule",
+                         "url":  "https://github.com/jkbrzt/rrule",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "NOASSERTION",
+                                             "name":  "Other"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "9f2061febeeb363d03352efe33d30c33073a0242",
+                                                                 "committedDate":  "2023-11-10T20:05:10Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  112,
+        "name":  "pg-boss",
+        "landscape_url":  "https://github.com/timgit/pg-boss",
+        "repo":  "timgit/pg-boss",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7461770Z",
+        "metadata":  {
+                         "nameWithOwner":  "timgit/pg-boss",
+                         "url":  "https://github.com/timgit/pg-boss",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "6de0d9082d7650d348a3e6f07bc39ed6ddedf5d4",
+                                                                 "committedDate":  "2026-09-10T17:24:20Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  113,
+        "name":  "FHIR mCSD",
+        "landscape_url":  "https://github.com/IHE/ITI.mCSD",
+        "repo":  "IHE/ITI.mCSD",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7505745Z",
+        "metadata":  {
+                         "nameWithOwner":  "IHE/ITI.mCSD",
+                         "url":  "https://github.com/IHE/ITI.mCSD",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "CC-BY-4.0",
+                                             "name":  "Creative Commons Attribution 4.0 International"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "658f0b2398da69e74f86115c8ec66812533d6bd2",
+                                                                 "committedDate":  "2025-10-07T16:53:17Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  114,
+        "name":  "SMART App Launch",
+        "landscape_url":  "https://github.com/HL7/smart-app-launch",
+        "repo":  "HL7/smart-app-launch",
+        "authorization":  "new-candidate-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T15:55:52.7505745Z",
+        "metadata":  {
+                         "nameWithOwner":  "HL7/smart-app-launch",
+                         "url":  "https://github.com/HL7/smart-app-launch",
+                         "isArchived":  false,
+                         "licenseInfo":  null,
+                         "defaultBranchRef":  {
+                                                  "name":  "master",
+                                                  "target":  {
+                                                                 "oid":  "2494e060a45aa3cb0b86adf55e2c8426d1cb88a1",
+                                                                 "committedDate":  "2024-05-14T20:28:33Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    },
+    {
+        "id":  115,
+        "name":  "SpecGrain",
+        "landscape_url":  "https://github.com/TheHalfMoon/SpecGrain",
+        "repo":  "TheHalfMoon/SpecGrain",
+        "authorization":  "user-suggested-2026-09-13-public-license-only",
+        "scope_resolution":  false,
+        "checked_at":  "2026-09-13T20:16:08.9459700Z",
+        "metadata":  {
+                         "nameWithOwner":  "TheHalfMoon/SpecGrain",
+                         "url":  "https://github.com/TheHalfMoon/SpecGrain",
+                         "isArchived":  false,
+                         "licenseInfo":  {
+                                             "spdxId":  "MIT",
+                                             "name":  "MIT License"
+                                         },
+                         "defaultBranchRef":  {
+                                                  "name":  "main",
+                                                  "target":  {
+                                                                 "oid":  "5de7d6499bb0a9e3a191fc0934399cf099d1980a",
+                                                                 "committedDate":  "2026-09-07T23:16:29Z"
+                                                             }
+                                              }
+                     },
+        "status":  "metadata-observed"
+    }
+]

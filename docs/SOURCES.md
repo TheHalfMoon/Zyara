@@ -2,6 +2,8 @@
 
 Snapshot: 2026-09-11.
 
+The [2026-09-13 canonical qualification](canonical/ZYARA_SOURCE_QUALIFICATION.md) evaluates these 90 entries, the eight existing healthcare additions and 17 new candidates (115 total), including the user-suggested SpecGrain. This original landscape remains the founder authorization record; new research does not expand private permissions implicitly.
+
 This repository records **90 unique general source/reference projects** supplied or researched for the broader platform landscape, plus healthcare-native additions below.
 
 ## Governance rule
