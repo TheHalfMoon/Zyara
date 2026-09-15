@@ -1,8 +1,9 @@
 # M003 Result
 
-Status: IMPLEMENTED — pending CI + merge verification.
+Status: COMPLETE (merged).
 
 - Base SHA: 55ec326ca07cfc0a84f3af92c0e211502c907654
+- Merge commit on main: 506a70678341987fbfdcfb373181773bee822e1d (PR #7)
 - Branch: muse/M003-governance-package
 - Acceptance 1 (dataset purpose/owner/region/retention or blocker): PASS
 - Acceptance 2 (named reviewers for clinical/delegate policy): PASS (TBD + PENDING, no fabrication)
