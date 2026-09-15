@@ -1,8 +1,11 @@
 # M004 Result
 
-Status: IMPLEMENTED — pending CI + merge verification.
+Status: COMPLETE (merged).
 
 - Base SHA: db8506f5556c345c6581eaf428fea248d7d1e5fc
+- Implementation head: 1bfeb7c
+- Merge commit on main: 87e28937f21f707e118faa28e723a88dcde11545 (PR #9)
+- CI: m004-ci green on head (typechecks + 8/8 matrix + PG16 outbox smoke).
 - Branch: muse/M004-durable-events
 - Acceptance 1 (tx domain+outbox commit): PASS — SQL smoke commits tenants+outbox
   in one transaction; MemoryOutbox models crash-before-commit as no-append
