@@ -115,6 +115,7 @@ BEGIN
 END
 $$;
 
+GRANT USAGE ON SCHEMA public TO zyara_app;
 GRANT SELECT, INSERT, UPDATE ON memberships, sessions, membership_audit TO zyara_app;
 GRANT SELECT ON tenants, branches, accounts TO zyara_app;
 GRANT ALL ON membership_audit_id_seq TO zyara_app;
