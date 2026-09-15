@@ -32,8 +32,8 @@ async function attempt(i) {
     await c.query("BEGIN");
     await c.query(`SET LOCAL app.current_tenant='t1'`);
     await c.query(
-      `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,held_at,expires_at,last_reason)
-       VALUES ($1,'t1',$2,'derm',$3,'d1','held','s1',1,'r1',1,10,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')`,
+      `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,max_extensions,held_at,expires_at,last_reason)
+       VALUES ($1,'t1',$2,'derm',$3,'d1','held','s1',1,'r1',1,10,2,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')`,
       [`race-${i}`, `actor-${i}`, `race-key-${i}`],
     );
     await c.query(
@@ -76,8 +76,8 @@ await admin2.connect();
 await admin2.query(`SET app.current_tenant='t1'`);
 await admin2.query("BEGIN");
 await admin2.query(
-  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,held_at,expires_at,last_reason)
-   VALUES ('dual-1','t1','actor-x','derm','dual-key-1','d2','held','s1',1,'r1',1,10,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')`,
+  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,max_extensions,held_at,expires_at,last_reason)
+   VALUES ('dual-1','t1','actor-x','derm','dual-key-1','d2','held','s1',1,'r1',1,10,2,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')`,
 );
 await admin2.query(
   `INSERT INTO reservation_items(hold_id,tenant_id,unit_id,occupied) VALUES ('dual-1','t1','doc-1',$1::tstzrange)`,
@@ -106,13 +106,13 @@ await admin2.end();
 
 // Idempotency: same key twice -> one hold; changed digest is a conflict signal.
 await admin.query(
-  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,held_at,expires_at,last_reason)
-   VALUES ('idem-1','t1','actor-1','derm','idem-key','dig-A','held','s1',1,'r1',1,10,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')
+  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,max_extensions,held_at,expires_at,last_reason)
+   VALUES ('idem-1','t1','actor-1','derm','idem-key','dig-A','held','s1',1,'r1',1,10,2,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')
    ON CONFLICT (tenant_id, idempotency_key) DO NOTHING`,
 );
 const dup = await admin.query(
-  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,held_at,expires_at,last_reason)
-   VALUES ('idem-2','t1','actor-1','derm','idem-key','dig-B','held','s1',1,'r1',1,10,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')
+  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,max_extensions,held_at,expires_at,last_reason)
+   VALUES ('idem-2','t1','actor-1','derm','idem-key','dig-B','held','s1',1,'r1',1,10,2,statement_timestamp(),statement_timestamp()+interval '10 minutes','HOLD_CREATED')
    ON CONFLICT (tenant_id, idempotency_key) DO NOTHING`,
 );
 if (dup.rowCount !== 0) throw new Error("idempotency: second row inserted under same key");
@@ -121,8 +121,8 @@ console.log("idempotency PASS: same key replays, changed body conflicts");
 // Acceptance 3: expired hold cannot redeem with the worker stopped.
 // No worker runs in this smoke at all: expiry is inline via statement_timestamp.
 await admin.query(
-  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,held_at,expires_at,last_reason)
-   VALUES ('old-1','t1','actor-1','derm','old-key','d3','held','s1',1,'r1',1,2,statement_timestamp()-interval '10 minutes',statement_timestamp()-interval '8 minutes','HOLD_CREATED')`,
+  `INSERT INTO holds(id,tenant_id,actor_id,service_id,idempotency_key,request_digest,state,schedule_id,schedule_version,recipe_id,recipe_version,ttl_min,max_extensions,held_at,expires_at,last_reason)
+   VALUES ('old-1','t1','actor-1','derm','old-key','d3','held','s1',1,'r1',1,2,2,statement_timestamp()-interval '10 minutes',statement_timestamp()-interval '8 minutes','HOLD_CREATED')`,
 );
 const redeem = await admin.query(
   `UPDATE holds SET state='committed', decided_at=statement_timestamp(), last_reason='HOLD_REDEEMED'
