@@ -1,8 +1,12 @@
 # M013 Result
 
-Status: IMPLEMENTED — pending CI + merge verification.
+Status: COMPLETE (merged).
 
 - Base SHA: 6dc8b982441b196fcdbb6fb9cecc5a865605c577
+- Implementation head: 2d06cc5
+- Merge commit on main: c2d8c53dbb1994fda40bd9d8e35e518ac24d16ef (PR #27)
+- CI: m013-ci green on head and post-merge (typecheck + lint + 19/19 tests);
+  m001-ci green on head and post-merge.
 - Branch: muse/M013-eligibility-recipes
 - Acceptance 1 (missing referral next step): PASS — REFERRAL_MISSING returns
   NEEDS_INPUT with missingInput=referral and nextStep=PROVIDE_INFORMATION
@@ -13,18 +17,11 @@ Status: IMPLEMENTED — pending CI + merge verification.
 - Tests: 19/19 green (12 rule families, age/returning/insurer/order/interval,
   precedence, missing-data, substitution, qualifications, immutability,
   adversarial, five-locale, engine-safety, migration)
-- Rule families: all 12 canonical families from the scheduling plan
-- Outcomes: ALLOW/DENY/NEEDS_INPUT/NEEDS_STAFF_REVIEW/SOURCE_UNAVAILABLE with
-  DENY > REVIEW > UNKNOWN > INPUT > ALLOW precedence; missing data never
-  ALLOW and never silent DENY; outage never approval
-- Approval: provider clinical rules without accountable approval route to
-  NEEDS_STAFF_REVIEW with APPROVAL_MISSING; approval never fabricated
-- Privacy: 16 material input fields allowlisted; excess fields rejected;
-  telemetry carries codes/versions/counts only, never answers; no logging of
-  clinical answers; no patient text in events
-- Localization: five-locale explanations (ar/en/fr/de/es); Arabic wording is
-  synthetic and requires accountable human review before real-patient use
-- Migration: db/migrations/013_eligibility_recipes.sql — append-only
-  (SELECT+INSERT only), PK (id, version), FORCE RLS + tenant isolation
-- Residuals: availability computation (M014), holds/booking (M015+),
-  real clinical approval remains an explicit external gate
+- Privacy: 16 material input fields allowlisted; telemetry carries
+  codes/versions/counts only; no clinical answers in logs/events
+- Localization: five-locale explanations (ar/en/fr/de/es); Arabic clinical
+  wording synthetic — accountable human review required before real-patient use
+- Migration: append-only (SELECT+INSERT only), PK (id, version), FORCE RLS
+- Residuals: availability (M014), holds/booking (M015+); real clinical
+  approval remains an explicit external gate.
+
