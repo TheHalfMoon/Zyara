@@ -23,7 +23,8 @@ if (r1.rows.length !== 1 || r1.rows[0].id !== "t1") throw new Error("RLS tenant 
 await c.query(`SET app.current_tenant='t2'`);
 const r2 = await c.query(`SELECT id FROM tenants`);
 if (r2.rows.length !== 1 || r2.rows[0].id !== "t2") throw new Error("RLS tenant isolation failed t2");
-const roles = await c.query(`RESET ROLE; SELECT rolname FROM pg_roles WHERE rolname IN ('zyara_migrator','zyara_app')`);
+await c.query(`RESET ROLE`);
+const roles = await c.query(`SELECT rolname FROM pg_roles WHERE rolname IN ('zyara_migrator','zyara_app')`);
 if (roles.rows.length !== 2) throw new Error("role isolation missing");
 console.log("M002 RLS smoke PASS: isolation + roles verified");
 await c.end();
