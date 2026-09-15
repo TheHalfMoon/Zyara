@@ -1,8 +1,6 @@
 // M010 adapters. pgDocs: MEASURED against real PostgreSQL+pg_trgm.
 // simulatedOpenSearch / simulatedMeilisearch: SIMULATED scoring only — no
 // relevance/latency claim is made for these candidates.
-import pkg from "pg";
-const { Client } = pkg;
 
 function scoreDoc(doc, intent) {
   const q = intent.text.toLowerCase();
