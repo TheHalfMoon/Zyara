@@ -1,8 +1,11 @@
 # M007 Result
 
-Status: IMPLEMENTED — pending CI + merge verification.
+Status: COMPLETE (merged).
 
 - Base SHA: 693f4430ca387ea8a53d0f9fedda34d44b7f8124
+- Implementation head: 9590df4
+- Merge commit on main: 74d06547f16fab8334990a008e9529558445e3be (PR #15)
+- CI: m007-ci green on head (typecheck + lint + 6/6 tests).
 - Branch: muse/M007-graph-import
 - Acceptance 1 (source + last check on assertions): PASS — field ownership map
 - Acceptance 2 (conflicts require review): PASS — alias-match suggestions,
