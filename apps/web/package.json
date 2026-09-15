@@ -1,0 +1,25 @@
+{
+  "name": "@zyara/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint app",
+    "test": "node --test dist-test/*.test.mjs",
+    "start": "next start -p 3100"
+  },
+  "dependencies": {
+    "@zyara/domain": "workspace:*",
+    "next": "15.5.25",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.9.0",
+    "@types/react": "19.0.1",
+    "typescript": "5.6.3"
+  }
+}
