@@ -1,0 +1,30 @@
+name: m013-ci
+on:
+  pull_request:
+    paths:
+      - "packages/scheduling/**"
+      - "tests/m013/**"
+      - "db/migrations/013_eligibility_recipes.sql"
+      - ".github/workflows/m013-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/scheduling/**"
+      - "tests/m013/**"
+      - "db/migrations/013_eligibility_recipes.sql"
+jobs:
+  m013:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/scheduling typecheck
+      - run: pnpm --filter @zyara/scheduling lint
+      - run: pnpm --filter @zyara/m013-tests test
