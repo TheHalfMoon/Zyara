@@ -93,13 +93,14 @@ if (booked.length !== 1) throw new Error(`capacity-one booking race: expected 1 
 console.log(`acceptance 1 PASS: 100 concurrent bookings -> exactly 1 booked (${booked[0].booked})`);
 
 // Acceptance 2: retried operation returns the same result (idempotency).
-const first = await admin.query(`SELECT id, appointment_id, state FROM booking_operations WHERE id='op-${booked[0].booked.slice(5)}'`);
+const winnerOpId = `op-${booked[0].booked.slice(5)}`;
+const first = await admin.query(`SELECT id, appointment_id, state, idempotency_key FROM booking_operations WHERE id=$1`, [winnerOpId]);
 if (first.rows[0].state !== "booked") throw new Error("booked operation not committed");
 const replay = await admin.query(
   `INSERT INTO booking_operations(id,tenant_id,actor_id,patient_id,idempotency_key,request_digest,state,service_id,type_id,schedule_id,schedule_version,recipe_id,recipe_version,candidate_token,start_utc,end_utc,time_zone,eligibility_outcome)
    VALUES ('op-replay','t1','actor-x','patient-x', $1,'dig-other','pending','derm','derm-init','s1',1,'r1',1,'cand-1','2026-10-01T07:00:00+00:00','2026-10-01T07:40:00+00:00','Asia/Riyadh','ALLOW')
    ON CONFLICT (tenant_id, idempotency_key) DO NOTHING RETURNING id`,
-  [wins.length > 0 ? `bkey-0` : "bkey-0"],
+  [first.rows[0].idempotency_key],
 );
 if (replay.rows.length !== 0) throw new Error("idempotency: second operation inserted under same key");
 console.log("acceptance 2 PASS: retried operation returns same booked result");
