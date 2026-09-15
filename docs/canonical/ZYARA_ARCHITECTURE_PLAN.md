@@ -75,6 +75,7 @@ All decisions are accepted for planning; where a gate is specified, production e
 | A24 | Attendance-linked review eligibility with independent appeal | Provider attendance alone can suppress legitimate complaints | Fraud and dispute evidence; trust |
 | A25 | No copied platform code in this mission; narrow dependencies | Founder permission is not license/security qualification | Per-component reuse record completed; engineering |
 | A26 | One Saudi catchment pilot; country/zone/currency/profile fields now | Country launch is an operating/regulatory gate, not translation switch | Country-specific launch dossier; operations |
+| A27 | TypeScript by default; Rust/Go only on measured evidence; PostgreSQL stays the authority for scheduling invariants | TypeScript owns product/platform logic; Rust is the preferred systems language for proven hot paths (recurrence expansion, candidate search, sandbox/voice-native); Go only for justified operational services; C/C++ only for native dependencies/bindings; every extraction needs benchmarks, stable typed boundaries and a rollback path; no speculative rewrites or microservice decomposition | Benchmark-before-extraction gate on every hot subsystem; architecture |
 
 [OpenSearch Arabic analyzer](https://docs.opensearch.org/latest/analyzers/language-analyzers/arabic/) is official technical evidence checked 2026-09-13, high confidence in documented capability, no benchmark performed. Source pins and license uncertainties for all candidates are in [qualification](ZYARA_SOURCE_QUALIFICATION.md).
 

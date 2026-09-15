@@ -1,0 +1,34 @@
+name: m014-ci
+on:
+  pull_request:
+    paths:
+      - "packages/scheduling/**"
+      - "apps/worker/**"
+      - "tests/m014/**"
+      - "db/migrations/014_availability.sql"
+      - ".github/workflows/m014-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/scheduling/**"
+      - "apps/worker/**"
+      - "tests/m014/**"
+      - "db/migrations/014_availability.sql"
+jobs:
+  m014:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/scheduling typecheck
+      - run: pnpm --filter @zyara/scheduling lint
+      - run: pnpm --filter @zyara/worker typecheck
+      - run: pnpm --filter @zyara/worker lint
+      - run: pnpm --filter @zyara/m014-tests test

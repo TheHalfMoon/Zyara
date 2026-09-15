@@ -346,6 +346,25 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  tests/m014:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@zyara/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@zyara/scheduling':
+        specifier: workspace:*
+        version: link:../../packages/scheduling
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
 packages:
 
   '@emnapi/runtime@1.11.3':
