@@ -1,0 +1,33 @@
+name: m009-ci
+on:
+  pull_request:
+    paths:
+      - "packages/services/**"
+      - "packages/contracts/**"
+      - "apps/web/**/provider/onboarding/**"
+      - "tests/m009/**"
+      - ".github/workflows/m009-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/services/**"
+      - "packages/contracts/**"
+      - "apps/web/**/provider/onboarding/**"
+      - "tests/m009/**"
+jobs:
+  m009:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/services typecheck
+      - run: pnpm --filter @zyara/services lint
+      - run: pnpm --filter @zyara/web typecheck
+      - run: pnpm --filter @zyara/m009-tests test
