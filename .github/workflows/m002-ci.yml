@@ -46,4 +46,4 @@ jobs:
       - run: pnpm --filter @zyara/authorization typecheck
       - run: pnpm --filter @zyara/api typecheck
       - run: pnpm --filter @zyara/m002-tests test
-      - run: node scripts/m002-rls-smoke.mjs
+      - run: pnpm --filter @zyara/api exec node ../../scripts/m002-rls-smoke.mjs
