@@ -5,6 +5,7 @@ import { interpretReadiness } from "@zyara/domain";
 import type { ReadyResponse } from "@zyara/contracts";
 import { requestTenant, authorize, oidc } from "./auth.js";
 import { registerVerifyRoutes } from "./verify.js";
+import { registerSearchRoutes } from "./search.js";
 import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
@@ -34,6 +35,7 @@ async function checkDatabase(): Promise<"reachable" | "unavailable"> {
 export function buildServer() {
   const app = Fastify({ logger: false });
   registerVerifyRoutes(app);
+  registerSearchRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
     const database = await checkDatabase();

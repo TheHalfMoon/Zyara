@@ -17,6 +17,8 @@
     "@zyara/identity": "workspace:*",
     "@zyara/authorization": "workspace:*",
     "@zyara/verification": "workspace:*",
+    "@zyara/search": "workspace:*",
+    "@zyara/search-contract": "workspace:*",
     "fastify": "5.12.4",
     "pg": "8.13.1"
   },
