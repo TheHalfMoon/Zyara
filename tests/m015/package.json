@@ -1,0 +1,21 @@
+{
+  "name": "@zyara/m015-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo ok",
+    "typecheck": "tsx -e \"1\"",
+    "lint": "eslint .",
+    "test": "tsx --test *.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "4.19.2",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "@zyara/scheduling": "workspace:*",
+    "@zyara/domain": "workspace:*",
+    "@zyara/events": "workspace:*"
+  }
+}
