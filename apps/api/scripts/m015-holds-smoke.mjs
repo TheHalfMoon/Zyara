@@ -51,9 +51,19 @@ async function attempt(i) {
   }
 }
 
-const wins = await Promise.all(Array.from({ length: 100 }, (_, i) => attempt(i)));
+const wins = [];
+// Bounded waves: 10 parallel clients x 10 waves = 100 attempts. Each wave is
+// genuinely concurrent (all 10 race the same interval); waves serialize only
+// to respect the database connection limit. Losers in every wave still prove
+// the exclusion invariant under real parallel contention.
+for (let wave = 0; wave < 10; wave += 1) {
+  const batch = await Promise.all(
+    Array.from({ length: 10 }, (_, k) => attempt(wave * 10 + k)),
+  );
+  wins.push(...batch);
+}
 const won = wins.filter(Boolean).length;
-if (won !== 1) throw new Error(`capacity-one race: expected 1 winner, got ${won}`);
+if (won !== 1) throw new Error(`capacity-one race: expected 1 winner, got ${won} (waves of 10)`);
 const active = await admin.query(
   `SELECT count(*)::int AS n FROM reservation_items WHERE tenant_id='t1' AND unit_id='room-1' AND active`,
 );
