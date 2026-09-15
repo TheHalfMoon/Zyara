@@ -51,11 +51,17 @@ CREATE TABLE IF NOT EXISTS membership_audit (
 );
 
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenants FORCE ROW LEVEL SECURITY;
 ALTER TABLE branches ENABLE ROW LEVEL SECURITY;
+ALTER TABLE branches FORCE ROW LEVEL SECURITY;
 ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE accounts FORCE ROW LEVEL SECURITY;
 ALTER TABLE memberships ENABLE ROW LEVEL SECURITY;
+ALTER TABLE memberships FORCE ROW LEVEL SECURITY;
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sessions FORCE ROW LEVEL SECURITY;
 ALTER TABLE membership_audit ENABLE ROW LEVEL SECURITY;
+ALTER TABLE membership_audit FORCE ROW LEVEL SECURITY;
 
 -- Tenant isolation: rows visible only when app.current_tenant matches.
 DROP POLICY IF EXISTS tenant_isolation ON tenants;
@@ -68,6 +74,32 @@ CREATE POLICY branch_isolation ON branches
 
 DROP POLICY IF EXISTS membership_isolation ON memberships;
 CREATE POLICY membership_isolation ON memberships
+  USING (tenant_id = current_setting('app.current_tenant', true));
+
+DROP POLICY IF EXISTS account_isolation ON accounts;
+CREATE POLICY account_isolation ON accounts
+  USING (
+    current_setting('app.current_tenant', true) <> ''
+    AND EXISTS (
+      SELECT 1 FROM memberships AS m
+      WHERE m.account_id = accounts.id
+        AND m.tenant_id = current_setting('app.current_tenant', true)
+    )
+  );
+
+DROP POLICY IF EXISTS session_isolation ON sessions;
+CREATE POLICY session_isolation ON sessions
+  USING (
+    current_setting('app.current_tenant', true) <> ''
+    AND EXISTS (
+      SELECT 1 FROM memberships AS m
+      WHERE m.account_id = sessions.account_id
+        AND m.tenant_id = current_setting('app.current_tenant', true)
+    )
+  );
+
+DROP POLICY IF EXISTS audit_isolation ON membership_audit;
+CREATE POLICY audit_isolation ON membership_audit
   USING (tenant_id = current_setting('app.current_tenant', true));
 
 -- Migration-role isolation: only zyara_migrator may write schema-level
