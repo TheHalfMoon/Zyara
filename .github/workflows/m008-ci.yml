@@ -1,0 +1,34 @@
+name: m008-ci
+on:
+  pull_request:
+    paths:
+      - "packages/verification/**"
+      - "apps/web/**/provider/**"
+      - "apps/api/**"
+      - "tests/m008/**"
+      - ".github/workflows/m008-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/verification/**"
+      - "apps/web/**/provider/**"
+      - "apps/api/**"
+      - "tests/m008/**"
+jobs:
+  m008:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/verification typecheck
+      - run: pnpm --filter @zyara/verification lint
+      - run: pnpm --filter @zyara/api typecheck
+      - run: pnpm --filter @zyara/web typecheck
+      - run: pnpm --filter @zyara/m008-tests test

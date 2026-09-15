@@ -4,6 +4,7 @@ const { Client } = pkg;
 import { interpretReadiness } from "@zyara/domain";
 import type { ReadyResponse } from "@zyara/contracts";
 import { requestTenant, authorize, oidc } from "./auth.js";
+import { registerVerifyRoutes } from "./verify.js";
 import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
@@ -32,6 +33,7 @@ async function checkDatabase(): Promise<"reachable" | "unavailable"> {
 
 export function buildServer() {
   const app = Fastify({ logger: false });
+  registerVerifyRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
     const database = await checkDatabase();
@@ -40,8 +42,7 @@ export function buildServer() {
   });
   // M002: tenant-scoped identity probe. Tenant comes from verified
   // session claims only; body-supplied tenant IDs are ignored.
-  app.get("/me", async (req) => {
-    try {
+  app.get("/me", async (req) => {    try {
       const { claims } = requestTenant(req);
       return { sub: claims.sub, tenant: claims.tenant, assurance: claims.assurance };
     } catch (err) {
