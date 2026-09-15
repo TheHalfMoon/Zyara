@@ -20,4 +20,5 @@ jobs:
       - run: pnpm lint
       - run: pnpm --filter @zyara/m001-tests test
       - run: pnpm --filter @zyara/m003-tests test
+      - run: pnpm --filter @zyara/accessibility-tests test
       - run: node scripts/check-boundaries.mjs

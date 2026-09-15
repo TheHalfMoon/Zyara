@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@zyara/domain": "workspace:*",
+    "@zyara/i18n": "workspace:*",
+    "@zyara/ui": "workspace:*",
     "next": "15.5.25",
     "react": "19.3.0",
     "react-dom": "19.3.0"
