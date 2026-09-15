@@ -1,0 +1,34 @@
+name: m011-ci
+on:
+  pull_request:
+    paths:
+      - "packages/search/**"
+      - "apps/web/**/search/**"
+      - "apps/api/src/search.ts"
+      - "tests/m011/**"
+      - ".github/workflows/m011-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/search/**"
+      - "apps/web/**/search/**"
+      - "apps/api/src/search.ts"
+      - "tests/m011/**"
+jobs:
+  m011:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/search typecheck
+      - run: pnpm --filter @zyara/search lint
+      - run: pnpm --filter @zyara/api typecheck
+      - run: pnpm --filter @zyara/web typecheck
+      - run: pnpm --filter @zyara/m011-tests test
