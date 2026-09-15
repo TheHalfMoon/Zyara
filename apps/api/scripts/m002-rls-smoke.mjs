@@ -9,7 +9,7 @@ if (!url) {
   console.log("SKIP: no DATABASE_URL");
   process.exit(0);
 }
-const sql = readFileSync(new URL("../db/migrations/002_authz_primitives.sql", import.meta.url), "utf8");
+const sql = readFileSync(new URL("../../../db/migrations/002_authz_primitives.sql", import.meta.url), "utf8");
 const c = new Client({ connectionString: url });
 await c.connect();
 await c.query(sql);
