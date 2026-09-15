@@ -116,6 +116,15 @@ importers:
 
   packages/graph: {}
 
+  packages/graph-import:
+    dependencies:
+      '@zyara/events':
+        specifier: workspace:*
+        version: link:../events
+      '@zyara/graph':
+        specifier: workspace:*
+        version: link:../graph
+
   packages/i18n:
     dependencies:
       '@zyara/domain':
@@ -161,6 +170,22 @@ importers:
       '@zyara/graph':
         specifier: workspace:*
         version: link:../../packages/graph
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/graph-import:
+    dependencies:
+      '@zyara/graph':
+        specifier: workspace:*
+        version: link:../../packages/graph
+      '@zyara/graph-import':
+        specifier: workspace:*
+        version: link:../../packages/graph-import
     devDependencies:
       tsx:
         specifier: 4.19.2
