@@ -66,7 +66,7 @@ async function bookDirect(i, patient, key) {
     await c.query(`INSERT INTO appointment_items(appointment_id,tenant_id,unit_id,occupied) VALUES ($1,'t1','room-1',$2::tstzrange)`, [`appt-${i}`, SLOT]);
     await c.query(`UPDATE booking_operations SET state='booked', decided_at=statement_timestamp(), last_reason='BOOKING_COMMITTED', appointment_id=$1 WHERE id=$2`, [`appt-${i}`, `op-${i}`]);
     await c.query(
-      `INSERT INTO outbox(id,code,tenant_id,correlation,payload) VALUES ($1,'AppointmentBooked','t1',$2,jsonb_build_object('appointment',$3))`,
+      `INSERT INTO outbox(id,code,tenant_id,correlation,payload) VALUES ($1,'AppointmentBooked','t1',$2,jsonb_build_object('appointment',$3::text))`,
       [`evt-${i}`, `op-${i}`, `appt-${i}`],
     );
     await c.query("COMMIT");
