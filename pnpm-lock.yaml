@@ -57,6 +57,12 @@ importers:
       '@zyara/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@zyara/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@zyara/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       next:
         specifier: 15.5.25
         version: 15.5.25(@types/node@22.9.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -108,7 +114,45 @@ importers:
 
   packages/events: {}
 
+  packages/i18n:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/identity: {}
+
+  packages/ui:
+    dependencies:
+      '@zyara/i18n':
+        specifier: workspace:*
+        version: link:../i18n
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+    devDependencies:
+      '@types/react':
+        specifier: 19.0.1
+        version: 19.0.1
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/accessibility:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@zyara/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
 
   tests/m001:
     devDependencies:
