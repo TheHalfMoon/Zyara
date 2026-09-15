@@ -154,6 +154,12 @@ importers:
 
   packages/identity: {}
 
+  packages/scheduling:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/search:
     dependencies:
       '@zyara/search-contract':
@@ -161,12 +167,6 @@ importers:
         version: link:../search-contract
 
   packages/search-contract: {}
-
-  packages/scheduling:
-    dependencies:
-      '@zyara/domain':
-        specifier: workspace:*
-        version: link:../domain
 
   packages/services: {}
 
@@ -366,6 +366,25 @@ importers:
         version: 5.6.3
 
   tests/m015:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@zyara/events':
+        specifier: workspace:*
+        version: link:../../packages/events
+      '@zyara/scheduling':
+        specifier: workspace:*
+        version: link:../../packages/scheduling
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m016:
     dependencies:
       '@zyara/domain':
         specifier: workspace:*

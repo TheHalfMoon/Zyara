@@ -25,3 +25,30 @@ export interface PublishDecisionContract {
   blockers: OnboardingBlocker[];
   completeness: number;
 }
+
+// Authoritative native booking contract (M016): confirmation follows commit.
+// A booked response carries the committed appointment id and snapshot token.
+// Any other outcome carries a stable machine code the UI must explain.
+export type BookingOutcomeCodeContract =
+  | "BOOKED"
+  | "PENDING"
+  | "CONFLICT"
+  | "NEEDS_RECONFIRMATION"
+  | "REJECTED"
+  | "PATIENT_DUPLICATE"
+  | "IDEMPOTENCY_CONFLICT";
+
+export interface BookingStatusContract {
+  operationId: string;
+  state: "pending" | "booked" | "conflict" | "needs_reconfirmation" | "rejected";
+  appointmentId: string | null;
+  reason: string | null;
+}
+
+export interface BookResponseContract {
+  outcome: BookingOutcomeCodeContract;
+  operationId: string;
+  appointmentId: string | null;
+  snapshotToken: string | null;
+  reason: string | null;
+}
