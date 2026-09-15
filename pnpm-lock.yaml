@@ -162,6 +162,12 @@ importers:
 
   packages/search-contract: {}
 
+  packages/scheduling:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/services: {}
 
   packages/ui:
@@ -316,6 +322,22 @@ importers:
       '@zyara/geospatial':
         specifier: workspace:*
         version: link:../../packages/geospatial
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m013:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@zyara/scheduling':
+        specifier: workspace:*
+        version: link:../../packages/scheduling
     devDependencies:
       tsx:
         specifier: 4.19.2
