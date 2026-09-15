@@ -1,0 +1,43 @@
+name: m010-ci
+on:
+  pull_request:
+    paths:
+      - "experiments/search/**"
+      - "packages/search-contract/**"
+      - "docs/evidence/M010/**"
+      - ".github/workflows/m010-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "experiments/search/**"
+      - "packages/search-contract/**"
+      - "docs/evidence/M010/**"
+jobs:
+  m010:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: zyara_dev
+          POSTGRES_PASSWORD: zyara_dev_only
+          POSTGRES_DB: zyara_dev
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U zyara_dev"
+          --health-interval=5s --health-timeout=5s --health-retries=10
+    env:
+      DATABASE_URL: postgresql://zyara_dev:zyara_dev_only@localhost:5432/zyara_dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/search-contract typecheck
+      - run: pnpm --filter @zyara/search-experiments test
+      - run: pnpm --filter @zyara/search-experiments benchmark

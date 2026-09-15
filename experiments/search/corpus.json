@@ -1,0 +1,5596 @@
+{
+ "docs": [
+  {
+   "id": "doc-0",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-0",
+   "lat": 24.67925112285316,
+   "lng": 46.586194613247365,
+   "freshness_days": 10,
+   "verified": false
+  },
+  {
+   "id": "doc-1",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "cardiology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-1",
+   "lat": 24.660382948356123,
+   "lng": 46.64209035499692,
+   "freshness_days": 19,
+   "verified": true
+  },
+  {
+   "id": "doc-2",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-2",
+   "lat": 24.70583340079188,
+   "lng": 46.72208096133284,
+   "freshness_days": 8,
+   "verified": false
+  },
+  {
+   "id": "doc-3",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-3",
+   "lat": 24.721747275773808,
+   "lng": 46.655434087288754,
+   "freshness_days": 29,
+   "verified": true
+  },
+  {
+   "id": "doc-4",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-4",
+   "lat": 24.64018717627637,
+   "lng": 46.62834458937608,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-5",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dermatology",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.76748301149942,
+   "lng": 46.597384058169276,
+   "freshness_days": 6,
+   "verified": true
+  },
+  {
+   "id": "doc-6",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.66721448288895,
+   "lng": 46.5923029385481,
+   "freshness_days": 12,
+   "verified": true
+  },
+  {
+   "id": "doc-7",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-7",
+   "lat": 24.70881977296099,
+   "lng": 46.63031899952069,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-8",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-0",
+   "lat": 24.62680571769029,
+   "lng": 46.59038632199839,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-9",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-1",
+   "lat": 24.80602550265044,
+   "lng": 46.64675015392452,
+   "freshness_days": 7,
+   "verified": false
+  },
+  {
+   "id": "doc-10",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-2",
+   "lat": 24.719978692481668,
+   "lng": 46.673906100911275,
+   "freshness_days": 6,
+   "verified": true
+  },
+  {
+   "id": "doc-11",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "pediatrics",
+   "service": "lab_draw",
+   "insurer": null,
+   "branch": "branch-3",
+   "lat": 24.712937571347133,
+   "lng": 46.57757957372554,
+   "freshness_days": 22,
+   "verified": true
+  },
+  {
+   "id": "doc-12",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-4",
+   "lat": 24.67389711039737,
+   "lng": 46.676715161881596,
+   "freshness_days": 0,
+   "verified": true
+  },
+  {
+   "id": "doc-13",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-5",
+   "lat": 24.711370125372333,
+   "lng": 46.629259848033264,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-14",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.740316242311522,
+   "lng": 46.74665860198177,
+   "freshness_days": 25,
+   "verified": false
+  },
+  {
+   "id": "doc-15",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-7",
+   "lat": 24.64380719969645,
+   "lng": 46.67448196708895,
+   "freshness_days": 13,
+   "verified": true
+  },
+  {
+   "id": "doc-16",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.790096027689426,
+   "lng": 46.75913798063733,
+   "freshness_days": 12,
+   "verified": true
+  },
+  {
+   "id": "doc-17",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dermatology",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.625020859256757,
+   "lng": 46.76039560404345,
+   "freshness_days": 0,
+   "verified": false
+  },
+  {
+   "id": "doc-18",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-2",
+   "lat": 24.73348069694489,
+   "lng": 46.712258896135914,
+   "freshness_days": 22,
+   "verified": false
+  },
+  {
+   "id": "doc-19",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "pediatrics",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-3",
+   "lat": 24.74084129962735,
+   "lng": 46.66665837010108,
+   "freshness_days": 9,
+   "verified": false
+  },
+  {
+   "id": "doc-20",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-4",
+   "lat": 24.661716111708806,
+   "lng": 46.626822594271225,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-21",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.656844188139214,
+   "lng": 46.676075606790555,
+   "freshness_days": 25,
+   "verified": true
+  },
+  {
+   "id": "doc-22",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-6",
+   "lat": 24.73355239574462,
+   "lng": 46.729997286617014,
+   "freshness_days": 2,
+   "verified": true
+  },
+  {
+   "id": "doc-23",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "cardiology",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-7",
+   "lat": 24.723375846777483,
+   "lng": 46.60796193759628,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-24",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-0",
+   "lat": 24.70525015341714,
+   "lng": 46.58160515702069,
+   "freshness_days": 11,
+   "verified": false
+  },
+  {
+   "id": "doc-25",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.622130785376207,
+   "lng": 46.71975348284207,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-26",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-2",
+   "lat": 24.681937212176994,
+   "lng": 46.601868978792055,
+   "freshness_days": 0,
+   "verified": false
+  },
+  {
+   "id": "doc-27",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dentistry",
+   "service": "lab_draw",
+   "insurer": null,
+   "branch": "branch-3",
+   "lat": 24.619267996592818,
+   "lng": 46.59674641890191,
+   "freshness_days": 17,
+   "verified": false
+  },
+  {
+   "id": "doc-28",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-4",
+   "lat": 24.756299062917382,
+   "lng": 46.6867772755187,
+   "freshness_days": 0,
+   "verified": true
+  },
+  {
+   "id": "doc-29",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-5",
+   "lat": 24.65305511318743,
+   "lng": 46.699966334223,
+   "freshness_days": 18,
+   "verified": true
+  },
+  {
+   "id": "doc-30",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-6",
+   "lat": 24.7793396054361,
+   "lng": 46.68184343664646,
+   "freshness_days": 1,
+   "verified": true
+  },
+  {
+   "id": "doc-31",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": "MEDGULF",
+   "branch": "branch-7",
+   "lat": 24.71835600650534,
+   "lng": 46.60674587962888,
+   "freshness_days": 16,
+   "verified": true
+  },
+  {
+   "id": "doc-32",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.715119030844793,
+   "lng": 46.66897830133997,
+   "freshness_days": 24,
+   "verified": true
+  },
+  {
+   "id": "doc-33",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dermatology",
+   "service": "consultation",
+   "insurer": null,
+   "branch": "branch-1",
+   "lat": 24.631963492609934,
+   "lng": 46.758291598080845,
+   "freshness_days": 24,
+   "verified": false
+  },
+  {
+   "id": "doc-34",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-2",
+   "lat": 24.68343964066021,
+   "lng": 46.590380548310655,
+   "freshness_days": 23,
+   "verified": true
+  },
+  {
+   "id": "doc-35",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-3",
+   "lat": 24.81210390199572,
+   "lng": 46.585039205939694,
+   "freshness_days": 12,
+   "verified": true
+  },
+  {
+   "id": "doc-36",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-4",
+   "lat": 24.735393035650624,
+   "lng": 46.6837348238539,
+   "freshness_days": 14,
+   "verified": true
+  },
+  {
+   "id": "doc-37",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-5",
+   "lat": 24.8068867041789,
+   "lng": 46.595877857131136,
+   "freshness_days": 19,
+   "verified": true
+  },
+  {
+   "id": "doc-38",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-6",
+   "lat": 24.69578451538123,
+   "lng": 46.66963499779552,
+   "freshness_days": 19,
+   "verified": false
+  },
+  {
+   "id": "doc-39",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "cardiology",
+   "service": "vaccination",
+   "insurer": "MEDGULF",
+   "branch": "branch-7",
+   "lat": 24.75760258953683,
+   "lng": 46.76852903612629,
+   "freshness_days": 17,
+   "verified": true
+  },
+  {
+   "id": "doc-40",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.76569929505363,
+   "lng": 46.64918250897639,
+   "freshness_days": 5,
+   "verified": true
+  },
+  {
+   "id": "doc-41",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-1",
+   "lat": 24.744709594507142,
+   "lng": 46.68681761901565,
+   "freshness_days": 0,
+   "verified": true
+  },
+  {
+   "id": "doc-42",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-2",
+   "lat": 24.73270294992849,
+   "lng": 46.67123190457672,
+   "freshness_days": 6,
+   "verified": true
+  },
+  {
+   "id": "doc-43",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-3",
+   "lat": 24.73226792477667,
+   "lng": 46.706265170403945,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-44",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "service": "vaccination",
+   "insurer": "BUPA",
+   "branch": "branch-4",
+   "lat": 24.731964826077594,
+   "lng": 46.76206650095731,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-45",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "vaccination",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.801585392613337,
+   "lng": 46.62683478290886,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-46",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.710868186789007,
+   "lng": 46.67212167810388,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-47",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-7",
+   "lat": 24.650197198992966,
+   "lng": 46.62663145051077,
+   "freshness_days": 17,
+   "verified": true
+  },
+  {
+   "id": "doc-48",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-0",
+   "lat": 24.755365440488234,
+   "lng": 46.749047783433646,
+   "freshness_days": 17,
+   "verified": true
+  },
+  {
+   "id": "doc-49",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-1",
+   "lat": 24.71071059583351,
+   "lng": 46.74987497781142,
+   "freshness_days": 6,
+   "verified": false
+  },
+  {
+   "id": "doc-50",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-2",
+   "lat": 24.6801138177108,
+   "lng": 46.60160481743254,
+   "freshness_days": 9,
+   "verified": true
+  },
+  {
+   "id": "doc-51",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "service": "vaccination",
+   "insurer": "BUPA",
+   "branch": "branch-3",
+   "lat": 24.75701000849381,
+   "lng": 46.76485673221499,
+   "freshness_days": 2,
+   "verified": false
+  },
+  {
+   "id": "doc-52",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-4",
+   "lat": 24.70393068260178,
+   "lng": 46.62137508964837,
+   "freshness_days": 6,
+   "verified": true
+  },
+  {
+   "id": "doc-53",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-5",
+   "lat": 24.762593405140937,
+   "lng": 46.62500142999664,
+   "freshness_days": 18,
+   "verified": false
+  },
+  {
+   "id": "doc-54",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": null,
+   "branch": "branch-6",
+   "lat": 24.7003010966409,
+   "lng": 46.59308050358407,
+   "freshness_days": 10,
+   "verified": false
+  },
+  {
+   "id": "doc-55",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "pediatrics",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-7",
+   "lat": 24.678784111054988,
+   "lng": 46.650159677581115,
+   "freshness_days": 1,
+   "verified": true
+  },
+  {
+   "id": "doc-56",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.783745204663276,
+   "lng": 46.69915472226888,
+   "freshness_days": 1,
+   "verified": true
+  },
+  {
+   "id": "doc-57",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.62824615096338,
+   "lng": 46.73081426932216,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-58",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": null,
+   "branch": "branch-2",
+   "lat": 24.76193529992029,
+   "lng": 46.69198620351702,
+   "freshness_days": 8,
+   "verified": true
+  },
+  {
+   "id": "doc-59",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-3",
+   "lat": 24.694014225999265,
+   "lng": 46.63186305430457,
+   "freshness_days": 22,
+   "verified": false
+  },
+  {
+   "id": "doc-60",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-4",
+   "lat": 24.715291056694834,
+   "lng": 46.587323096019404,
+   "freshness_days": 13,
+   "verified": true
+  },
+  {
+   "id": "doc-61",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-5",
+   "lat": 24.631046697875856,
+   "lng": 46.60961146382354,
+   "freshness_days": 9,
+   "verified": false
+  },
+  {
+   "id": "doc-62",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": "MEDGULF",
+   "branch": "branch-6",
+   "lat": 24.63111624769531,
+   "lng": 46.77502560349852,
+   "freshness_days": 9,
+   "verified": false
+  },
+  {
+   "id": "doc-63",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-7",
+   "lat": 24.71810599263422,
+   "lng": 46.67171700796783,
+   "freshness_days": 18,
+   "verified": false
+  },
+  {
+   "id": "doc-64",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-0",
+   "lat": 24.631570867222173,
+   "lng": 46.6227334474653,
+   "freshness_days": 29,
+   "verified": true
+  },
+  {
+   "id": "doc-65",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-1",
+   "lat": 24.661984483950214,
+   "lng": 46.616446697942166,
+   "freshness_days": 28,
+   "verified": false
+  },
+  {
+   "id": "doc-66",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "vaccination",
+   "insurer": "MEDGULF",
+   "branch": "branch-2",
+   "lat": 24.759688862186298,
+   "lng": 46.62534811952822,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-67",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-3",
+   "lat": 24.802705603750795,
+   "lng": 46.660408302626756,
+   "freshness_days": 13,
+   "verified": true
+  },
+  {
+   "id": "doc-68",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "cardiology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-4",
+   "lat": 24.771919778740404,
+   "lng": 46.76073950566091,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-69",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-5",
+   "lat": 24.801420524070412,
+   "lng": 46.69045388768166,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-70",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": null,
+   "branch": "branch-6",
+   "lat": 24.723984086472914,
+   "lng": 46.63944568684995,
+   "freshness_days": 2,
+   "verified": true
+  },
+  {
+   "id": "doc-71",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-7",
+   "lat": 24.781837535934894,
+   "lng": 46.68085743388831,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-72",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-0",
+   "lat": 24.786691442417354,
+   "lng": 46.57563381092362,
+   "freshness_days": 3,
+   "verified": true
+  },
+  {
+   "id": "doc-73",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-1",
+   "lat": 24.777108808240293,
+   "lng": 46.702350546137616,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-74",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-2",
+   "lat": 24.744499313604457,
+   "lng": 46.761963843132555,
+   "freshness_days": 28,
+   "verified": false
+  },
+  {
+   "id": "doc-75",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-3",
+   "lat": 24.63812250951901,
+   "lng": 46.767968302636596,
+   "freshness_days": 20,
+   "verified": true
+  },
+  {
+   "id": "doc-76",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-4",
+   "lat": 24.695681517158075,
+   "lng": 46.58016563774757,
+   "freshness_days": 9,
+   "verified": true
+  },
+  {
+   "id": "doc-77",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.681814443186298,
+   "lng": 46.62110764975399,
+   "freshness_days": 18,
+   "verified": true
+  },
+  {
+   "id": "doc-78",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-6",
+   "lat": 24.71256678836085,
+   "lng": 46.739466374132036,
+   "freshness_days": 26,
+   "verified": true
+  },
+  {
+   "id": "doc-79",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "dermatology",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-7",
+   "lat": 24.751197474269567,
+   "lng": 46.744818382940444,
+   "freshness_days": 21,
+   "verified": false
+  },
+  {
+   "id": "doc-80",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.71123152836822,
+   "lng": 46.62486757929176,
+   "freshness_days": 16,
+   "verified": true
+  },
+  {
+   "id": "doc-81",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.783755156264082,
+   "lng": 46.60583656267002,
+   "freshness_days": 16,
+   "verified": false
+  },
+  {
+   "id": "doc-82",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-2",
+   "lat": 24.671077098423986,
+   "lng": 46.7027412416853,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-83",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-3",
+   "lat": 24.813368269388004,
+   "lng": 46.72024144343771,
+   "freshness_days": 7,
+   "verified": true
+  },
+  {
+   "id": "doc-84",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-4",
+   "lat": 24.744495275436343,
+   "lng": 46.652680709070715,
+   "freshness_days": 19,
+   "verified": false
+  },
+  {
+   "id": "doc-85",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.81011419194415,
+   "lng": 46.7299517085284,
+   "freshness_days": 15,
+   "verified": true
+  },
+  {
+   "id": "doc-86",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dentistry",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-6",
+   "lat": 24.660270015808194,
+   "lng": 46.74814178277477,
+   "freshness_days": 22,
+   "verified": true
+  },
+  {
+   "id": "doc-87",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-7",
+   "lat": 24.623182767961545,
+   "lng": 46.650114754724505,
+   "freshness_days": 5,
+   "verified": true
+  },
+  {
+   "id": "doc-88",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "ophthalmology",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-0",
+   "lat": 24.68501073141247,
+   "lng": 46.60275880507864,
+   "freshness_days": 17,
+   "verified": false
+  },
+  {
+   "id": "doc-89",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "cardiology",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.755469400348513,
+   "lng": 46.68804927840568,
+   "freshness_days": 27,
+   "verified": true
+  },
+  {
+   "id": "doc-90",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "cardiology",
+   "service": "consultation",
+   "insurer": null,
+   "branch": "branch-2",
+   "lat": 24.63561604684815,
+   "lng": 46.750299323068184,
+   "freshness_days": 29,
+   "verified": true
+  },
+  {
+   "id": "doc-91",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-3",
+   "lat": 24.715119014546648,
+   "lng": 46.59740309673101,
+   "freshness_days": 27,
+   "verified": true
+  },
+  {
+   "id": "doc-92",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "lab_draw",
+   "insurer": null,
+   "branch": "branch-4",
+   "lat": 24.701838692982122,
+   "lng": 46.60731401955448,
+   "freshness_days": 11,
+   "verified": false
+  },
+  {
+   "id": "doc-93",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "dentistry",
+   "service": "lab_draw",
+   "insurer": null,
+   "branch": "branch-5",
+   "lat": 24.751447491307182,
+   "lng": 46.73384651858099,
+   "freshness_days": 4,
+   "verified": true
+  },
+  {
+   "id": "doc-94",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.712952346127853,
+   "lng": 46.579299934159216,
+   "freshness_days": 16,
+   "verified": true
+  },
+  {
+   "id": "doc-95",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-7",
+   "lat": 24.635806289088354,
+   "lng": 46.6511894416038,
+   "freshness_days": 4,
+   "verified": true
+  },
+  {
+   "id": "doc-96",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dermatology",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-0",
+   "lat": 24.7814628181573,
+   "lng": 46.676426332348214,
+   "freshness_days": 28,
+   "verified": true
+  },
+  {
+   "id": "doc-97",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.764714747393874,
+   "lng": 46.689430793046206,
+   "freshness_days": 8,
+   "verified": false
+  },
+  {
+   "id": "doc-98",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-2",
+   "lat": 24.6308459539026,
+   "lng": 46.680453013579545,
+   "freshness_days": 29,
+   "verified": true
+  },
+  {
+   "id": "doc-99",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-3",
+   "lat": 24.691076567588745,
+   "lng": 46.7186423907496,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-100",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "cardiology",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-4",
+   "lat": 24.74808171573691,
+   "lng": 46.629215832890196,
+   "freshness_days": 13,
+   "verified": false
+  },
+  {
+   "id": "doc-101",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-5",
+   "lat": 24.788544294942543,
+   "lng": 46.70258229435161,
+   "freshness_days": 0,
+   "verified": false
+  },
+  {
+   "id": "doc-102",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "cardiology",
+   "service": "lab_draw",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.61846809099093,
+   "lng": 46.736121022465824,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-103",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-7",
+   "lat": 24.769280822767318,
+   "lng": 46.66670078444034,
+   "freshness_days": 1,
+   "verified": false
+  },
+  {
+   "id": "doc-104",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-0",
+   "lat": 24.726496290887148,
+   "lng": 46.750699935338645,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-105",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "cardiology",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-1",
+   "lat": 24.658130191039668,
+   "lng": 46.68191875256337,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-106",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-2",
+   "lat": 24.69814146948643,
+   "lng": 46.6416028685376,
+   "freshness_days": 22,
+   "verified": false
+  },
+  {
+   "id": "doc-107",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": null,
+   "branch": "branch-3",
+   "lat": 24.6335789729435,
+   "lng": 46.742739623596144,
+   "freshness_days": 18,
+   "verified": true
+  },
+  {
+   "id": "doc-108",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "MEDGULF",
+   "branch": "branch-4",
+   "lat": 24.775027958868442,
+   "lng": 46.70396822015494,
+   "freshness_days": 15,
+   "verified": false
+  },
+  {
+   "id": "doc-109",
+   "name_ar": "فهد Dubois",
+   "name_alias": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "MEDGULF",
+   "branch": "branch-5",
+   "lat": 24.805328270845486,
+   "lng": 46.738169305768984,
+   "freshness_days": 13,
+   "verified": true
+  },
+  {
+   "id": "doc-110",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.619891889352722,
+   "lng": 46.62030301661901,
+   "freshness_days": 10,
+   "verified": true
+  },
+  {
+   "id": "doc-111",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-7",
+   "lat": 24.795570947561785,
+   "lng": 46.57921712067649,
+   "freshness_days": 11,
+   "verified": true
+  },
+  {
+   "id": "doc-112",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-0",
+   "lat": 24.690475703549012,
+   "lng": 46.72667607320212,
+   "freshness_days": 15,
+   "verified": true
+  },
+  {
+   "id": "doc-113",
+   "name_ar": "نورة Schmidt",
+   "name_alias": "Noura Schmidt",
+   "specialty": "dentistry",
+   "service": "consultation",
+   "insurer": "BUPA",
+   "branch": "branch-1",
+   "lat": 24.63468188099228,
+   "lng": 46.58299279738888,
+   "freshness_days": 12,
+   "verified": true
+  },
+  {
+   "id": "doc-114",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "cardiology",
+   "service": "vaccination",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-2",
+   "lat": 24.681401881534978,
+   "lng": 46.73227382437065,
+   "freshness_days": 8,
+   "verified": false
+  },
+  {
+   "id": "doc-115",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-3",
+   "lat": 24.689375098148734,
+   "lng": 46.64638547221869,
+   "freshness_days": 4,
+   "verified": false
+  },
+  {
+   "id": "doc-116",
+   "name_ar": "سارة García",
+   "name_alias": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-4",
+   "lat": 24.796104671812056,
+   "lng": 46.58653689287342,
+   "freshness_days": 6,
+   "verified": true
+  },
+  {
+   "id": "doc-117",
+   "name_ar": "مريم العتيبي",
+   "name_alias": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "service": "lab_draw",
+   "insurer": "TAWUNIYA",
+   "branch": "branch-5",
+   "lat": 24.67816802263856,
+   "lng": 46.75315726352595,
+   "freshness_days": 21,
+   "verified": true
+  },
+  {
+   "id": "doc-118",
+   "name_ar": "خالد Müller",
+   "name_alias": "Khaled Mueller",
+   "specialty": "cardiology",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-6",
+   "lat": 24.66784736062996,
+   "lng": 46.670469289130715,
+   "freshness_days": 20,
+   "verified": false
+  },
+  {
+   "id": "doc-119",
+   "name_ar": "ليلى حسن",
+   "name_alias": "Laila Hassan",
+   "specialty": "dentistry",
+   "service": "follow_up",
+   "insurer": "BUPA",
+   "branch": "branch-7",
+   "lat": 24.7976743993409,
+   "lng": 46.60920173725784,
+   "freshness_days": 7,
+   "verified": true
+  }
+ ],
+ "intents": [
+  {
+   "id": "ar-0",
+   "locale": "ar",
+   "text": "نورة Schmidt",
+   "specialty": "cardiology",
+   "expected": "doc-83",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-1",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-100",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-2",
+   "locale": "ar",
+   "text": "سارة García",
+   "expected": "doc-116",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-3",
+   "locale": "ar",
+   "text": "مريم العتيبي",
+   "specialty": "ophthalmology",
+   "expected": "doc-62",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-4",
+   "locale": "ar",
+   "text": "dentistry branch-2",
+   "specialty": "dentistry",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-5",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "expected": "doc-65",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-6",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "expected": "doc-9",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-7",
+   "locale": "ar",
+   "text": "dentistry branch-3",
+   "specialty": "dentistry",
+   "expected": "doc-27",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-8",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-9",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-10",
+   "locale": "ar",
+   "text": "dermatology branch-7",
+   "expected": "doc-71",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-11",
+   "locale": "ar",
+   "text": "سارة García",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-12",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-13",
+   "locale": "ar",
+   "text": "ophthalmology branch-4",
+   "expected": "doc-116",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-14",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "specialty": "dermatology",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-15",
+   "locale": "ar",
+   "text": "pediatrics branch-4",
+   "specialty": "pediatrics",
+   "expected": "doc-20",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-16",
+   "locale": "ar",
+   "text": "dentistry branch-2",
+   "specialty": "dentistry",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-17",
+   "locale": "ar",
+   "text": "cardiology branch-1",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-18",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-38",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-19",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-20",
+   "locale": "ar",
+   "text": "pediatrics branch-6",
+   "specialty": "pediatrics",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-21",
+   "locale": "ar",
+   "text": "cardiology branch-1",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-22",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "specialty": "dermatology",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-23",
+   "locale": "ar",
+   "text": "ophthalmology branch-4",
+   "specialty": "ophthalmology",
+   "expected": "doc-4",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-24",
+   "locale": "ar",
+   "text": "مريم العتيبي",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-25",
+   "locale": "ar",
+   "text": "مريم العتيبي",
+   "specialty": "dermatology",
+   "expected": "doc-13",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-26",
+   "locale": "ar",
+   "text": "ليلى حسن",
+   "specialty": "dentistry",
+   "expected": "doc-31",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-27",
+   "locale": "ar",
+   "text": "ophthalmology branch-0",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-28",
+   "locale": "ar",
+   "text": "dermatology branch-1",
+   "specialty": "dermatology",
+   "expected": "doc-33",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-29",
+   "locale": "ar",
+   "text": "سارة García",
+   "specialty": "cardiology",
+   "expected": "doc-74",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-30",
+   "locale": "ar",
+   "text": "cardiology branch-1",
+   "specialty": "cardiology",
+   "expected": "doc-89",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-31",
+   "locale": "ar",
+   "text": "dentistry branch-3",
+   "specialty": "dentistry",
+   "expected": "doc-115",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-32",
+   "locale": "ar",
+   "text": "dentistry branch-7",
+   "specialty": "dentistry",
+   "expected": "doc-111",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-33",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "cardiology",
+   "expected": "doc-39",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-34",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "pediatrics",
+   "expected": "doc-38",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-35",
+   "locale": "ar",
+   "text": "مريم العتيبي",
+   "expected": "doc-29",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-36",
+   "locale": "ar",
+   "text": "dentistry branch-3",
+   "specialty": "dentistry",
+   "expected": "doc-107",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-37",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "expected": "doc-76",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-38",
+   "locale": "ar",
+   "text": "pediatrics branch-7",
+   "specialty": "pediatrics",
+   "expected": "doc-55",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-39",
+   "locale": "ar",
+   "text": "ophthalmology branch-6",
+   "specialty": "ophthalmology",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-40",
+   "locale": "ar",
+   "text": "سارة García",
+   "expected": "doc-114",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-41",
+   "locale": "ar",
+   "text": "pediatrics branch-6",
+   "specialty": "pediatrics",
+   "expected": "doc-22",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-42",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "ophthalmology",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-43",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-44",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "dermatology",
+   "expected": "doc-79",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-45",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "expected": "doc-20",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-46",
+   "locale": "ar",
+   "text": "ophthalmology branch-6",
+   "expected": "doc-62",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-47",
+   "locale": "ar",
+   "text": "سارة García",
+   "expected": "doc-74",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-48",
+   "locale": "ar",
+   "text": "ophthalmology branch-6",
+   "expected": "doc-46",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-49",
+   "locale": "ar",
+   "text": "ophthalmology branch-0",
+   "specialty": "ophthalmology",
+   "expected": "doc-88",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-50",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "pediatrics",
+   "expected": "doc-77",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-51",
+   "locale": "ar",
+   "text": "مريم العتيبي",
+   "expected": "doc-75",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-52",
+   "locale": "ar",
+   "text": "سارة García",
+   "specialty": "ophthalmology",
+   "expected": "doc-73",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-53",
+   "locale": "ar",
+   "text": "نورة Schmidt",
+   "expected": "doc-23",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-54",
+   "locale": "ar",
+   "text": "فهد Dubois",
+   "specialty": "pediatrics",
+   "expected": "doc-9",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-55",
+   "locale": "ar",
+   "text": "pediatrics branch-0",
+   "specialty": "pediatrics",
+   "expected": "doc-80",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-56",
+   "locale": "ar",
+   "text": "cardiology branch-2",
+   "expected": "doc-42",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-57",
+   "locale": "ar",
+   "text": "ليلى حسن",
+   "expected": "doc-96",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-58",
+   "locale": "ar",
+   "text": "dentistry branch-3",
+   "expected": "doc-115",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-59",
+   "locale": "ar",
+   "text": "dentistry branch-2",
+   "specialty": "dentistry",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-60",
+   "locale": "ar",
+   "text": "dentistry branch-2",
+   "specialty": "dentistry",
+   "expected": "doc-26",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-61",
+   "locale": "ar",
+   "text": "خالد Müller",
+   "specialty": "ophthalmology",
+   "expected": "doc-46",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-62",
+   "locale": "ar",
+   "text": "نورة Schmidt",
+   "expected": "doc-11",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "ar-63",
+   "locale": "ar",
+   "text": "dermatology branch-5",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-0",
+   "locale": "en",
+   "text": "Khaled Mueller",
+   "expected": "doc-80",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-1",
+   "locale": "en",
+   "text": "Laila Hassan",
+   "expected": "doc-105",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-2",
+   "locale": "en",
+   "text": "dentistry near branch-0",
+   "expected": "doc-32",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-3",
+   "locale": "en",
+   "text": "cardiology near branch-4",
+   "expected": "doc-68",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-4",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "expected": "doc-91",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-5",
+   "locale": "en",
+   "text": "cardiology lab_draw",
+   "specialty": "cardiology",
+   "expected": "doc-68",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-6",
+   "locale": "en",
+   "text": "dermatology near branch-3",
+   "specialty": "dermatology",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-7",
+   "locale": "en",
+   "text": "Maryam Alotaibi",
+   "expected": "doc-58",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-8",
+   "locale": "en",
+   "text": "cardiology near branch-2",
+   "expected": "doc-90",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-9",
+   "locale": "en",
+   "text": "dentistry consultation",
+   "expected": "doc-14",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-10",
+   "locale": "en",
+   "text": "ophthalmology near branch-4",
+   "expected": "doc-12",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-11",
+   "locale": "en",
+   "text": "Noura Schmidt",
+   "specialty": "cardiology",
+   "expected": "doc-90",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-12",
+   "locale": "en",
+   "text": "pediatrics near branch-3",
+   "expected": "doc-51",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-13",
+   "locale": "en",
+   "text": "Maryam Alotaibi",
+   "specialty": "cardiology",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-14",
+   "locale": "en",
+   "text": "pediatrics near branch-5",
+   "expected": "doc-85",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-15",
+   "locale": "en",
+   "text": "dentistry near branch-3",
+   "expected": "doc-107",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-16",
+   "locale": "en",
+   "text": "Sara Garcia",
+   "specialty": "cardiology",
+   "expected": "doc-92",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-17",
+   "locale": "en",
+   "text": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-18",
+   "locale": "en",
+   "text": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-19",
+   "locale": "en",
+   "text": "ophthalmology vaccination",
+   "expected": "doc-104",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-20",
+   "locale": "en",
+   "text": "dentistry near branch-4",
+   "expected": "doc-108",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-21",
+   "locale": "en",
+   "text": "pediatrics consultation",
+   "expected": "doc-34",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-22",
+   "locale": "en",
+   "text": "Laila Hassan",
+   "expected": "doc-47",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-23",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-24",
+   "locale": "en",
+   "text": "dentistry follow_up",
+   "expected": "doc-119",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-25",
+   "locale": "en",
+   "text": "pediatrics near branch-3",
+   "expected": "doc-43",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-26",
+   "locale": "en",
+   "text": "cardiology follow_up",
+   "expected": "doc-18",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-27",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "expected": "doc-85",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-28",
+   "locale": "en",
+   "text": "Noura Schmidt",
+   "specialty": "pediatrics",
+   "expected": "doc-19",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-29",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "expected": "doc-40",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-30",
+   "locale": "en",
+   "text": "pediatrics near branch-4",
+   "specialty": "pediatrics",
+   "expected": "doc-76",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-31",
+   "locale": "en",
+   "text": "ophthalmology vaccination",
+   "specialty": "ophthalmology",
+   "expected": "doc-44",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-32",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-33",
+   "locale": "en",
+   "text": "dermatology near branch-7",
+   "specialty": "dermatology",
+   "expected": "doc-71",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-34",
+   "locale": "en",
+   "text": "cardiology near branch-1",
+   "specialty": "cardiology",
+   "expected": "doc-89",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-35",
+   "locale": "en",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-103",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-36",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "expected": "doc-15",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-37",
+   "locale": "en",
+   "text": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "expected": "doc-4",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-38",
+   "locale": "en",
+   "text": "Maryam Alotaibi",
+   "expected": "doc-25",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-39",
+   "locale": "en",
+   "text": "dentistry near branch-3",
+   "specialty": "dentistry",
+   "expected": "doc-27",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-40",
+   "locale": "en",
+   "text": "ophthalmology follow_up",
+   "specialty": "ophthalmology",
+   "expected": "doc-48",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-41",
+   "locale": "en",
+   "text": "dentistry near branch-2",
+   "specialty": "dentistry",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-42",
+   "locale": "en",
+   "text": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "expected": "doc-44",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-43",
+   "locale": "en",
+   "text": "cardiology consultation",
+   "specialty": "cardiology",
+   "expected": "doc-90",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-44",
+   "locale": "en",
+   "text": "dentistry vaccination",
+   "specialty": "dentistry",
+   "expected": "doc-112",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-45",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "expected": "doc-37",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-46",
+   "locale": "en",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-37",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-47",
+   "locale": "en",
+   "text": "ophthalmology follow_up",
+   "specialty": "ophthalmology",
+   "expected": "doc-10",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-48",
+   "locale": "en",
+   "text": "dentistry follow_up",
+   "expected": "doc-52",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-49",
+   "locale": "en",
+   "text": "pediatrics lab_draw",
+   "expected": "doc-55",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-50",
+   "locale": "en",
+   "text": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-51",
+   "locale": "en",
+   "text": "cardiology near branch-3",
+   "specialty": "cardiology",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-52",
+   "locale": "en",
+   "text": "pediatrics near branch-7",
+   "specialty": "pediatrics",
+   "expected": "doc-55",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-53",
+   "locale": "en",
+   "text": "cardiology near branch-2",
+   "expected": "doc-18",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-54",
+   "locale": "en",
+   "text": "dermatology near branch-3",
+   "specialty": "dermatology",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-55",
+   "locale": "en",
+   "text": "Khaled Mueller",
+   "specialty": "ophthalmology",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-56",
+   "locale": "en",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-118",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-57",
+   "locale": "en",
+   "text": "Laila Hassan",
+   "expected": "doc-68",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-58",
+   "locale": "en",
+   "text": "Sara Garcia",
+   "expected": "doc-36",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-59",
+   "locale": "en",
+   "text": "cardiology near branch-5",
+   "specialty": "cardiology",
+   "expected": "doc-61",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-60",
+   "locale": "en",
+   "text": "ophthalmology consultation",
+   "expected": "doc-54",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-61",
+   "locale": "en",
+   "text": "Noura Schmidt",
+   "specialty": "ophthalmology",
+   "expected": "doc-60",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-62",
+   "locale": "en",
+   "text": "Sara Garcia",
+   "specialty": "dentistry",
+   "expected": "doc-52",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "en-63",
+   "locale": "en",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-66",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-0",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "expected": "doc-53",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-1",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "specialty": "dermatology",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-2",
+   "locale": "fr",
+   "text": "dermatology near branch-5",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-3",
+   "locale": "fr",
+   "text": "pediatrics consultation",
+   "expected": "doc-20",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-4",
+   "locale": "fr",
+   "text": "dermatology near branch-1",
+   "specialty": "dermatology",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-5",
+   "locale": "fr",
+   "text": "cardiology vaccination",
+   "expected": "doc-100",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-6",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "expected": "doc-91",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-7",
+   "locale": "fr",
+   "text": "dentistry follow_up",
+   "expected": "doc-59",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-8",
+   "locale": "fr",
+   "text": "Noura Schmidt",
+   "expected": "doc-83",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-9",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-67",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-10",
+   "locale": "fr",
+   "text": "pediatrics near branch-4",
+   "specialty": "pediatrics",
+   "expected": "doc-76",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-11",
+   "locale": "fr",
+   "text": "pediatrics vaccination",
+   "specialty": "pediatrics",
+   "expected": "doc-43",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-12",
+   "locale": "fr",
+   "text": "dentistry near branch-0",
+   "specialty": "dentistry",
+   "expected": "doc-56",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-13",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "specialty": "dentistry",
+   "expected": "doc-49",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-14",
+   "locale": "fr",
+   "text": "dentistry follow_up",
+   "specialty": "dentistry",
+   "expected": "doc-119",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-15",
+   "locale": "fr",
+   "text": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "expected": "doc-80",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-16",
+   "locale": "fr",
+   "text": "Khaled Mueller",
+   "expected": "doc-46",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-17",
+   "locale": "fr",
+   "text": "dentistry lab_draw",
+   "specialty": "dentistry",
+   "expected": "doc-86",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-18",
+   "locale": "fr",
+   "text": "ophthalmology near branch-0",
+   "expected": "doc-88",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-19",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-3",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-20",
+   "locale": "fr",
+   "text": "cardiology near branch-5",
+   "specialty": "cardiology",
+   "expected": "doc-61",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-21",
+   "locale": "fr",
+   "text": "Maryam Alotaibi",
+   "expected": "doc-25",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-22",
+   "locale": "fr",
+   "text": "ophthalmology near branch-6",
+   "specialty": "ophthalmology",
+   "expected": "doc-94",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-23",
+   "locale": "fr",
+   "text": "pediatrics near branch-0",
+   "specialty": "pediatrics",
+   "expected": "doc-80",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-24",
+   "locale": "fr",
+   "text": "dermatology near branch-4",
+   "specialty": "dermatology",
+   "expected": "doc-36",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-25",
+   "locale": "fr",
+   "text": "ophthalmology vaccination",
+   "specialty": "ophthalmology",
+   "expected": "doc-104",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-26",
+   "locale": "fr",
+   "text": "dermatology near branch-1",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-27",
+   "locale": "fr",
+   "text": "Sara Garcia",
+   "specialty": "cardiology",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-28",
+   "locale": "fr",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-74",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-29",
+   "locale": "fr",
+   "text": "dermatology near branch-0",
+   "expected": "doc-96",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-30",
+   "locale": "fr",
+   "text": "dermatology near branch-3",
+   "specialty": "dermatology",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-31",
+   "locale": "fr",
+   "text": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "expected": "doc-51",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-32",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-33",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "specialty": "cardiology",
+   "expected": "doc-91",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-34",
+   "locale": "fr",
+   "text": "cardiology lab_draw",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-35",
+   "locale": "fr",
+   "text": "Sara Garcia",
+   "specialty": "pediatrics",
+   "expected": "doc-34",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-36",
+   "locale": "fr",
+   "text": "ophthalmology near branch-2",
+   "expected": "doc-66",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-37",
+   "locale": "fr",
+   "text": "dermatology consultation",
+   "specialty": "dermatology",
+   "expected": "doc-33",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-38",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "specialty": "ophthalmology",
+   "expected": "doc-2",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-39",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-40",
+   "locale": "fr",
+   "text": "ophthalmology lab_draw",
+   "specialty": "ophthalmology",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-41",
+   "locale": "fr",
+   "text": "Noura Schmidt",
+   "expected": "doc-111",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-42",
+   "locale": "fr",
+   "text": "Noura Schmidt",
+   "specialty": "ophthalmology",
+   "expected": "doc-12",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-43",
+   "locale": "fr",
+   "text": "pediatrics follow_up",
+   "specialty": "pediatrics",
+   "expected": "doc-87",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-44",
+   "locale": "fr",
+   "text": "Noura Schmidt",
+   "expected": "doc-19",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-45",
+   "locale": "fr",
+   "text": "pediatrics lab_draw",
+   "expected": "doc-11",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-46",
+   "locale": "fr",
+   "text": "Khaled Mueller",
+   "expected": "doc-61",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-47",
+   "locale": "fr",
+   "text": "cardiology near branch-7",
+   "specialty": "cardiology",
+   "expected": "doc-23",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-48",
+   "locale": "fr",
+   "text": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "expected": "doc-45",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-49",
+   "locale": "fr",
+   "text": "cardiology near branch-2",
+   "expected": "doc-18",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-50",
+   "locale": "fr",
+   "text": "dentistry near branch-5",
+   "specialty": "dentistry",
+   "expected": "doc-53",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-51",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-52",
+   "locale": "fr",
+   "text": "dentistry near branch-7",
+   "specialty": "dentistry",
+   "expected": "doc-95",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-53",
+   "locale": "fr",
+   "text": "Sara Garcia",
+   "expected": "doc-92",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-54",
+   "locale": "fr",
+   "text": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "expected": "doc-80",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-55",
+   "locale": "fr",
+   "text": "dermatology follow_up",
+   "specialty": "dermatology",
+   "expected": "doc-15",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-56",
+   "locale": "fr",
+   "text": "ophthalmology consultation",
+   "specialty": "ophthalmology",
+   "expected": "doc-4",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-57",
+   "locale": "fr",
+   "text": "dermatology near branch-7",
+   "specialty": "dermatology",
+   "expected": "doc-7",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-58",
+   "locale": "fr",
+   "text": "cardiology lab_draw",
+   "specialty": "cardiology",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-59",
+   "locale": "fr",
+   "text": "Laila Hassan",
+   "specialty": "dermatology",
+   "expected": "doc-96",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-60",
+   "locale": "fr",
+   "text": "dermatology consultation",
+   "expected": "doc-33",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-61",
+   "locale": "fr",
+   "text": "ophthalmology lab_draw",
+   "expected": "doc-60",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-62",
+   "locale": "fr",
+   "text": "Maryam Alotaibi",
+   "specialty": "ophthalmology",
+   "expected": "doc-94",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "fr-63",
+   "locale": "fr",
+   "text": "Khaled Mueller",
+   "expected": "doc-77",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-0",
+   "locale": "de",
+   "text": "Noura Schmidt",
+   "specialty": "dentistry",
+   "expected": "doc-108",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-1",
+   "locale": "de",
+   "text": "dermatology consultation",
+   "specialty": "dermatology",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-2",
+   "locale": "de",
+   "text": "cardiology consultation",
+   "specialty": "cardiology",
+   "expected": "doc-105",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-3",
+   "locale": "de",
+   "text": "cardiology vaccination",
+   "expected": "doc-39",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-4",
+   "locale": "de",
+   "text": "Fahad Dubois",
+   "specialty": "pediatrics",
+   "expected": "doc-40",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-5",
+   "locale": "de",
+   "text": "Fahad Dubois",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-6",
+   "locale": "de",
+   "text": "Noura Schmidt",
+   "expected": "doc-113",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-7",
+   "locale": "de",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-8",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "specialty": "pediatrics",
+   "expected": "doc-6",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-9",
+   "locale": "de",
+   "text": "pediatrics consultation",
+   "specialty": "pediatrics",
+   "expected": "doc-6",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-10",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-28",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-11",
+   "locale": "de",
+   "text": "pediatrics follow_up",
+   "expected": "doc-87",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-12",
+   "locale": "de",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-61",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-13",
+   "locale": "de",
+   "text": "dentistry consultation",
+   "specialty": "dentistry",
+   "expected": "doc-111",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-14",
+   "locale": "de",
+   "text": "Fahad Dubois",
+   "expected": "doc-3",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-15",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "specialty": "dentistry",
+   "expected": "doc-106",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-16",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "specialty": "dermatology",
+   "expected": "doc-33",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-17",
+   "locale": "de",
+   "text": "Maryam Alotaibi",
+   "expected": "doc-0",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-18",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "specialty": "dermatology",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-19",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "specialty": "pediatrics",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-20",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "expected": "doc-22",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-21",
+   "locale": "de",
+   "text": "dentistry follow_up",
+   "specialty": "dentistry",
+   "expected": "doc-52",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-22",
+   "locale": "de",
+   "text": "cardiology near branch-7",
+   "expected": "doc-39",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-23",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "expected": "doc-39",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-24",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-101",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-25",
+   "locale": "de",
+   "text": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "expected": "doc-43",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-26",
+   "locale": "de",
+   "text": "cardiology near branch-7",
+   "specialty": "cardiology",
+   "expected": "doc-23",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-27",
+   "locale": "de",
+   "text": "cardiology near branch-4",
+   "specialty": "cardiology",
+   "expected": "doc-68",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-28",
+   "locale": "de",
+   "text": "pediatrics consultation",
+   "expected": "doc-38",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-29",
+   "locale": "de",
+   "text": "dermatology follow_up",
+   "specialty": "dermatology",
+   "expected": "doc-36",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-30",
+   "locale": "de",
+   "text": "pediatrics consultation",
+   "specialty": "pediatrics",
+   "expected": "doc-72",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-31",
+   "locale": "de",
+   "text": "Fahad Dubois",
+   "specialty": "cardiology",
+   "expected": "doc-84",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-32",
+   "locale": "de",
+   "text": "dermatology near branch-5",
+   "expected": "doc-21",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-33",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "specialty": "dermatology",
+   "expected": "doc-21",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-34",
+   "locale": "de",
+   "text": "ophthalmology near branch-7",
+   "specialty": "ophthalmology",
+   "expected": "doc-63",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-35",
+   "locale": "de",
+   "text": "pediatrics consultation",
+   "expected": "doc-72",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-36",
+   "locale": "de",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-37",
+   "locale": "de",
+   "text": "dentistry near branch-6",
+   "specialty": "dentistry",
+   "expected": "doc-78",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-38",
+   "locale": "de",
+   "text": "cardiology near branch-2",
+   "specialty": "cardiology",
+   "expected": "doc-74",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-39",
+   "locale": "de",
+   "text": "cardiology near branch-1",
+   "expected": "doc-65",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-40",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-81",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-41",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "specialty": "dermatology",
+   "expected": "doc-79",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-42",
+   "locale": "de",
+   "text": "Fahad Dubois",
+   "expected": "doc-66",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-43",
+   "locale": "de",
+   "text": "ophthalmology near branch-4",
+   "specialty": "ophthalmology",
+   "expected": "doc-60",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-44",
+   "locale": "de",
+   "text": "dermatology follow_up",
+   "specialty": "dermatology",
+   "expected": "doc-30",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-45",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-63",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-46",
+   "locale": "de",
+   "text": "Khaled Mueller",
+   "specialty": "cardiology",
+   "expected": "doc-39",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-47",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-48",
+   "locale": "de",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-49",
+   "locale": "de",
+   "text": "dentistry near branch-5",
+   "specialty": "dentistry",
+   "expected": "doc-93",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-50",
+   "locale": "de",
+   "text": "Noura Schmidt",
+   "expected": "doc-12",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-51",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "specialty": "dermatology",
+   "expected": "doc-21",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-52",
+   "locale": "de",
+   "text": "dentistry lab_draw",
+   "specialty": "dentistry",
+   "expected": "doc-27",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-53",
+   "locale": "de",
+   "text": "cardiology near branch-5",
+   "specialty": "cardiology",
+   "expected": "doc-69",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-54",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "expected": "doc-52",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-55",
+   "locale": "de",
+   "text": "pediatrics follow_up",
+   "specialty": "pediatrics",
+   "expected": "doc-24",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-56",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "specialty": "cardiology",
+   "expected": "doc-68",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-57",
+   "locale": "de",
+   "text": "cardiology near branch-4",
+   "expected": "doc-100",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-58",
+   "locale": "de",
+   "text": "dentistry lab_draw",
+   "expected": "doc-86",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-59",
+   "locale": "de",
+   "text": "dentistry consultation",
+   "specialty": "dentistry",
+   "expected": "doc-111",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-60",
+   "locale": "de",
+   "text": "Sara Garcia",
+   "specialty": "cardiology",
+   "expected": "doc-69",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-61",
+   "locale": "de",
+   "text": "dentistry follow_up",
+   "specialty": "dentistry",
+   "expected": "doc-115",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-62",
+   "locale": "de",
+   "text": "cardiology near branch-4",
+   "specialty": "cardiology",
+   "expected": "doc-92",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "de-63",
+   "locale": "de",
+   "text": "Laila Hassan",
+   "expected": "doc-70",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-0",
+   "locale": "es",
+   "text": "ophthalmology follow_up",
+   "expected": "doc-48",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-1",
+   "locale": "es",
+   "text": "Noura Schmidt",
+   "specialty": "cardiology",
+   "expected": "doc-18",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-2",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "expected": "doc-74",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-3",
+   "locale": "es",
+   "text": "Laila Hassan",
+   "specialty": "ophthalmology",
+   "expected": "doc-47",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-4",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-63",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-5",
+   "locale": "es",
+   "text": "pediatrics vaccination",
+   "expected": "doc-51",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-6",
+   "locale": "es",
+   "text": "dentistry near branch-2",
+   "expected": "doc-98",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-7",
+   "locale": "es",
+   "text": "dentistry follow_up",
+   "specialty": "dentistry",
+   "expected": "doc-119",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-8",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "expected": "doc-45",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-9",
+   "locale": "es",
+   "text": "Laila Hassan",
+   "specialty": "dentistry",
+   "expected": "doc-16",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-10",
+   "locale": "es",
+   "text": "Khaled Mueller",
+   "specialty": "cardiology",
+   "expected": "doc-61",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-11",
+   "locale": "es",
+   "text": "cardiology consultation",
+   "specialty": "cardiology",
+   "expected": "doc-90",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-12",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "specialty": "dermatology",
+   "expected": "doc-103",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-13",
+   "locale": "es",
+   "text": "ophthalmology lab_draw",
+   "specialty": "ophthalmology",
+   "expected": "doc-58",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-14",
+   "locale": "es",
+   "text": "pediatrics consultation",
+   "specialty": "pediatrics",
+   "expected": "doc-25",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-15",
+   "locale": "es",
+   "text": "Laila Hassan",
+   "expected": "doc-88",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-16",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "dermatology",
+   "expected": "doc-36",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-17",
+   "locale": "es",
+   "text": "dermatology near branch-4",
+   "specialty": "dermatology",
+   "expected": "doc-36",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-18",
+   "locale": "es",
+   "text": "cardiology near branch-1",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-19",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "expected": "doc-15",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-20",
+   "locale": "es",
+   "text": "Khaled Mueller",
+   "expected": "doc-50",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-21",
+   "locale": "es",
+   "text": "dentistry near branch-0",
+   "expected": "doc-112",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-22",
+   "locale": "es",
+   "text": "Maryam Alotaibi",
+   "specialty": "dermatology",
+   "expected": "doc-117",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-23",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-24",
+   "locale": "es",
+   "text": "Laila Hassan",
+   "specialty": "dermatology",
+   "expected": "doc-71",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-25",
+   "locale": "es",
+   "text": "Maryam Alotaibi",
+   "expected": "doc-1",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-26",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "expected": "doc-27",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-27",
+   "locale": "es",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-37",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-28",
+   "locale": "es",
+   "text": "dentistry follow_up",
+   "expected": "doc-32",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-29",
+   "locale": "es",
+   "text": "dentistry consultation",
+   "expected": "doc-110",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-30",
+   "locale": "es",
+   "text": "Khaled Mueller",
+   "specialty": "cardiology",
+   "expected": "doc-102",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-31",
+   "locale": "es",
+   "text": "cardiology near branch-2",
+   "specialty": "cardiology",
+   "expected": "doc-90",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-32",
+   "locale": "es",
+   "text": "pediatrics near branch-1",
+   "specialty": "pediatrics",
+   "expected": "doc-9",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-33",
+   "locale": "es",
+   "text": "cardiology consultation",
+   "specialty": "cardiology",
+   "expected": "doc-105",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-34",
+   "locale": "es",
+   "text": "dermatology near branch-7",
+   "specialty": "dermatology",
+   "expected": "doc-103",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-35",
+   "locale": "es",
+   "text": "Maryam Alotaibi",
+   "specialty": "pediatrics",
+   "expected": "doc-43",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-36",
+   "locale": "es",
+   "text": "dermatology vaccination",
+   "specialty": "dermatology",
+   "expected": "doc-17",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-37",
+   "locale": "es",
+   "text": "ophthalmology near branch-2",
+   "expected": "doc-10",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-38",
+   "locale": "es",
+   "text": "ophthalmology near branch-4",
+   "expected": "doc-116",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-39",
+   "locale": "es",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-71",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-40",
+   "locale": "es",
+   "text": "ophthalmology near branch-2",
+   "expected": "doc-58",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-41",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-3",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-42",
+   "locale": "es",
+   "text": "dentistry near branch-4",
+   "specialty": "dentistry",
+   "expected": "doc-108",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-43",
+   "locale": "es",
+   "text": "dentistry vaccination",
+   "specialty": "dentistry",
+   "expected": "doc-16",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-44",
+   "locale": "es",
+   "text": "cardiology near branch-6",
+   "specialty": "cardiology",
+   "expected": "doc-102",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-45",
+   "locale": "es",
+   "text": "cardiology follow_up",
+   "specialty": "cardiology",
+   "expected": "doc-83",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-46",
+   "locale": "es",
+   "text": "cardiology follow_up",
+   "expected": "doc-65",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-47",
+   "locale": "es",
+   "text": "Khaled Mueller",
+   "specialty": "dermatology",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-48",
+   "locale": "es",
+   "text": "ophthalmology follow_up",
+   "expected": "doc-10",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-49",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "specialty": "dentistry",
+   "expected": "doc-27",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-50",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "specialty": "dermatology",
+   "expected": "doc-5",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-51",
+   "locale": "es",
+   "text": "ophthalmology near branch-7",
+   "expected": "doc-63",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-52",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "cardiology",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-53",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "pediatrics",
+   "expected": "doc-55",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-54",
+   "locale": "es",
+   "text": "dermatology lab_draw",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-55",
+   "locale": "es",
+   "text": "Laila Hassan",
+   "expected": "doc-110",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-56",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "cardiology",
+   "expected": "doc-99",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-57",
+   "locale": "es",
+   "text": "Sara Garcia",
+   "specialty": "ophthalmology",
+   "expected": "doc-116",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-58",
+   "locale": "es",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-71",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-59",
+   "locale": "es",
+   "text": "dermatology lab_draw",
+   "specialty": "dermatology",
+   "expected": "doc-97",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-60",
+   "locale": "es",
+   "text": "dermatology near branch-3",
+   "expected": "doc-35",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-61",
+   "locale": "es",
+   "text": "Fahad Dubois",
+   "specialty": "ophthalmology",
+   "expected": "doc-8",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-62",
+   "locale": "es",
+   "text": "ophthalmology near branch-0",
+   "expected": "doc-104",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  },
+  {
+   "id": "es-63",
+   "locale": "es",
+   "text": "ophthalmology consultation",
+   "specialty": "ophthalmology",
+   "expected": "doc-4",
+   "near": {
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "radiusKm": 15
+   },
+   "expectNearby": true
+  }
+ ]
+}

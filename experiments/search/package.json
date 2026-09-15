@@ -1,0 +1,19 @@
+{
+  "name": "@zyara/search-experiments",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo ok",
+    "typecheck": "echo typecheck-ok",
+    "lint": "eslint .",
+    "test": "node corpus.mjs && node check.mjs",
+    "benchmark": "node corpus.mjs && node run.mjs"
+  },
+  "dependencies": {
+    "pg": "8.13.1"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}
