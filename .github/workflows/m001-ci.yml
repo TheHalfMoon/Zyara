@@ -19,4 +19,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm --filter @zyara/m001-tests test
+      - run: pnpm --filter @zyara/m003-tests test
       - run: node scripts/check-boundaries.mjs
