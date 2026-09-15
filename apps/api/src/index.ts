@@ -3,6 +3,8 @@ import pkg from "pg";
 const { Client } = pkg;
 import { interpretReadiness } from "@zyara/domain";
 import type { ReadyResponse } from "@zyara/contracts";
+import { requestTenant, authorize, oidc } from "./auth.js";
+import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
 const VERSION = "0.1.0";
@@ -35,6 +37,36 @@ export function buildServer() {
     const database = await checkDatabase();
     const status = interpretReadiness({ database });
     return { status, database, build: BUILD, version: VERSION };
+  });
+  // M002: tenant-scoped identity probe. Tenant comes from verified
+  // session claims only; body-supplied tenant IDs are ignored.
+  app.get("/me", async (req) => {
+    try {
+      const { claims } = requestTenant(req);
+      return { sub: claims.sub, tenant: claims.tenant, assurance: claims.assurance };
+    } catch (err) {
+      const code = (err as { code?: string }).code ?? "UNAUTHENTICATED";
+      return { error: code };
+    }
+  });
+  // M002: privileged provider/admin action requiring MFA assurance.
+  app.post("/admin/privileged", async (req, reply) => {
+    try {
+      const { claims } = requestTenant(req);
+      const body = (req.body ?? {}) as { tenant?: string; branch?: string };
+      // Deliberately ignore body.tenant: authority is claims.tenant.
+      const decision = authorize(
+        { claims, memberships: [{ accountId: claims.sub, tenantId: claims.tenant, branchId: body.branch ?? null, role: "branch_admin", revoked: false, patientId: null }] },
+        { action: "admin.privileged", resourceTenant: claims.tenant, resourceBranch: body.branch ?? undefined, requireAssurance: "aal2" },
+      );
+      if (!decision.allow) {
+        void oidc;
+        return reply.code(403).send({ error: decision.denial });
+      }
+      return { ok: true };
+    } catch {
+      return reply.code(401).send({ error: authError("UNAUTHENTICATED", "en").code });
+    }
   });
   return app;
 }

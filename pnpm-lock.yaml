@@ -20,12 +20,18 @@ importers:
 
   apps/api:
     dependencies:
+      '@zyara/authorization':
+        specifier: workspace:*
+        version: link:../../packages/authorization
       '@zyara/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
       '@zyara/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@zyara/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
       fastify:
         specifier: 5.12.4
         version: 5.12.4
@@ -87,12 +93,36 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/authorization:
+    dependencies:
+      '@zyara/identity':
+        specifier: workspace:*
+        version: link:../identity
+
   packages/contracts: {}
 
   packages/domain: {}
 
+  packages/identity: {}
+
   tests/m001:
     devDependencies:
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m002:
+    dependencies:
+      '@zyara/authorization':
+        specifier: workspace:*
+        version: link:../../packages/authorization
+      '@zyara/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
       typescript:
         specifier: 5.6.3
         version: 5.6.3
