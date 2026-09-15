@@ -32,6 +32,9 @@ importers:
       '@zyara/identity':
         specifier: workspace:*
         version: link:../../packages/identity
+      '@zyara/verification':
+        specifier: workspace:*
+        version: link:../../packages/verification
       fastify:
         specifier: 5.12.4
         version: 5.12.4
@@ -149,6 +152,12 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/verification:
+    dependencies:
+      '@zyara/events':
+        specifier: workspace:*
+        version: link:../events
+
   tests/accessibility:
     dependencies:
       '@zyara/domain':
@@ -227,6 +236,19 @@ importers:
       '@zyara/events':
         specifier: workspace:*
         version: link:../../packages/events
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m008:
+    dependencies:
+      '@zyara/verification':
+        specifier: workspace:*
+        version: link:../../packages/verification
     devDependencies:
       tsx:
         specifier: 4.19.2
