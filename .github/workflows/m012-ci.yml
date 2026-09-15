@@ -1,0 +1,33 @@
+name: m012-ci
+on:
+  pull_request:
+    paths:
+      - "packages/geospatial/**"
+      - "apps/web/**/map/**"
+      - "apps/web/**/profiles/**"
+      - "tests/m012/**"
+      - ".github/workflows/m012-ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "packages/geospatial/**"
+      - "apps/web/**/map/**"
+      - "apps/web/**/profiles/**"
+      - "tests/m012/**"
+jobs:
+  m012:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/geospatial typecheck
+      - run: pnpm --filter @zyara/geospatial lint
+      - run: pnpm --filter @zyara/web typecheck
+      - run: pnpm --filter @zyara/m012-tests test
