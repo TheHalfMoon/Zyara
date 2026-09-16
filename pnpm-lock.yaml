@@ -198,6 +198,12 @@ importers:
 
   packages/contracts: {}
 
+  packages/country-pack:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/domain: {}
 
   packages/enterprise-access:
@@ -1149,6 +1155,19 @@ importers:
       '@zyara/partner-analytics':
         specifier: workspace:*
         version: link:../../packages/partner-analytics
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m058:
+    dependencies:
+      '@zyara/country-pack':
+        specifier: workspace:*
+        version: link:../../packages/country-pack
     devDependencies:
       tsx:
         specifier: 4.19.2
