@@ -185,6 +185,12 @@ importers:
 
   packages/services: {}
 
+  packages/trust/attendance:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../domain
+
   packages/ui:
     dependencies:
       '@zyara/i18n':
@@ -462,6 +468,19 @@ importers:
       '@zyara/communication':
         specifier: workspace:*
         version: link:../../packages/communication
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m021:
+    dependencies:
+      '@zyara/trust-attendance':
+        specifier: workspace:*
+        version: link:../../packages/trust/attendance
     devDependencies:
       tsx:
         specifier: 4.19.2
