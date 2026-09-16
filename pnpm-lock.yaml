@@ -136,6 +136,15 @@ importers:
         specifier: workspace:*
         version: link:../identity
 
+  packages/commerce:
+    dependencies:
+      '@zyara/analytics':
+        specifier: workspace:*
+        version: link:../analytics
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/communication:
     dependencies:
       '@zyara/domain':
@@ -538,6 +547,22 @@ importers:
       '@zyara/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m025:
+    dependencies:
+      '@zyara/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
+      '@zyara/commerce':
+        specifier: workspace:*
+        version: link:../../packages/commerce
     devDependencies:
       tsx:
         specifier: 4.19.2
