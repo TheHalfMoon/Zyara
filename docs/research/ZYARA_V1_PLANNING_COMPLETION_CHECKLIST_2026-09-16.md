@@ -1,6 +1,6 @@
-# Zyara V1 AScout Completion Checklist — 2026-09-16
+# Zyara V1 Planning Completion Checklist — 2026-09-16
 
-Use this checklist only after live re-verification. It is a planning quality gate, not implementation evidence.
+Use this checklist only after live repository re-verification. It is a planning quality gate, not implementation evidence.
 
 ## Live truth
 
@@ -23,7 +23,7 @@ Use this checklist only after live re-verification. It is a planning quality gat
 - [ ] Common care-language search
 - [ ] Arabic normalization/transliteration
 - [ ] Map/list parity
-- [ ] Distance/travel time policy
+- [ ] Distance/travel-time policy
 - [ ] Open-now/working hours
 - [ ] Phone
 - [ ] WhatsApp
@@ -75,7 +75,7 @@ Use this checklist only after live re-verification. It is a planning quality gat
 
 - [ ] V1 requirements updated
 - [ ] Explicit exclusions updated
-- [ ] Existing work preservation matrix complete
+- [ ] Existing-work preservation matrix complete
 - [ ] Data-model delta complete
 - [ ] Search/ranking contract complete
 - [ ] Review/trust redesign complete
@@ -86,14 +86,14 @@ Use this checklist only after live re-verification. It is a planning quality gat
 - [ ] Each task has tests/evidence/rollback/completion criteria
 - [ ] External validation separated from repository implementation
 - [ ] First implementation task identified
-- [ ] Final implementation-agent prompt produced
+- [ ] Final implementation handoff produced
 
 ## Completion marker
 
 Only when every required planning item is complete and internally consistent:
 
 ```text
-ASCOUT_ZYARA_V1_PLAN_COMPLETE = YES
+ZYARA_V1_PLAN_COMPLETE = YES
 ```
 
-Report exact base SHA, planning HEAD SHA, generated/updated artifacts, validation checks, unresolved external gates and the first implementation task identifier.
+Report exact base SHA, planning HEAD SHA, generated/updated canonical artifacts, validation checks, unresolved external gates and the first implementation task identifier.
