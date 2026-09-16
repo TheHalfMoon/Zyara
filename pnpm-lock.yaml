@@ -184,6 +184,18 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/recall-campaigns:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@zyara/recall-plans':
+        specifier: workspace:*
+        version: link:../recall-plans
+      '@zyara/waitlist':
+        specifier: workspace:*
+        version: link:../waitlist
+
   packages/recall-plans:
     dependencies:
       '@zyara/domain':
@@ -639,6 +651,22 @@ importers:
 
   tests/m033:
     dependencies:
+      '@zyara/recall-plans':
+        specifier: workspace:*
+        version: link:../../packages/recall-plans
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m034:
+    dependencies:
+      '@zyara/recall-campaigns':
+        specifier: workspace:*
+        version: link:../../packages/recall-campaigns
       '@zyara/recall-plans':
         specifier: workspace:*
         version: link:../../packages/recall-plans
