@@ -283,6 +283,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/patient-timeline:
+    dependencies:
+      '@zyara/consent-boundaries':
+        specifier: workspace:*
+        version: link:../consent-boundaries
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/recall-campaigns:
     dependencies:
       '@zyara/domain':
@@ -1045,6 +1054,19 @@ importers:
       '@zyara/patient-matching':
         specifier: workspace:*
         version: link:../../packages/patient-matching
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m053:
+    dependencies:
+      '@zyara/patient-timeline':
+        specifier: workspace:*
+        version: link:../../packages/patient-timeline
     devDependencies:
       tsx:
         specifier: 4.19.2
