@@ -191,6 +191,12 @@ importers:
         specifier: workspace:*
         version: link:../../domain
 
+  packages/trust/reviews:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../domain
+
   packages/ui:
     dependencies:
       '@zyara/i18n':
@@ -481,6 +487,19 @@ importers:
       '@zyara/trust-attendance':
         specifier: workspace:*
         version: link:../../packages/trust/attendance
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m022:
+    dependencies:
+      '@zyara/trust-reviews':
+        specifier: workspace:*
+        version: link:../../packages/trust/reviews
     devDependencies:
       tsx:
         specifier: 4.19.2
