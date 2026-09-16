@@ -191,6 +191,12 @@ importers:
         specifier: workspace:*
         version: link:../../domain
 
+  packages/trust/governance:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../../domain
+
   packages/trust/reviews:
     dependencies:
       '@zyara/domain':
@@ -500,6 +506,19 @@ importers:
       '@zyara/trust-reviews':
         specifier: workspace:*
         version: link:../../packages/trust/reviews
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m023:
+    dependencies:
+      '@zyara/trust-governance':
+        specifier: workspace:*
+        version: link:../../packages/trust/governance
     devDependencies:
       tsx:
         specifier: 4.19.2
