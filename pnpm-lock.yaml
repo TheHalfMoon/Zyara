@@ -290,6 +290,15 @@ importers:
 
   packages/services: {}
 
+  packages/specialty-dental:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@zyara/recall-plans':
+        specifier: workspace:*
+        version: link:../recall-plans
+
   packages/trust/attendance:
     dependencies:
       '@zyara/domain':
@@ -906,6 +915,19 @@ importers:
       '@zyara/voice-booking':
         specifier: workspace:*
         version: link:../../packages/voice-booking
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m046:
+    dependencies:
+      '@zyara/specialty-dental':
+        specifier: workspace:*
+        version: link:../../packages/specialty-dental
     devDependencies:
       tsx:
         specifier: 4.19.2
