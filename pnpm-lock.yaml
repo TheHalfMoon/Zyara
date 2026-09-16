@@ -154,6 +154,12 @@ importers:
 
   packages/identity: {}
 
+  packages/patient:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/scheduling:
     dependencies:
       '@zyara/domain':
@@ -395,6 +401,19 @@ importers:
       '@zyara/scheduling':
         specifier: workspace:*
         version: link:../../packages/scheduling
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m017:
+    dependencies:
+      '@zyara/patient':
+        specifier: workspace:*
+        version: link:../../packages/patient
     devDependencies:
       tsx:
         specifier: 4.19.2
