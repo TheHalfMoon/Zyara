@@ -200,6 +200,12 @@ importers:
 
   packages/domain: {}
 
+  packages/enterprise-access:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/events: {}
 
   packages/fhir-adapter:
@@ -1108,6 +1114,19 @@ importers:
       '@zyara/caregiver-access':
         specifier: workspace:*
         version: link:../../packages/caregiver-access
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m056:
+    dependencies:
+      '@zyara/enterprise-access':
+        specifier: workspace:*
+        version: link:../../packages/enterprise-access
     devDependencies:
       tsx:
         specifier: 4.19.2
