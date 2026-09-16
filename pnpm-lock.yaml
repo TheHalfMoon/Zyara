@@ -274,6 +274,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/patient-documents:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@zyara/waitlist':
+        specifier: workspace:*
+        version: link:../waitlist
+
   packages/patient-matching:
     dependencies:
       '@zyara/consent-boundaries':
@@ -1067,6 +1076,19 @@ importers:
       '@zyara/patient-timeline':
         specifier: workspace:*
         version: link:../../packages/patient-timeline
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m054:
+    dependencies:
+      '@zyara/patient-documents':
+        specifier: workspace:*
+        version: link:../../packages/patient-documents
     devDependencies:
       tsx:
         specifier: 4.19.2
