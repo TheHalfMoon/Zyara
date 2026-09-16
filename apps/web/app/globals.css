@@ -480,7 +480,7 @@ a {
   display: grid;
   grid-template-columns: minmax(0, 0.93fr) minmax(420px, 1.07fr);
   gap: 18px;
-  align-items: start;
+  align-items: flex-start;
 }
 
 .zyara-results {
@@ -507,7 +507,7 @@ a {
 
 .zyara-card-top {
   display: flex;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
 }
