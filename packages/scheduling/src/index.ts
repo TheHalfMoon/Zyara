@@ -11,4 +11,6 @@ export * from "./reservations.js";
 export * from "./hold-explanations.js";
 export * from "./appointments.js";
 export * from "./booking-explanations.js";
+export * from "./changes.js";
+export * from "./change-explanations.js";
 
