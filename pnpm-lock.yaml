@@ -202,6 +202,12 @@ importers:
 
   packages/identity: {}
 
+  packages/legacy-ingest:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/patient:
     dependencies:
       '@zyara/domain':
@@ -752,6 +758,19 @@ importers:
       '@zyara/fhir-adapter':
         specifier: workspace:*
         version: link:../../packages/fhir-adapter
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m039:
+    dependencies:
+      '@zyara/legacy-ingest':
+        specifier: workspace:*
+        version: link:../../packages/legacy-ingest
     devDependencies:
       tsx:
         specifier: 4.19.2
