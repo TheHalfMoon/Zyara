@@ -127,6 +127,12 @@ importers:
         specifier: workspace:*
         version: link:../identity
 
+  packages/communication:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/contracts: {}
 
   packages/domain: {}
@@ -440,6 +446,19 @@ importers:
       '@zyara/scheduling':
         specifier: workspace:*
         version: link:../../packages/scheduling
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m020:
+    dependencies:
+      '@zyara/communication':
+        specifier: workspace:*
+        version: link:../../packages/communication
     devDependencies:
       tsx:
         specifier: 4.19.2
