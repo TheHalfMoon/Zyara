@@ -1,6 +1,6 @@
 # Zyara Network Source Catalog
 
-**Research date:** 2026-09-16  
+**Research date:** 2026-09-16
 **Purpose:** give Astro a focused donor/reference set for the complete Zyara Network product.
 
 ## Source-use rule

@@ -1,6 +1,6 @@
 # Zyara Network — Whole-Product Vision
 
-**Founder direction: 2026-09-16**  
+**Founder direction: 2026-09-16**
 **Planning scope: whole product, not only the discovery launch wedge**
 
 ## Product thesis

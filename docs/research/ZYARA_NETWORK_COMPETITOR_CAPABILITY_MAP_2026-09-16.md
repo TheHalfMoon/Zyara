@@ -1,6 +1,6 @@
 # Zyara Network Competitor Capability Map
 
-**Research refresh:** 2026-09-16  
+**Research refresh:** 2026-09-16
 **Purpose:** give Astro a whole-product comparison frame. This is not a ranking and does not authorize copying proprietary implementations.
 
 ## Research rule

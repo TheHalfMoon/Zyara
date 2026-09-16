@@ -1,6 +1,6 @@
 # Zyara Network Capability Map
 
-**Purpose:** define the complete capability universe Astro must reconcile against live Zyara implementation before creating the next canonical roadmap.  
+**Purpose:** define the complete capability universe Astro must reconcile against live Zyara implementation before creating the next canonical roadmap.
 **Status:** founder-directed planning input; capability presence here does not mean implementation, validation or production authorization.
 
 ## Capability states Astro must use
