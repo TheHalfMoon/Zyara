@@ -9,7 +9,7 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
   return (
     <main className="zyara-shell" lang={active} dir={ar ? "rtl" : "ltr"}>
       <nav className="zyara-nav" aria-label="Primary navigation">
-        <a className="zyara-brand" href={`/${active}`} aria-label="Zyara home">
+        <a className="zyara-brand" href={`/${active}`} aria-label="Zyara start">
           <span className="zyara-mark" aria-hidden="true">Z</span>
           <span className="zyara-wordmark">Zyara</span>
         </a>
@@ -69,7 +69,7 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
             <h2 id="map-list-heading">{ar ? "الأماكن الظاهرة على الخريطة" : "Places on this map"}</h2>
             <span>{NEARBY_PLACES.length} {ar ? "أماكن تجريبية" : "preview places"}</span>
           </div>
-          <div className="zyara-results" aria-label="Branch list">
+          <div className="zyara-results" aria-label="branch-list">
             {NEARBY_PLACES.map((place) => (
               <article className="zyara-card" key={place.id}>
                 <div className="zyara-place-thumb" aria-hidden="true">{place.kind.toUpperCase()}</div>
