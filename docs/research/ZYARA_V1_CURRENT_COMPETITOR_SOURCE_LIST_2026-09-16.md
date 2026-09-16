@@ -53,4 +53,4 @@ These are the principal public product references used for the 2026-09-16 V1 pro
 
 ## Existing Zyara competitor references to retain
 
-The repository already tracks additional products such as Okadoc, Practo, Docplanner/Doctoralia, OneDoc, Top Doctors, Healthengine, HotDoc, Kry/Livi, Doctena, Doctoranytime and Air Doctor. AScout should keep them in the broader competitor landscape and perform fresh checks only when they materially affect a V1 decision.
+The repository already tracks additional products such as Okadoc, Practo, Docplanner/Doctoralia, OneDoc, Top Doctors, Healthengine, HotDoc, Kry/Livi, Doctena, Doctoranytime and Air Doctor. Future planning should keep them in the broader competitor landscape and perform fresh checks only when they materially affect a Zyara V1 decision.
