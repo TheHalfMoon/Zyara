@@ -274,6 +274,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/patient-matching:
+    dependencies:
+      '@zyara/consent-boundaries':
+        specifier: workspace:*
+        version: link:../consent-boundaries
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/recall-campaigns:
     dependencies:
       '@zyara/domain':
@@ -1023,6 +1032,19 @@ importers:
       '@zyara/consent-boundaries':
         specifier: workspace:*
         version: link:../../packages/consent-boundaries
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m052:
+    dependencies:
+      '@zyara/patient-matching':
+        specifier: workspace:*
+        version: link:../../packages/patient-matching
     devDependencies:
       tsx:
         specifier: 4.19.2
