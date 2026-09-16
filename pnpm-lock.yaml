@@ -202,6 +202,18 @@ importers:
 
   packages/identity: {}
 
+  packages/integration-ops:
+    dependencies:
+      '@zyara/adapter-harness':
+        specifier: workspace:*
+        version: link:../adapter-harness
+      '@zyara/adapter-ops':
+        specifier: workspace:*
+        version: link:../adapter-ops
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/legacy-ingest:
     dependencies:
       '@zyara/domain':
@@ -771,6 +783,22 @@ importers:
       '@zyara/legacy-ingest':
         specifier: workspace:*
         version: link:../../packages/legacy-ingest
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m040:
+    dependencies:
+      '@zyara/adapter-ops':
+        specifier: workspace:*
+        version: link:../../packages/adapter-ops
+      '@zyara/integration-ops':
+        specifier: workspace:*
+        version: link:../../packages/integration-ops
     devDependencies:
       tsx:
         specifier: 4.19.2
