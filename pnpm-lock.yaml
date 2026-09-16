@@ -214,6 +214,12 @@ importers:
 
   packages/events: {}
 
+  packages/expansion-decision:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/fhir-adapter:
     dependencies:
       '@zyara/adapter-ops':
@@ -1190,6 +1196,19 @@ importers:
       '@zyara/scale-qual':
         specifier: workspace:*
         version: link:../../packages/scale-qual
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m060:
+    dependencies:
+      '@zyara/expansion-decision':
+        specifier: workspace:*
+        version: link:../../packages/expansion-decision
     devDependencies:
       tsx:
         specifier: 4.19.2
