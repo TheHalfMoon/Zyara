@@ -124,6 +124,12 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/action-confirmation:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/adapter-harness:
     dependencies:
       '@zyara/domain':
@@ -843,6 +849,19 @@ importers:
       '@zyara/navigation-tools':
         specifier: workspace:*
         version: link:../../packages/navigation-tools
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m043:
+    dependencies:
+      '@zyara/action-confirmation':
+        specifier: workspace:*
+        version: link:../../packages/action-confirmation
     devDependencies:
       tsx:
         specifier: 4.19.2
