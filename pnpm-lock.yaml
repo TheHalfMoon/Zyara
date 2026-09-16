@@ -163,6 +163,12 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/caregiver-access:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/clinical-workflows:
     dependencies:
       '@zyara/domain':
@@ -1089,6 +1095,19 @@ importers:
       '@zyara/patient-documents':
         specifier: workspace:*
         version: link:../../packages/patient-documents
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m055:
+    dependencies:
+      '@zyara/caregiver-access':
+        specifier: workspace:*
+        version: link:../../packages/caregiver-access
     devDependencies:
       tsx:
         specifier: 4.19.2
