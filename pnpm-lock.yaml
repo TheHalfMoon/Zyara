@@ -157,6 +157,12 @@ importers:
         specifier: workspace:*
         version: link:../identity
 
+  packages/clinical-workflows:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/commerce:
     dependencies:
       '@zyara/analytics':
@@ -928,6 +934,19 @@ importers:
       '@zyara/specialty-dental':
         specifier: workspace:*
         version: link:../../packages/specialty-dental
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m047:
+    dependencies:
+      '@zyara/clinical-workflows':
+        specifier: workspace:*
+        version: link:../../packages/clinical-workflows
     devDependencies:
       tsx:
         specifier: 4.19.2
