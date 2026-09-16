@@ -226,6 +226,18 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/navigation-tools:
+    dependencies:
+      '@zyara/adapter-harness':
+        specifier: workspace:*
+        version: link:../adapter-harness
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@zyara/navigation-safety':
+        specifier: workspace:*
+        version: link:../navigation-safety
+
   packages/patient:
     dependencies:
       '@zyara/domain':
@@ -818,6 +830,19 @@ importers:
       '@zyara/navigation-safety':
         specifier: workspace:*
         version: link:../../packages/navigation-safety
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m042:
+    dependencies:
+      '@zyara/navigation-tools':
+        specifier: workspace:*
+        version: link:../../packages/navigation-tools
     devDependencies:
       tsx:
         specifier: 4.19.2
