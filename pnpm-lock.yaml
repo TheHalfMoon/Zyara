@@ -256,6 +256,34 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  tests/e2e:
+    dependencies:
+      '@zyara/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
+      '@zyara/commerce':
+        specifier: workspace:*
+        version: link:../../packages/commerce
+      '@zyara/communication':
+        specifier: workspace:*
+        version: link:../../packages/communication
+      '@zyara/scheduling':
+        specifier: workspace:*
+        version: link:../../packages/scheduling
+      '@zyara/trust-attendance':
+        specifier: workspace:*
+        version: link:../../packages/trust/attendance
+      '@zyara/trust-reviews':
+        specifier: workspace:*
+        version: link:../../packages/trust/reviews
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
   tests/graph:
     dependencies:
       '@zyara/graph':
