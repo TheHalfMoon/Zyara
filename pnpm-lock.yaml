@@ -202,6 +202,12 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/referrals:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/scheduling:
     dependencies:
       '@zyara/domain':
@@ -670,6 +676,19 @@ importers:
       '@zyara/recall-plans':
         specifier: workspace:*
         version: link:../../packages/recall-plans
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m035:
+    dependencies:
+      '@zyara/referrals':
+        specifier: workspace:*
+        version: link:../../packages/referrals
     devDependencies:
       tsx:
         specifier: 4.19.2
