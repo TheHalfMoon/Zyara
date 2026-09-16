@@ -989,3 +989,1200 @@ a {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Zyara V1 patient discovery polish — synthetic UI preview */
+.zyara-hero-v2 {
+  padding-top: 30px;
+}
+
+.zyara-searchbar-ai {
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+}
+
+.zyara-ai-orb {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #ff5a3c, #ff876e 58%, #c8b6ff);
+  color: white;
+  font-weight: 750;
+  box-shadow: 0 8px 22px rgba(255, 90, 60, 0.22);
+}
+
+.zyara-voice-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 12px;
+  background: #faf9f7;
+  color: #3f3f44;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.zyara-voice-button:hover,
+.zyara-voice-button:focus-visible,
+.zyara-voice-button.active {
+  border-color: rgba(255, 90, 60, 0.34);
+  background: #fff2ed;
+  color: #a83b27;
+  outline: none;
+}
+
+.zyara-hero-proof {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.zyara-hero-proof span {
+  padding: 8px 10px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 999px;
+  background: rgba(250, 249, 247, 0.9);
+  color: #5f5e64;
+  font-size: 12px;
+}
+
+.zyara-map-caption {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 10px 30px rgba(17, 17, 17, 0.06);
+  color: #55545a;
+  font-size: 12px;
+  font-weight: 650;
+  backdrop-filter: blur(14px);
+}
+
+[dir="rtl"] .zyara-map-caption {
+  right: 24px;
+  left: auto;
+}
+
+.zyara-floating-card-v2 {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.zyara-specialty-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.zyara-specialty-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 126px;
+  padding: 18px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.zyara-specialty-card:hover,
+.zyara-specialty-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(17, 17, 17, 0.16);
+  box-shadow: 0 16px 36px rgba(17, 17, 17, 0.07);
+  outline: none;
+}
+
+.zyara-specialty-card strong,
+.zyara-specialty-card span {
+  display: block;
+}
+
+.zyara-specialty-card strong {
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.zyara-specialty-card div > span {
+  color: var(--zyara-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.zyara-specialty-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff0e9, #f3eafa);
+  color: #8d574a;
+  font-size: 20px;
+}
+
+.zyara-specialty-arrow {
+  color: #8b8a90;
+  font-size: 20px;
+}
+
+.zyara-section-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.zyara-home-results {
+  gap: 14px;
+}
+
+.zyara-care-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 18px;
+}
+
+.zyara-place-thumb-lg {
+  width: 82px;
+  height: 82px;
+  border-radius: 20px;
+}
+
+.zyara-care-card-main {
+  min-width: 0;
+}
+
+.zyara-contact-actions {
+  flex-wrap: wrap;
+}
+
+.zyara-doctors-grid-v2 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.zyara-doctor-card-v2 {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.zyara-doctor-card-v2 .zyara-card-actions {
+  margin-top: auto;
+}
+
+.zyara-rating-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.zyara-rating-split > div {
+  display: grid;
+  gap: 2px;
+  padding: 11px 12px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 13px;
+  background: #fafaf8;
+}
+
+.zyara-rating-split span,
+.zyara-rating-split small {
+  color: var(--zyara-muted);
+  font-size: 10px;
+}
+
+.zyara-rating-split strong {
+  font-size: 17px;
+}
+
+.zyara-dark-panel {
+  padding: clamp(28px, 5vw, 64px);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 90, 60, 0.18), transparent 18rem),
+    radial-gradient(circle at 20% 90%, rgba(200, 182, 255, 0.12), transparent 22rem),
+    #111;
+  color: white;
+}
+
+.zyara-dark-panel h2 {
+  max-width: 930px;
+  margin: 0;
+  font-size: clamp(34px, 5vw, 68px);
+  font-weight: 440;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.zyara-eyebrow-light {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.zyara-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 38px;
+}
+
+.zyara-trust-grid > div {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.zyara-trust-grid span {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 13px;
+}
+
+.zyara-provider-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  margin: 12px 0 58px;
+  padding: clamp(26px, 4vw, 48px);
+  border: 1px solid var(--zyara-line);
+  border-radius: 26px;
+  background: linear-gradient(135deg, #fff 0%, #fff4ef 60%, #f4efff 100%);
+}
+
+.zyara-provider-cta h2 {
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 460;
+  letter-spacing: -0.04em;
+}
+
+.zyara-provider-cta p {
+  max-width: 720px;
+  margin: 10px 0 0;
+  color: var(--zyara-muted);
+}
+
+.zyara-search-page {
+  padding-top: 44px;
+}
+
+.zyara-search-head {
+  display: grid;
+  gap: 18px;
+}
+
+.zyara-searchbar-wide {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.zyara-voice-panel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 90, 60, 0.18);
+  border-radius: 16px;
+  background: #fff5f1;
+}
+
+.zyara-voice-panel div {
+  display: grid;
+  gap: 3px;
+}
+
+.zyara-voice-panel span:not(.zyara-voice-pulse) {
+  color: #77655f;
+  font-size: 12px;
+}
+
+.zyara-voice-pulse {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5a3c;
+  box-shadow: 0 0 0 7px rgba(255, 90, 60, 0.12);
+}
+
+.zyara-search-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 28px 0 10px;
+}
+
+.zyara-entity-tabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 14px;
+  background: white;
+}
+
+.zyara-entity-tabs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: #66656b;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.zyara-entity-tabs a span {
+  color: #929197;
+  font-size: 10px;
+}
+
+.zyara-entity-tabs a.active {
+  background: #111;
+  color: white;
+}
+
+.zyara-entity-tabs a.active span {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.zyara-sort-row,
+.zyara-specialty-rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+}
+
+.zyara-sort-row > span {
+  margin-inline-end: 4px;
+  color: var(--zyara-muted);
+  font-size: 12px;
+}
+
+.zyara-specialty-rail {
+  margin-bottom: 18px;
+  padding: 8px 0;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+
+.zyara-specialty-rail .zyara-chip {
+  flex: 0 0 auto;
+}
+
+.zyara-specialty-rail .zyara-chip.active {
+  border-color: #111;
+  background: #111;
+  color: white;
+}
+
+.zyara-search-layout-v2 {
+  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+}
+
+.zyara-results-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.zyara-results-header h2,
+.zyara-result-section h3 {
+  margin: 0;
+}
+
+.zyara-result-section {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.zyara-doctor-results {
+  display: grid;
+  gap: 12px;
+}
+
+.zyara-doctor-search-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 20px;
+  background: white;
+}
+
+.zyara-doctor-search-main {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+
+.zyara-doctor-avatar-lg {
+  width: 78px;
+  height: 78px;
+}
+
+.zyara-rating-split-inline {
+  max-width: 510px;
+}
+
+.zyara-map-panel-search {
+  min-height: 680px;
+  position: sticky;
+  top: 92px;
+}
+
+.zyara-empty-state {
+  display: grid;
+  gap: 5px;
+  padding: 28px;
+  border: 1px dashed rgba(17, 17, 17, 0.16);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.6);
+  color: var(--zyara-muted);
+}
+
+.zyara-specialties-head {
+  max-width: none;
+}
+
+.zyara-specialty-directory {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.zyara-specialty-directory-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: flex-start;
+  padding: 22px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 22px;
+  background: white;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.zyara-specialty-directory-card:hover,
+.zyara-specialty-directory-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(17, 17, 17, 0.07);
+  outline: none;
+}
+
+.zyara-specialty-directory-card h2 {
+  margin: 2px 0 6px;
+  font-size: 25px;
+  letter-spacing: -0.03em;
+}
+
+.zyara-specialty-directory-card p {
+  margin: 0 0 12px;
+  color: var(--zyara-muted);
+  font-size: 13px;
+}
+
+.zyara-specialty-icon-lg {
+  width: 54px;
+  height: 54px;
+  font-size: 24px;
+}
+
+.zyara-specialty-ai-panel {
+  margin-top: 28px;
+}
+
+.zyara-specialty-ai-panel p {
+  max-width: 760px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.zyara-primary-light {
+  width: fit-content;
+  margin-top: 12px;
+  background: white;
+  color: #111;
+}
+
+.zyara-doctor-profile-hero {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+  padding: clamp(26px, 5vw, 64px);
+  border: 1px solid var(--zyara-line);
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fff 0%, #fff8f4 52%, #f6f1ff 100%);
+}
+
+.zyara-doctor-profile-avatar {
+  display: grid;
+  aspect-ratio: 1;
+  width: 100%;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f2dbcf, #d8c5df);
+  color: rgba(17, 17, 17, 0.55);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.zyara-doctor-profile-main {
+  min-width: 0;
+}
+
+.zyara-doctor-trust-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 22px 0;
+}
+
+.zyara-doctor-trust-row > div {
+  display: grid;
+  gap: 2px;
+  padding: 13px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.zyara-doctor-trust-row span,
+.zyara-doctor-trust-row small {
+  color: var(--zyara-muted);
+  font-size: 10px;
+}
+
+.zyara-doctor-trust-row strong {
+  font-size: 19px;
+}
+
+.zyara-doctor-detail-grid {
+  margin-top: 18px;
+}
+
+.zyara-timeline-list,
+.zyara-service-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.zyara-timeline-list > div,
+.zyara-service-list > div {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--zyara-line);
+}
+
+.zyara-timeline-dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #ff5a3c;
+}
+
+.zyara-service-list > div > span {
+  color: var(--zyara-positive);
+}
+
+.zyara-location-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.zyara-location-option {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 21px;
+  background: white;
+}
+
+.zyara-location-option-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.zyara-location-option h3 {
+  margin: 3px 0 0;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.zyara-review-separation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 18px;
+}
+
+.zyara-review-separation h2 {
+  margin: 8px 0 4px;
+  font-size: 36px;
+}
+
+.zyara-review-separation p {
+  color: var(--zyara-muted);
+}
+
+.zyara-facility-gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: repeat(2, 170px);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.zyara-gallery-main,
+.zyara-gallery-side {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(145deg, #dfe8e9, #c9d2d1 48%, #aab8b6);
+  color: rgba(17, 17, 17, 0.56);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.zyara-gallery-main {
+  grid-row: 1 / 3;
+  background:
+    radial-gradient(circle at 70% 25%, rgba(255, 255, 255, 0.58), transparent 14rem),
+    linear-gradient(145deg, #e6dbd5, #c9d2d1 52%, #a6b7b4);
+}
+
+.zyara-gallery-side.two {
+  background: linear-gradient(145deg, #e8e0ec, #d0c5d6);
+}
+
+.zyara-facility-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 26px;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+
+.zyara-facility-score-card {
+  display: grid;
+  min-width: 180px;
+  gap: 4px;
+  padding: 18px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 18px;
+  background: white;
+}
+
+.zyara-facility-score-card > span,
+.zyara-facility-score-card small {
+  color: var(--zyara-muted);
+  font-size: 11px;
+}
+
+.zyara-facility-score-card strong {
+  font-size: 32px;
+}
+
+.zyara-sticky-action-bar {
+  position: sticky;
+  top: 84px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: 10px 12px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 12px 30px rgba(17, 17, 17, 0.06);
+  backdrop-filter: blur(16px);
+}
+
+.zyara-sticky-location {
+  display: grid;
+  gap: 2px;
+}
+
+.zyara-sticky-location span {
+  color: var(--zyara-muted);
+  font-size: 11px;
+}
+
+.zyara-facility-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.zyara-insurance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.zyara-insurance-grid > span {
+  display: grid;
+  gap: 2px;
+  padding: 11px 12px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 12px;
+  background: #fafaf8;
+  font-weight: 650;
+}
+
+.zyara-insurance-grid small {
+  color: var(--zyara-muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.zyara-review-summary {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.zyara-review-summary strong {
+  font-size: 40px;
+}
+
+.zyara-review-summary span {
+  color: var(--zyara-muted);
+}
+
+.zyara-review-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.zyara-review-themes span {
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: #f2f2ef;
+  color: #66656b;
+  font-size: 11px;
+}
+
+.zyara-small-copy {
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 1100px) {
+  .zyara-specialty-grid,
+  .zyara-doctors-grid-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zyara-search-layout-v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-map-panel-search {
+    position: relative;
+    top: auto;
+    min-height: 520px;
+  }
+
+  .zyara-doctor-trust-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .zyara-nav-provider,
+  .zyara-language-chip {
+    display: none;
+  }
+
+  .zyara-searchbar-ai {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .zyara-searchbar-ai .zyara-primary {
+    grid-column: 1 / -1;
+  }
+
+  .zyara-voice-button {
+    font-size: 0;
+  }
+
+  .zyara-voice-button::after {
+    content: "⌁";
+    font-size: 18px;
+  }
+
+  .zyara-specialty-grid,
+  .zyara-specialty-directory,
+  .zyara-doctors-grid-v2,
+  .zyara-location-options,
+  .zyara-review-separation,
+  .zyara-facility-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-care-card,
+  .zyara-doctor-search-card {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-place-thumb-lg,
+  .zyara-doctor-avatar-lg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .zyara-search-toolbar,
+  .zyara-provider-cta,
+  .zyara-facility-header,
+  .zyara-sticky-action-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .zyara-search-toolbar {
+    display: grid;
+  }
+
+  .zyara-entity-tabs {
+    overflow-x: auto;
+  }
+
+  .zyara-trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-doctor-profile-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-doctor-profile-avatar {
+    width: 132px;
+  }
+
+  .zyara-doctor-trust-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .zyara-facility-gallery {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 120px;
+  }
+
+  .zyara-gallery-main {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .zyara-insurance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.zyara-nav-current {
+  color: #111;
+  background: #f1f1ef;
+}
+
+.zyara-provider-page {
+  padding-top: 44px;
+}
+
+.zyara-provider-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(26px, 4vw, 48px);
+  border: 1px solid var(--zyara-line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255, 90, 60, 0.12), transparent 18rem),
+    linear-gradient(135deg, #fff 0%, #fff8f4 58%, #f5f0ff 100%);
+}
+
+.zyara-provider-head > div:first-child {
+  max-width: 920px;
+}
+
+.zyara-provider-head-actions {
+  display: grid;
+  min-width: 210px;
+  gap: 10px;
+}
+
+.zyara-provider-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.zyara-provider-stat-grid > div {
+  display: grid;
+  gap: 3px;
+  padding: 17px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 17px;
+  background: white;
+}
+
+.zyara-provider-stat-grid span,
+.zyara-provider-stat-grid small {
+  color: var(--zyara-muted);
+  font-size: 11px;
+}
+
+.zyara-provider-stat-grid strong {
+  font-size: 29px;
+  letter-spacing: -0.04em;
+}
+
+.zyara-provider-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.75fr);
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.zyara-provider-main-column,
+.zyara-provider-side-column {
+  display: grid;
+  gap: 14px;
+}
+
+.zyara-provider-side-column {
+  position: sticky;
+  top: 92px;
+}
+
+.zyara-warning-pill {
+  padding: 7px 9px;
+  border-radius: 999px;
+  background: #fff4df;
+  color: #9a6118;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.zyara-attestation-list {
+  display: grid;
+  margin-top: 12px;
+}
+
+.zyara-attestation-list > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--zyara-line);
+}
+
+.zyara-attestation-list > div:last-child {
+  border-bottom: 0;
+}
+
+.zyara-attestation-list > div > div {
+  display: grid;
+  gap: 2px;
+}
+
+.zyara-attestation-list span {
+  color: var(--zyara-muted);
+  font-size: 12px;
+}
+
+.zyara-provider-roster {
+  display: grid;
+  margin-top: 12px;
+}
+
+.zyara-provider-roster > div {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.2fr) minmax(120px, 0.8fr) auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--zyara-line);
+  color: #55545a;
+  font-size: 12px;
+}
+
+.zyara-provider-roster > div:last-child {
+  border-bottom: 0;
+}
+
+.zyara-provider-roster .zyara-doctor-row span {
+  display: block;
+  color: var(--zyara-muted);
+  font-size: 11px;
+}
+
+.zyara-provider-roster a {
+  font-weight: 650;
+}
+
+.zyara-roster-placeholder {
+  opacity: 0.78;
+}
+
+.zyara-warning-text {
+  color: var(--zyara-warning);
+  font-weight: 700;
+}
+
+.zyara-provider-taxonomy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.zyara-provider-taxonomy > div {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 14px;
+  background: #fafaf8;
+}
+
+.zyara-provider-taxonomy > div > span {
+  color: var(--zyara-muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.zyara-contact-admin-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.zyara-contact-admin-list > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 12px;
+  background: #fafaf8;
+}
+
+.zyara-contact-admin-list > div > div {
+  display: grid;
+  min-width: 0;
+  gap: 1px;
+}
+
+.zyara-contact-admin-list small {
+  overflow: hidden;
+  color: var(--zyara-muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.zyara-contact-admin-list em {
+  color: #8d8c92;
+  font-size: 10px;
+  font-style: normal;
+}
+
+.zyara-provider-mini-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.zyara-provider-mini-metrics > div {
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+  border: 1px solid var(--zyara-line);
+  border-radius: 13px;
+  background: #fafaf8;
+}
+
+.zyara-provider-mini-metrics strong {
+  font-size: 23px;
+}
+
+.zyara-provider-mini-metrics span {
+  color: var(--zyara-muted);
+  font-size: 10px;
+}
+
+@media (max-width: 1100px) {
+  .zyara-provider-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-provider-side-column {
+    position: relative;
+    top: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .zyara-provider-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .zyara-provider-stat-grid,
+  .zyara-provider-side-column,
+  .zyara-provider-taxonomy,
+  .zyara-provider-mini-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .zyara-provider-roster > div {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .zyara-provider-roster > div > :first-child {
+    grid-column: 1 / -1;
+  }
+}
