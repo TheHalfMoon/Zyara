@@ -3,6 +3,9 @@
 **Research refresh:** 2026-09-16
 **Purpose:** give Astro a whole-product comparison frame. This is not a ranking and does not authorize copying proprietary implementations.
 
+> **AI-era expansion:** also read [`ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`](ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md) and [`ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`](ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md). GenHealth and Plena Health now require feature-level reconciliation in the Astro pass.
+
+
 ## Research rule
 
 Use official product documentation where possible and date every time-sensitive claim. Competitor roadmaps are directional evidence, not proof that every announced feature is generally available in every country or specialty.

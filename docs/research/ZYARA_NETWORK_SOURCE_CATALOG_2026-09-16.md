@@ -3,6 +3,9 @@
 **Research date:** 2026-09-16
 **Purpose:** give Astro a focused donor/reference set for the complete Zyara Network product.
 
+> **AI-era expansion:** also read [`ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md) for the expanded founder-owned/public automation, interoperability, workflow, communications, security and infrastructure source universe.
+
+
 ## Source-use rule
 
 The founder states that Zyara has permission to copy/use source from the explicitly supplied repositories below and from repositories in the founder's GitHub estate. That permission is a planning input, not a substitute for provenance discipline.
