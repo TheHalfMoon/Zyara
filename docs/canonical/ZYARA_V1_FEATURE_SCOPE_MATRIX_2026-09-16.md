@@ -1,7 +1,7 @@
 # Zyara V1 Feature Scope Matrix — 2026-09-16
 
 Status: founder-directed planning input.  
-Purpose: remove ambiguity for AScout and the next implementation agent by separating required V1 capability families from later platform expansion.
+Purpose: remove ambiguity for the planning pass and the next implementation agent by separating required V1 capability families from later platform expansion.
 
 Legend:
 
@@ -116,4 +116,4 @@ The V1 plan may implement repository-owned capability without claiming these ext
 - production privacy/legal review;
 - commercial willingness-to-pay validation.
 
-AScout must keep repository implementation readiness and external market/production validation as separate status dimensions.
+The planning pass must keep repository implementation readiness and external market/production validation as separate status dimensions.
