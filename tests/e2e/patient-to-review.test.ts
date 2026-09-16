@@ -145,7 +145,7 @@ describe("M026 synthetic patient-to-review loop", () => {
   });
 
   it("attendance grants eligibility; review publishes anonymously; report reflects attendance", () => {
-    let evidence = recordEvidence([], {
+    const evidence = recordEvidence([], {
       id: "att-01", tenantId: fx.tenantId, appointmentId: "appt-02",
       patientId: fx.patient.patientId, outcome: "completed", source: "provider_checkin",
       actorRole: "provider", actorId: fx.practitionerId, confidence: 0.95,
@@ -153,7 +153,6 @@ describe("M026 synthetic patient-to-review loop", () => {
     }, "att-01");
     const decision = deriveEligibility(currentEvidenceFor(evidence, "appt-02"), new Set(), true);
     assert.equal(decision.eligible, true);
-    void evidence;
     const reviews = { byId: new Map(), byAppointment: new Map(), invited: new Set<string>(), audit: [] as string[] };
     assert.equal(inviteEligible(reviews, "appt-02"), true);
     const sub = submitReview(reviews, {
