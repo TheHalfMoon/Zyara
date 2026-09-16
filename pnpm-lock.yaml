@@ -240,6 +240,12 @@ importers:
         specifier: workspace:*
         version: link:../events
 
+  packages/waitlist:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   tests/accessibility:
     dependencies:
       '@zyara/domain':
@@ -591,6 +597,19 @@ importers:
       '@zyara/commerce':
         specifier: workspace:*
         version: link:../../packages/commerce
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m031:
+    dependencies:
+      '@zyara/waitlist':
+        specifier: workspace:*
+        version: link:../../packages/waitlist
     devDependencies:
       tsx:
         specifier: 4.19.2
