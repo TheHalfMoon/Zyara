@@ -130,6 +130,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/adapter-ops:
+    dependencies:
+      '@zyara/adapter-harness':
+        specifier: workspace:*
+        version: link:../adapter-harness
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/analytics:
     dependencies:
       '@zyara/domain':
@@ -708,6 +717,19 @@ importers:
       '@zyara/adapter-harness':
         specifier: workspace:*
         version: link:../../packages/adapter-harness
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m037:
+    dependencies:
+      '@zyara/adapter-ops':
+        specifier: workspace:*
+        version: link:../../packages/adapter-ops
     devDependencies:
       tsx:
         specifier: 4.19.2
