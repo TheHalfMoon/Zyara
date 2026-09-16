@@ -358,6 +358,15 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/scale-qual:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+      '@zyara/waitlist':
+        specifier: workspace:*
+        version: link:../waitlist
+
   packages/scheduling:
     dependencies:
       '@zyara/domain':
@@ -1168,6 +1177,19 @@ importers:
       '@zyara/country-pack':
         specifier: workspace:*
         version: link:../../packages/country-pack
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m059:
+    dependencies:
+      '@zyara/scale-qual':
+        specifier: workspace:*
+        version: link:../../packages/scale-qual
     devDependencies:
       tsx:
         specifier: 4.19.2
