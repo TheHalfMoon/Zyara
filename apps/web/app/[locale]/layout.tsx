@@ -15,8 +15,8 @@ export default async function LocaleLayout({
   const { locale } = await params;
   const active = isSupportedLocale(locale) ? locale : "ar";
   return (
-    <html lang={active} dir={directionForLocale(active)}>
-      <body>{children}</body>
-    </html>
+    <div lang={active} dir={directionForLocale(active)}>
+      {children}
+    </div>
   );
 }
