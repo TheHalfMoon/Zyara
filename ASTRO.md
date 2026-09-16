@@ -84,25 +84,29 @@ Read these first:
 
 1. `README.md`
 2. `docs/canonical/ZYARA_NETWORK_MASTER_VISION_2026-09-16.md`
-3. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
-4. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
-5. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
-6. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
-7. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
-8. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
-9. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
-10. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
-11. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
-12. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
-13. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
-14. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
-15. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
-16. `docs/canonical/ZYARA_ROADMAP.md`
-17. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
-18. current V1 founder/scope/canonicalization documents;
-19. `docs/VOICE_AGENT_RUNTIME.md`
-20. `docs/COMPETITORS.md`
-21. `docs/SOURCES.md`
+3. `docs/canonical/ZYARA_AI_ERA_AUTOMATION_PRINCIPLES_2026-09-16.md`
+4. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
+5. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
+6. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
+7. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
+8. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+9. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+10. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+11. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+12. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+13. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+14. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+15. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+16. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+17. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+18. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+19. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+20. `docs/canonical/ZYARA_ROADMAP.md`
+21. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+22. current V1 founder/scope/canonicalization documents;
+23. `docs/VOICE_AGENT_RUNTIME.md`
+24. `docs/COMPETITORS.md`
+25. `docs/SOURCES.md`
 
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
 
@@ -339,12 +343,15 @@ Mandatory source research includes:
 - `TheHalfMoon/MedScale`;
 - `TheHalfMoon/MESC`;
 - `TheHalfMoon/commandMed`;
+- `TheHalfMoon/commandF`;
+- `TheHalfMoon/Tarif`;
+- `TheHalfMoon/Ecra`;
 - `TheHalfMoon/Himsat`;
 - `TheHalfMoon/Wispral`;
 - `TheHalfMoon/Qdrat`;
 - `TheHalfMoon/Signthos`;
 - `TheHalfMoon/Sentrdel`;
-- relevant engineering-governance sources (`Kodac`, `Winds`, `Ascout`, `SpecGrain`, `Diffcipline`);
+- relevant engineering-governance sources (`Kodac`, `Winds`, `Ascout`, `SpecGrain`, `Diffcipline`, `Delethos`, `MSTR`, `Flake`);
 - `openemr/openemr`;
 - `medplum/medplum`;
 - `openmrs/openmrs-core` / Bahmni references;
@@ -402,6 +409,38 @@ Do not reinvent specialized medical systems without reason.
 - Evaluate Signthos/Documenso patterns for forms/e-sign/document workflows.
 - Keep lab/imaging source systems authoritative for their results and preserve source/version/provenance.
 
+## AI-era clinic automation directive
+
+Read `docs/canonical/ZYARA_AI_ERA_AUTOMATION_PRINCIPLES_2026-09-16.md` and `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`.
+
+The objective is not a chatbot added to legacy workflows. Astro must redesign repetitive clinic work around a governed automation substrate. Every repeated workflow must be classified as:
+
+```text
+ELIMINATE
+AUTOMATE
+ASSIST
+KEEP_HUMAN
+```
+
+GenHealth and Plena Health are mandatory deep-dive comparators. Reconcile every materially observed public feature family, including document/fax intake, referral conversion, eligibility, prior authorization, claims/RCM, phone/SMS/chat, scheduling, waitlist/backfill, procedure journeys, grounded operational chat, human exception handling, agent guardrails, action logs, pause/resume, SLA/anomaly monitoring and workflow/operator analytics. Do not assume US-specific payer semantics apply to Saudi Arabia.
+
+The plan must include a shared workflow/automation architecture with:
+
+- versioned workflows and durable state machines;
+- explicit automation authority classes;
+- scoped service identities and deterministic policy;
+- typed actions/connectors for Zyara, FHIR, NPHIES and channels;
+- API-first integration and browser/fax/phone automation only as bounded fallbacks;
+- external correlation IDs, idempotency, retries and reconciliation;
+- action receipts and source provenance;
+- outcome verification rather than click-success claims;
+- a first-class human exception/handoff queue;
+- operator control plane with live/history views, guardrails, pause/resume, safe retry and audit export;
+- workflow discovery/recording/compilation with review and synthetic qualification before activation;
+- staged rollout/quality review with no unsafe experimentation on clinical decisions.
+
+AI may classify, extract, summarize, draft and propose workflow steps. It must not grant itself authority or silently convert probabilistic output into authoritative clinical, scheduling, financial or insurance state.
+
 ## AI-era requirement
 
 Zyara Network must feel native to the AI era without becoming an unsafe agent wrapper.
@@ -430,10 +469,17 @@ Never let an LLM directly mint authoritative appointments, claims, prescriptions
 
 ## Competitor research directive
 
-Read `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`, then refresh material time-sensitive facts.
+Read both `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md` and `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`, then refresh material time-sensitive facts from official sources.
 
-Minimum comparison set:
+GenHealth and Plena require feature-level reconciliation. The broader master index exists to prevent blind spots across discovery, clinic OS, automation, RCM, ambient intelligence, communications, interoperability, labs/imaging, workforce and Saudi/MENA product patterns.
 
+Minimum deep comparison set:
+
+- GenHealth;
+- Plena Health;
+- Notable;
+- Luma Health;
+- Abridge;
 - Doctolib;
 - Epic / MyChart;
 - Tebra;
@@ -491,6 +537,10 @@ Timeline, visits, medications/prescriptions, allergies, conditions, labs, imagin
 ### 7. Clinic operating-system plan
 
 Front desk, calendar/capacity, patient operations, staff/roles, communications, forms/consent, telehealth, clinical workflows, insurance/revenue cycle, analytics and integrations.
+
+### 7A. AI-era automation and control-plane plan
+
+Clinic-work inventory; `ELIMINATE / AUTOMATE / ASSIST / KEEP_HUMAN` decisions; GenHealth/Plena feature reconciliation; workflow runtime/state/versioning; authority classes; typed connectors; workflow discovery/compiler; API-first vs browser/fax/phone fallback; human exception queue; action receipts/outcome verification; operator control plane; staged rollout, SLA/anomaly and quality-review model.
 
 ### 8. Doctor workspace plan
 

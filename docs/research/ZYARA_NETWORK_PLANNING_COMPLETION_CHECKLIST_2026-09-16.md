@@ -287,6 +287,55 @@ One cannot substitute for another.
 - [ ] whole-product context retained while authorizing only the first bounded task;
 - [ ] no hidden/local-only roadmap remains.
 
+## 19. AI-era clinic automation architecture
+
+- [ ] Every repeated clinic workflow classified `ELIMINATE / AUTOMATE / ASSIST / KEEP_HUMAN`.
+- [ ] Versioned workflow/state-machine model defined.
+- [ ] Automation authority classes defined and enforceable.
+- [ ] Scoped agent/service identities and default-deny policy defined.
+- [ ] Typed action/connector contract defined for native Zyara, FHIR, NPHIES and communications.
+- [ ] API-first integration rule defined; browser/fax/phone automation explicitly bounded as fallback.
+- [ ] External correlation IDs, idempotency, retry and reconciliation semantics defined.
+- [ ] Action receipt and outcome-verification contract defined.
+- [ ] Human exception/handoff queue is first-class and resumable.
+- [ ] Operator control plane covers live/history, per-location/workflow/agent state, guardrails, pause/resume, safe retry and audit export.
+- [ ] Workflow discovery/recording/compiler strategy includes review, synthetic qualification, versioning and staged activation.
+- [ ] Automation monitoring covers SLA, anomaly, error/retry, cost/volume and quality sampling without making automation rate a quality score.
+- [ ] No workflow can silently expand its own authority or edit its evaluator/policy to pass.
+
+## 20. GenHealth + Plena feature reconciliation
+
+GenHealth and Plena Health require explicit feature-family reconciliation from current public official evidence.
+
+- [ ] document/fax/email intake, OCR/extraction and source citations;
+- [ ] patient/referral matching and referral conversion;
+- [ ] eligibility/benefits workflows localized to Saudi authority;
+- [ ] policy/medical-necessity evidence work packets;
+- [ ] prior authorization detect/assemble/submit/poll/reconcile;
+- [ ] claims, follow-up, remittance/payment-posting and reconciliation where in scope;
+- [ ] denials/appeals work packets and tracking;
+- [ ] phone/voice, SMS/chat and after-hours workflows;
+- [ ] scheduling/cancellation/reschedule/waitlist/backfill/recall;
+- [ ] specialty procedure-preparation and post-procedure journeys;
+- [ ] refill-request routing with clinician authority preserved;
+- [ ] grounded operational chat/copilot;
+- [ ] human exception queue;
+- [ ] action/transcript/audit history;
+- [ ] per-agent/workflow/location guardrails and controls;
+- [ ] pause/resume, SLA/anomaly monitoring and safe staged experiments;
+- [ ] each feature mapped to `PRESERVE / BUILD / ADAPT / INTEGRATE / DEFER / REJECT`, authority class, source of truth and task.
+
+## 21. Complete competitor and source universe
+
+- [ ] `ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md` reconciled by category.
+- [ ] `ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md` reconciled against the existing 115-source qualification ledger.
+- [ ] GenHealth, Plena, Notable, Luma Health and Abridge receive deep current research in addition to the prior comparison set.
+- [ ] Saudi/MENA competitors and official authorities are explicitly covered.
+- [ ] RCM, prior-auth, patient-engagement, ambient-clinical, telehealth, interoperability, imaging/labs, eRx and workforce categories are not omitted.
+- [ ] Founder-owned public sources `commandF`, `Tarif`, `Ecra`, `Delethos`, `MSTR` and `Flake` are evaluated where relevant.
+- [ ] Private founder-owned repository names/content are not disclosed into this public repository without separate founder authorization for public disclosure.
+- [ ] Overlapping source platforms are converged to a small maintainable dependency/adaptation set rather than accumulated.
+
 ## Completion marker
 
 Only when all required items are genuinely satisfied:
