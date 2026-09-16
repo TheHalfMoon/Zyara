@@ -618,6 +618,19 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  tests/m032:
+    dependencies:
+      '@zyara/waitlist':
+        specifier: workspace:*
+        version: link:../../packages/waitlist
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
   tests/reliability:
     dependencies:
       '@zyara/analytics':

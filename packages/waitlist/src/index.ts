@@ -1,3 +1,3 @@
-// Package entry: preference-aware waitlist enrollment (M031).
+export * from "./offers.js";
 export * from "./enrollment.js";
 export * from "./fairness.js";
