@@ -1,0 +1,35 @@
+{
+  "description": "Rights-cleared synthetic Saudi clinic fixture. All identities are invented. No real national IDs. Phone numbers are in reserved documentation ranges and never receive delivery.",
+  "tenantId": "tenant-riyadh-synthetic",
+  "branchId": "branch-olaya-synthetic",
+  "practitionerId": "practitioner-synthetic-01",
+  "resourceId": "room-synthetic-01",
+  "serviceId": "service-general-synthetic",
+  "typeId": "type-followup-synthetic",
+  "scheduleId": "sched-synthetic-01",
+  "scheduleVersion": 2,
+  "recipeId": "recipe-synthetic-01",
+  "recipeVersion": 3,
+  "durationMin": 30,
+  "patient": {
+    "patientId": "patient-synthetic-01",
+    "displayName": "Synthetic Patient One",
+    "phone": "+966500000001",
+    "email": "synthetic-01@example.invalid"
+  },
+  "requestOnlyPatient": {
+    "patientId": "patient-synthetic-02",
+    "displayName": "Synthetic Patient Two",
+    "phone": "+966500000002",
+    "email": "synthetic-02@example.invalid"
+  },
+  "slot": {
+    "startUtc": "2026-10-05T07:00:00.000Z",
+    "endUtc": "2026-10-05T07:30:00.000Z",
+    "timeZone": "Asia/Riyadh"
+  },
+  "rescheduledSlot": {
+    "startUtc": "2026-10-05T08:00:00.000Z",
+    "endUtc": "2026-10-05T08:30:00.000Z"
+  }
+}
