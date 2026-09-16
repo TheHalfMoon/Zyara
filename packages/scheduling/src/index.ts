@@ -13,4 +13,5 @@ export * from "./appointments.js";
 export * from "./booking-explanations.js";
 export * from "./changes.js";
 export * from "./change-explanations.js";
+export * from "./calendar.js";
 
