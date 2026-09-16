@@ -22,6 +22,10 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 [Roadmap](ZYARA_ROADMAP.md) defines 12 phases, 24 slices and measurable exit gates. Tasks with future partner/legal requirements are designed for execution once those gates are satisfied; this is not a claim all 60 are ready today.
 
+## Deferred external validation (Founder direction 2026-09-16)
+
+M028, M029 and M030 are DEFERRED_EXTERNAL_VALIDATION: not complete, passed, waived or evidenced. No clinic recruitment, agreements, live pilot traffic, paid commitments, revenue or approvals are claimed. They remain external validation gates and do not block repository implementation of M031-M060 where no true technical, safety, data, interoperability or release dependency exists. Removed implementation edges: M031/M033/M036/M041/M056 no longer list M030; retained as external gates. Production authorization, launch and expansion claims still require the real evidence defined in M028-M030, M058 and M060.
+
 ## P00
 
 ### S00A
@@ -666,7 +670,7 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 - **Objective:** Create preference-aware waitlist enrollment
 - **Rationale:** Patients need earlier care without losing control of clinician/site/time preferences.
-- **Dependencies:** M030, M013, M017
+- **Dependencies:** M013, M017
 - **Likely files/modules:** `packages/waitlist`, `apps/web/waitlist`, `db/migrations` (proposed paths; adapt to actual repository with recorded scope rationale).
 - **Source/donor references:** A07, A24, C10, C13, C20
 - **Requirement trace:** R05, R08, R14
@@ -708,7 +712,7 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 - **Objective:** Model clinician-originated follow-up and recall plans
 - **Rationale:** Recall requires an accountable clinical source rather than inferred advice.
-- **Dependencies:** M030, M021, M013
+- **Dependencies:** M021, M013
 - **Likely files/modules:** `packages/access-work`, `packages/clinical-contracts`, `db/migrations` (proposed paths; adapt to actual repository with recorded scope rationale).
 - **Source/donor references:** A10, A15, FHIR, C27
 - **Requirement trace:** R08, R14, R19
@@ -772,7 +776,7 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 - **Objective:** Build the adapter capability and certification harness
 - **Rationale:** Vendor names and FHIR labels cannot substitute for tested scheduling semantics.
-- **Dependencies:** M030, M016, M004
+- **Dependencies:** M016, M004
 - **Likely files/modules:** `packages/integration/contracts`, `tests/adapter-contract`, `docs/adapter-certification` (proposed paths; adapt to actual repository with recorded scope rationale).
 - **Source/donor references:** A11, C13, C19, C20, C23
 - **Requirement trace:** R05, R12, R20
@@ -878,7 +882,7 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 - **Objective:** Implement the reviewed navigation safety and intent contract
 - **Rationale:** Patient-facing AI must route safely with a controlled intended use.
-- **Dependencies:** M030, M011, M003
+- **Dependencies:** M011, M003
 - **Likely files/modules:** `packages/navigation/safety`, `packages/navigation/intent`, `fixtures/ai` (proposed paths; adapt to actual repository with recorded scope rationale).
 - **Source/donor references:** A16, GOV, AI-PAPER
 - **Requirement trace:** R01, R14
@@ -1196,7 +1200,7 @@ A01–A26 refer to the [ADR register](ZYARA_ARCHITECTURE_PLAN.md). S001–S115 r
 
 - **Objective:** Deliver enterprise access governance and support contracts
 - **Rationale:** Hospital groups need bounded branch administration and operating accountability.
-- **Dependencies:** M040, M030, M002
+- **Dependencies:** M040, M002
 - **Likely files/modules:** `packages/enterprise`, `packages/identity`, `apps/web/admin`, `docs/contracts` (proposed paths; adapt to actual repository with recorded scope rationale).
 - **Source/donor references:** A12, A13, A11, S077
 - **Requirement trace:** R12, R14, R18

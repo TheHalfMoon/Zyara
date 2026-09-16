@@ -36,7 +36,7 @@ No calendar duration or staffing estimate is presented as validated. Estimate ta
 | S04A | P04 | M021, M022, M023 | Attendance and independently governed trust |
 | S04B | P04 | M024, M025 | Measured provider value |
 | S05A | P05 | M026, M027 | Synthetic and reliability proof |
-| S05B | P05 | M028, M029, M030 | Clinic readiness and pilot economics |
+| S05B | P05 | M028, M029, M030 | Clinic readiness and pilot economics (external validation track; DEFERRED_EXTERNAL_VALIDATION per 2026-09-16, not an implementation gate for M031-M060) |
 | S06A | P06 | M031, M032 | Fair cancellation recovery |
 | S06B | P06 | M033, M034, M035 | Clinician-originated continuity work |
 | S07A | P07 | M036, M037, M038 | Contracted external operations |

@@ -1555,7 +1555,6 @@
       "objective": "Create preference-aware waitlist enrollment",
       "rationale": "Patients need earlier care without losing control of clinician/site/time preferences.",
       "dependencies": [
-        "M030",
         "M013",
         "M017"
       ],
@@ -1598,7 +1597,13 @@
       "risk": "high when affecting patient data or appointment authority",
       "recovery": "Pause matching, retain preferences and original care.",
       "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "PLANNED_NOT_IMPLEMENTED",
+      "external_gates_retained": [
+        "M028",
+        "M029",
+        "M030"
+      ],
+      "dependency_correction": "Founder direction 2026-09-16: M030 removed as implementation dependency (business-sequencing only); retained as external validation gate."
     },
     {
       "id": "M032",
@@ -1663,7 +1668,6 @@
       "objective": "Model clinician-originated follow-up and recall plans",
       "rationale": "Recall requires an accountable clinical source rather than inferred advice.",
       "dependencies": [
-        "M030",
         "M021",
         "M013"
       ],
@@ -1705,7 +1709,13 @@
       "risk": "high when affecting patient data or appointment authority",
       "recovery": "Pause automated contacts and route due work to responsible clinic.",
       "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "PLANNED_NOT_IMPLEMENTED",
+      "external_gates_retained": [
+        "M028",
+        "M029",
+        "M030"
+      ],
+      "dependency_correction": "Founder direction 2026-09-16: M030 removed as implementation dependency (business-sequencing only); retained as external validation gate."
     },
     {
       "id": "M034",
@@ -1817,7 +1827,6 @@
       "objective": "Build the adapter capability and certification harness",
       "rationale": "Vendor names and FHIR labels cannot substitute for tested scheduling semantics.",
       "dependencies": [
-        "M030",
         "M016",
         "M004"
       ],
@@ -1860,7 +1869,13 @@
       "risk": "high when affecting patient data or appointment authority",
       "recovery": "Downgrade to request/call; disable unsupported writes.",
       "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "PLANNED_NOT_IMPLEMENTED",
+      "external_gates_retained": [
+        "M028",
+        "M029",
+        "M030"
+      ],
+      "dependency_correction": "Founder direction 2026-09-16: M030 removed as implementation dependency (business-sequencing only); retained as external validation gate."
     },
     {
       "id": "M037",
@@ -2079,7 +2094,6 @@
       "objective": "Implement the reviewed navigation safety and intent contract",
       "rationale": "Patient-facing AI must route safely with a controlled intended use.",
       "dependencies": [
-        "M030",
         "M011",
         "M003"
       ],
@@ -2119,7 +2133,13 @@
       "risk": "high when affecting patient data or appointment authority",
       "recovery": "Disable generative navigation; retain deterministic search/call paths.",
       "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "PLANNED_NOT_IMPLEMENTED",
+      "external_gates_retained": [
+        "M028",
+        "M029",
+        "M030"
+      ],
+      "dependency_correction": "Founder direction 2026-09-16: M030 removed as implementation dependency (business-sequencing only); retained as external validation gate."
     },
     {
       "id": "M042",
@@ -2857,7 +2877,6 @@
       "rationale": "Hospital groups need bounded branch administration and operating accountability.",
       "dependencies": [
         "M040",
-        "M030",
         "M002"
       ],
       "change_surface": [
@@ -2899,7 +2918,13 @@
       "risk": "high when affecting patient data or appointment authority",
       "recovery": "Disable provisioning integration; preserve manually reviewed roles.",
       "definition_of_done": "Every acceptance condition passes at the recorded implementation revision; scope and dependency evidence are checked, residual risks recorded, and an independent check confirms the outcome. An executor success statement alone is insufficient.",
-      "state": "PLANNED_NOT_IMPLEMENTED"
+      "state": "PLANNED_NOT_IMPLEMENTED",
+      "external_gates_retained": [
+        "M028",
+        "M029",
+        "M030"
+      ],
+      "dependency_correction": "Founder direction 2026-09-16: M030 removed as implementation dependency (business-sequencing only); retained as external validation gate."
     },
     {
       "id": "M057",
