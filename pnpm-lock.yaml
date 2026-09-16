@@ -172,6 +172,15 @@ importers:
 
   packages/events: {}
 
+  packages/fhir-adapter:
+    dependencies:
+      '@zyara/adapter-ops':
+        specifier: workspace:*
+        version: link:../adapter-ops
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/geospatial: {}
 
   packages/graph: {}
@@ -730,6 +739,19 @@ importers:
       '@zyara/adapter-ops':
         specifier: workspace:*
         version: link:../../packages/adapter-ops
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m038:
+    dependencies:
+      '@zyara/fhir-adapter':
+        specifier: workspace:*
+        version: link:../../packages/fhir-adapter
     devDependencies:
       tsx:
         specifier: 4.19.2
