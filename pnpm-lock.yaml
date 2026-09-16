@@ -184,6 +184,12 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/consent-boundaries:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/contracts: {}
 
   packages/domain: {}
@@ -1004,6 +1010,19 @@ importers:
       '@zyara/group-care':
         specifier: workspace:*
         version: link:../../packages/group-care
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m051:
+    dependencies:
+      '@zyara/consent-boundaries':
+        specifier: workspace:*
+        version: link:../../packages/consent-boundaries
     devDependencies:
       tsx:
         specifier: 4.19.2
