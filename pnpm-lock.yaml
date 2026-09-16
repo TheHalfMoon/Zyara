@@ -157,6 +157,12 @@ importers:
         specifier: workspace:*
         version: link:../identity
 
+  packages/care-modalities:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/clinical-workflows:
     dependencies:
       '@zyara/domain':
@@ -966,6 +972,19 @@ importers:
       '@zyara/recurring-care':
         specifier: workspace:*
         version: link:../../packages/recurring-care
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m049:
+    dependencies:
+      '@zyara/care-modalities':
+        specifier: workspace:*
+        version: link:../../packages/care-modalities
     devDependencies:
       tsx:
         specifier: 4.19.2
