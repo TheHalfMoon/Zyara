@@ -220,6 +220,12 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/navigation-safety:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/patient:
     dependencies:
       '@zyara/domain':
@@ -799,6 +805,19 @@ importers:
       '@zyara/integration-ops':
         specifier: workspace:*
         version: link:../../packages/integration-ops
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m041:
+    dependencies:
+      '@zyara/navigation-safety':
+        specifier: workspace:*
+        version: link:../../packages/navigation-safety
     devDependencies:
       tsx:
         specifier: 4.19.2
