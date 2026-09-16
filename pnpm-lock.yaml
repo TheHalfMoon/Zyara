@@ -330,6 +330,12 @@ importers:
         specifier: workspace:*
         version: link:../events
 
+  packages/voice-eval:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/waitlist:
     dependencies:
       '@zyara/domain':
@@ -862,6 +868,19 @@ importers:
       '@zyara/action-confirmation':
         specifier: workspace:*
         version: link:../../packages/action-confirmation
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m044:
+    dependencies:
+      '@zyara/voice-eval':
+        specifier: workspace:*
+        version: link:../../packages/voice-eval
     devDependencies:
       tsx:
         specifier: 4.19.2
