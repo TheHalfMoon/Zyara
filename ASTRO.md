@@ -2,27 +2,44 @@
 
 This file is the entry point for Astro or any implementation-planning agent.
 
-The 2026-09-13 planning mission has produced a converged [canonical build plan](docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md) and [Muse handoff](docs/canonical/ZYARA_MUSE_EXECUTION_HANDOFF.md). Read those first for current architecture, scheduling semantics, phase order and task contracts. The foundation below preserves founder intent; the new canonical set supersedes conflicting implementation suggestions, not founder constraints. Planning validation is recorded in [the evidence report](docs/research/PLANNING_VALIDATION.md).
+The repository now contains a refined V1 direction centered on healthcare discovery, trust, access, AI-native search and voice. The product authority is Zyara itself; no planning agent is part of the product model.
 
 ## Mission
 
-Turn the canonical planning documents in this repository into an executable, dependency-ordered software delivery plan for **Zyara**, a Saudi-first global healthcare discovery, navigation, booking, trust, and patient-journey platform.
+Turn the live canonical Zyara documents into an executable, dependency-ordered software delivery plan for a Saudi-first healthcare discovery and access platform.
 
-Do not reduce the concept to a scheduling marketplace. Preserve the complete product thesis.
+Do not reduce Zyara to a scheduling marketplace, and do not expand V1 into a full EHR/Doctolib clone.
+
+The current V1 north star is:
+
+> **When someone needs care, they start with Zyara.**
+>
+> They can browse, type or speak. Zyara helps them find trustworthy doctors and healthcare facilities, understand specialty/service fit, distance, hours, insurance, reputation, freshness and access options, then call, WhatsApp, get directions, visit the provider website or book through the strongest truthful access mode available.
 
 ## Required reading order
 
 1. `README.md`
-2. `docs/VISION.md`
-3. `docs/PRODUCT.md`
-4. `docs/COMPETITORS.md`
-5. `docs/ARCHITECTURE.md`
-6. `docs/AI_SEARCH_TRUST.md`
-7. `docs/PROVIDER_BUSINESS.md`
-8. `docs/PRIVACY_INTEROP.md`
-9. `docs/VOICE_AGENT_RUNTIME.md`
-10. `docs/ROADMAP.md`
-11. `docs/SOURCES.md`
+2. `docs/canonical/ZYARA_V1_FOUNDER_DIRECTION_2026-09-16.md`
+3. `docs/canonical/ZYARA_V1_FEATURE_SCOPE_MATRIX_2026-09-16.md`
+4. `docs/canonical/ZYARA_V1_PRODUCT_CANONICALIZATION_BRIEF_2026-09-16.md`
+5. `docs/research/ZYARA_V1_COMPETITOR_FEATURE_SYNTHESIS_2026-09-16.md`
+6. `docs/research/ZYARA_V1_CURRENT_COMPETITOR_SOURCE_LIST_2026-09-16.md`
+7. `docs/research/ZYARA_V1_LIVE_TRUTH_PRECHECK_2026-09-16.md`
+8. `docs/research/ZYARA_V1_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+9. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+10. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+11. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+12. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+13. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+14. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+15. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+16. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+17. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+18. `docs/canonical/ZYARA_ROADMAP.md`
+19. `docs/VOICE_AGENT_RUNTIME.md`
+20. `docs/SOURCES.md`
+
+Then reverify live repository/GitHub truth before changing canonical authority.
 
 ## Non-negotiable founder decisions
 
@@ -31,103 +48,94 @@ Do not reduce the concept to a scheduling marketplace. Preserve the complete pro
 - Patient product: free.
 - Booking: no booking fee to the patient.
 - Core monetization: B2B SaaS subscriptions and paid integrations/enterprise capabilities.
-- Zyara does not need to handle consultation payments in the core launch model.
-- Languages: Arabic, English, French, German, Spanish.
-- Arabic is first-class RTL.
+- Arabic is first-class RTL; English, French, German and Spanish remain supported first-class locales under the existing architecture.
+- V1 is healthcare discovery + trust + access.
+- Specialty, subspecialty and service/procedure search are first-class.
+- Practitioners may work at multiple facilities; `PractitionerRole` models workplace relationships.
+- Doctor reputation and facility reputation are independent first-class trust objects.
+- Insurance is scoped by payer/network + branch + service + practitioner role + validity/evidence, never a global provider boolean.
+- Branch-aware phone, booking phone, official WhatsApp, directions, website and truthful booking/access routes are first-class V1 actions.
+- Clinic Portal V1 is a provider-data operating surface for claims, branches, roster, services, specialties, insurance, contacts, media, freshness, reviews and discovery analytics.
+- Material provider-managed public data uses recurring freshness/attestation rules.
 - AI is a healthcare-navigation layer, not an autonomous clinician.
-- Voice is a first-class patient input surface, with privacy-preserving local transcription preferred where practical.
-- Agent/tool execution must be isolated from sensitive patient data and production infrastructure by explicit policy and sandbox boundaries.
-- Verified-visit reviews are preferred over open anonymous internet reviews.
-- FHIR-aligned domain modeling and data provenance are required early.
-- Privacy, consent, tenant isolation and auditability are architecture constraints, not future polish.
-
-## Planning directive
-
-Before writing production code, produce a repository-native execution plan that includes:
-
-- product epics and user stories;
-- bounded contexts/modules;
-- proposed monorepo layout;
-- database schema strategy;
-- FHIR mapping strategy;
-- public search/indexing architecture;
-- geospatial strategy;
-- provider verification workflow;
-- review verification workflow;
-- booking integration abstraction;
-- notification abstraction;
-- AI orchestration and safety policy;
-- voice capture/transcription architecture for Arabic, English, French, German and Spanish;
-- local/offline ASR and optional cloud-ASR provider abstraction;
-- audio retention, consent and transcript provenance policy;
-- secure agent/tool sandbox architecture and egress/credential policy;
-- agent orchestration policy that separates non-clinical automation from clinical recommendation logic;
-- RAG/retrieval grounding architecture and source provenance;
-- localization/RTL architecture;
-- analytics/event taxonomy;
-- security/privacy threat model;
-- test strategy;
-- synthetic seed-data strategy;
-- CI/CD strategy;
-- observability plan;
-- migration and rollback conventions;
-- release milestones and acceptance gates.
-
-## Delivery philosophy
-
-Prefer a **modular monolith with strict boundaries** for the first production system unless concrete evidence justifies an earlier service split. Preserve event contracts so modules can be extracted later.
-
-Avoid:
-
-- premature microservices;
-- copying entire donor applications into the product;
-- mixing patient clinical data with public marketplace/search data without explicit boundaries;
-- AI-generated clinical claims without provenance;
-- unconstrained autonomous agents making clinical routing decisions;
-- giving AI sandboxes unrestricted network, production credentials or patient-record access;
-- retaining raw voice recordings by default when a transcript is sufficient;
-- paid ranking disguised as relevance;
-- storing sensitive health data merely because it might be useful later;
-- building a custom closed clinical data model that prevents FHIR interoperability;
-- depending on a single EHR/HIS vendor contract for core booking.
-
-## Source adoption rule
-
-`docs/SOURCES.md` is a **source landscape**, not a command to vendor-copy everything.
-
-For each source proposed for direct code reuse, Astro must record:
-
-1. exact upstream repository and commit/tag;
-2. exact files/components to adopt;
-3. founder authorization reference/status;
-4. upstream license and notices;
-5. changes made for Zyara;
-6. security review status;
-7. reason to reuse rather than reimplement;
-8. upgrade/fork maintenance strategy.
-
-If reuse depends on a founder-held permission beyond the public upstream license, record the permission basis and scope separately rather than assuming that the public license terms were changed.
-
-Do not import a donor dependency or code tree without this record.
+- **AI may interpret, navigate, explain and propose; structured Zyara systems own facts and actions.**
+- Voice is a first-class patient input surface using the same intent/safety/search/tool pipeline as text.
+- Verified-visit review mechanics are preferred over open anonymous internet reviews.
+- Paid status must never improve organic ranking.
+- FHIR-aligned domain modeling, provenance, privacy, consent, tenant isolation and auditability remain architecture constraints.
 
 ## Initial implementation target
 
-The first useful release should prove the core flywheel in one Saudi launch geography:
+The first useful public product should prove the discovery flywheel:
 
-1. provider/facility graph;
-2. map + multilingual healthcare search;
-3. trustworthy provider profiles;
-4. verified onboarding/claiming;
-5. appointment availability abstraction;
-6. free patient booking;
-7. verified post-visit review loop;
-8. provider analytics;
-9. safe AI navigation over the same structured graph.
+1. trustworthy provider/facility graph;
+2. doctor, clinic/hospital, specialty and service discovery;
+3. map/list parity and nearby-care context;
+4. distance/travel-time handling and open-now/hours;
+5. branch-aware phone, WhatsApp, directions, website and booking/access actions;
+6. deep doctor and facility profiles;
+7. multi-location practitioners;
+8. insurance visibility at the correct scope;
+9. independent doctor/facility reputation;
+10. provider claim/correction and Clinic Portal V1;
+11. recurring freshness attestation;
+12. natural-language AI search and explainable match reasons;
+13. staged voice discovery over the same structured pipeline.
 
-Text AI navigation should be proven before voice becomes a production dependency. Voice can then reuse the exact same structured intent/search/safety pipeline rather than creating a second clinical reasoning path.
+Do not make full EHR/HIS replacement, broad clinical records, prescribing, full claims/revenue cycle, complete practice-management OS, full messaging, mobile check-in/queue, full telehealth, AI phone receptionist or unrestricted autonomous agents V1 discovery blockers.
 
-Patient longitudinal health records and deeper FHIR clinical integrations are foundational, but should follow the discovery/booking trust loop in dependency order rather than block the first public search experience.
+## Planning directive
+
+Before the next major implementation wave, reconcile live repository truth and produce:
+
+- an existing-work preservation matrix;
+- revised V1 requirements and explicit exclusions;
+- the minimum data-model delta;
+- search/ranking and specialty/service taxonomy contracts;
+- independent practitioner/facility review architecture;
+- Clinic Portal V1 plan;
+- AI/voice V1 plan;
+- competitor adopt/defer/reject matrix;
+- dependency-ordered phases, slices and tasks;
+- tests, evidence, rollback/recovery and completion criteria per task;
+- a clean implementation handoff based on exact live truth.
+
+Use `docs/research/ZYARA_V1_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md` as the planning quality gate.
+
+## Delivery philosophy
+
+Prefer a modular monolith with strict boundaries unless evidence justifies extraction.
+
+Preserve one coherent provider graph, one search contract, one review/trust architecture, one profile/freshness model and one text/voice intent pipeline.
+
+Avoid:
+
+- duplicate practitioner records per clinic;
+- global insurance booleans;
+- blended doctor/facility reputation;
+- second AI/voice reasoning stacks;
+- premature microservices;
+- copying competitor trade dress;
+- copying entire donor applications into Zyara;
+- AI-generated provider/clinical facts without provenance;
+- unrestricted agents with production patient access;
+- paid ranking disguised as relevance;
+- storing sensitive data merely because it may be useful later.
+
+## Source adoption rule
+
+`docs/SOURCES.md` is a source landscape, not an instruction to vendor-copy everything.
+
+For direct code reuse, preserve exact upstream repository/version, files/components adopted, authorization basis, license/notices, security review, Zyara modifications and maintenance strategy.
+
+## Evidence boundary
+
+Repository implementation, synthetic qualification, real-provider validation, real-patient/pilot validation, commercial validation and production authorization are separate status dimensions.
+
+Never convert a technically complete repository feature into a production-validation claim without evidence.
 
 ## Completion standard
 
-A phase is not complete because screens exist. It is complete only when its acceptance criteria, automated tests, privacy/security gates, observability, documentation, localization behavior, and failure-mode behavior are proven.
+A planning pass is complete only when the V1 reconciliation, preservation matrix, canonical deltas, dependency graph, phases/slices/tasks, acceptance gates and implementation handoff are internally consistent and live-truth grounded.
+
+A product phase is not complete because screens exist. Acceptance criteria, tests, privacy/security behavior, evidence, localization, observability and failure modes must be proven at the level appropriate to that phase.
