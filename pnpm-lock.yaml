@@ -124,6 +124,12 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/analytics:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
   packages/authorization:
     dependencies:
       '@zyara/identity':
@@ -519,6 +525,19 @@ importers:
       '@zyara/trust-governance':
         specifier: workspace:*
         version: link:../../packages/trust/governance
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/m024:
+    dependencies:
+      '@zyara/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
     devDependencies:
       tsx:
         specifier: 4.19.2
