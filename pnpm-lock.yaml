@@ -94,6 +94,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@zyara/communication':
+        specifier: workspace:*
+        version: link:../../packages/communication
       '@zyara/domain':
         specifier: workspace:*
         version: link:../../packages/domain

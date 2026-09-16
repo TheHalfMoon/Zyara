@@ -12,6 +12,7 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
+    "@zyara/communication": "workspace:*",
     "@zyara/domain": "workspace:*",
     "@zyara/events": "workspace:*"
   },
