@@ -340,9 +340,9 @@ The V1 clinic portal should be designed for structured profile management and fu
 9. **AI is the interaction layer, not the database.** Typed tools and graph facts remain authoritative.
 10. **The clinic portal is the supply-maintenance engine.** V1 provider software exists first to keep public healthcare data accurate and make Zyara valuable to providers.
 
-## Planning implications for AScout
+## Planning implications
 
-AScout should treat this synthesis as evidence input, not as a feature checklist to copy wholesale.
+Treat this synthesis as evidence input, not as a feature checklist to copy wholesale.
 
 The planning pass should:
 
