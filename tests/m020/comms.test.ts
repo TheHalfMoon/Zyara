@@ -101,7 +101,8 @@ describe("M020 consent-aware orchestration", () => {
     assert.equal(smsSegmentsFor(latin).encoding, "gsm7");
   });
   it("idempotency digest is stable for replays", () => {
-    const { id: _a, queuedAtUtc: _b, attemptCount: _c, ...core } = msg;
+    const { id: _omitId, queuedAtUtc: _omitQueued, attemptCount: _omitAttempt, ...core } = msg;
+    void _omitId; void _omitQueued; void _omitAttempt;
     assert.equal(digestMessage(core), digestMessage(core));
   });
 });
