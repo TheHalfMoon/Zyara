@@ -21,7 +21,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
   return (
     <main className="zyara-shell" lang={active} dir={ar ? "rtl" : "ltr"}>
       <nav className="zyara-nav" aria-label="Primary navigation">
-        <a className="zyara-brand" href={`/${active}`} aria-label="Zyara home">
+        <a className="zyara-brand" href={`/${active}`} aria-label="Zyara start">
           <span className="zyara-mark" aria-hidden="true">Z</span>
           <span className="zyara-wordmark">Zyara</span>
         </a>
@@ -47,7 +47,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
             <div className="zyara-tags" style={{ marginTop: 18 }}>
               {place.specialties.map((specialty) => <span className="zyara-tag" key={specialty}>{specialty}</span>)}
             </div>
-            <div className="zyara-card-actions" style={{ marginTop: 24 }}>
+            <div className="zyara-card-actions" aria-label="profile-actions" style={{ marginTop: 24 }}>
               <a className="zyara-primary" href={`/${active}/book?branch=${place.id}`}>{ar ? "احجز موعدًا" : "Book appointment"}</a>
               <a className="zyara-secondary" href={directionsUrl(place)} target="_blank" rel="noreferrer">{ar ? "الاتجاهات" : "Directions"} ↗</a>
               <a className="zyara-secondary" href={mapUrl(place)} target="_blank" rel="noreferrer">{ar ? "افتح في الخرائط" : "Open in Maps"} ↗</a>
@@ -111,8 +111,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ locale
             <div className="zyara-hours">
               <div className="zyara-hour-row"><span>{ar ? "وضع الحجز" : "Booking mode"}</span><strong>{ar ? "حجز مباشر تجريبي" : "Preview native booking"}</strong></div>
               <div className="zyara-hour-row"><span>{ar ? "التأمين" : "Insurance"}</span><strong>{ar ? "تحقق مع العيادة" : "Confirm with clinic"}</strong></div>
-              <div className="zyara-hour-row"><span>{ar ? "آخر تحديث" : "Freshness"}</span><strong>2026-09-16</strong></div>
+              <div className="zyara-hour-row"><span>{ar ? "آخر تحديث" : "Freshness"}</span><strong>observed 2026-09-16</strong></div>
             </div>
+            <p className="zyara-demo-note" style={{ marginTop: 14 }}>Insurance acceptance not guaranteed · Booking: preview native</p>
           </aside>
         </div>
 
