@@ -35,7 +35,7 @@ Zyara is a public repository. Founder-owned private repositories discovered thro
 | [TheHalfMoon/commandF](https://github.com/TheHalfMoon/commandF) | FHIR package resolution, conformance/breaking-change intelligence and interoperability change impact | ENGINEERING / INTEROP REFERENCE |
 | [TheHalfMoon/Himsat](https://github.com/TheHalfMoon/Himsat) | local-first capture/transcription/diarization, evidence-linked summaries, document intelligence | REFERENCE for ambient/visit intelligence |
 | [TheHalfMoon/Wispral](https://github.com/TheHalfMoon/Wispral) | voice command vs aside, interruption, structured agent control, provenance and local-first voice | REFERENCE for voice/phone UX |
-| [TheHalfMoon/Qdrat](https://github.com/TheHalfMoon/Qdrat) | staff lifecycle, roles, attendance, leave, assets, helpdesk and reporting patterns | REFERENCE for clinic workforce/admin |
+| [TheHalfMoon/Qdrat](https://github.com/TheHalfMoon/Qdrat) | clinic-workforce donor: organization/roles, shifts/leave, staff lifecycle, approvals, helpdesk/tasks, WhatsApp, reporting and audit patterns; see dedicated deep dive | HIGH-PRIORITY SELECTIVE ADAPTATION CANDIDATE |
 | [TheHalfMoon/Signthos](https://github.com/TheHalfMoon/Signthos) | document/PDF/e-sign workflows and provenance discipline | REFERENCE for consent/forms/documents |
 | [TheHalfMoon/Sentrdel](https://github.com/TheHalfMoon/Sentrdel) | security invariants, authorization evidence, explicit coverage gaps and policy control-plane patterns | SECURITY / ENGINEERING |
 | [TheHalfMoon/Tarif](https://github.com/TheHalfMoon/Tarif) | deterministic AI-agent action authority, default deny, secret isolation, receipts and enforcement coverage | HIGH-PRIORITY REFERENCE for Zyara automation authority |
@@ -56,6 +56,7 @@ Zyara is a public repository. Founder-owned private repositories discovered thro
 
 | Source | Zyara use | Initial mode |
 |---|---|---|
+| [block/buzz](https://github.com/block/buzz) | human-agent collaboration, scoped identities, event/activity streams, workflow approval patterns, tenant isolation, search and tamper-evident audit concepts; see dedicated deep dive | HIGH-PRIORITY SELECTIVE ADAPTATION / REFERENCE |
 | [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) | real-time map/layer state, entity selection and contextual voice/tool UX | PATTERN_REIMPLEMENTED |
 | [openimsdk/openmeeting](https://github.com/openimsdk/openmeeting) | meeting/mobile component patterns | ADAPTATION CANDIDATE after exact qualification |
 | [suitenumerique/meet](https://github.com/suitenumerique/meet) | LiveKit-based self-hostable meeting product, recording/transcription/telephony patterns | STRONG ZYARA CONNECT CANDIDATE |

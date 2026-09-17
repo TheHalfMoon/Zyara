@@ -89,24 +89,26 @@ Read these first:
 5. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
 6. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
 7. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
-8. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
-9. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
-10. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
-11. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
-12. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
-13. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
-14. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
-15. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
-16. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
-17. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
-18. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
-19. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
-20. `docs/canonical/ZYARA_ROADMAP.md`
-21. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
-22. current V1 founder/scope/canonicalization documents;
-23. `docs/VOICE_AGENT_RUNTIME.md`
-24. `docs/COMPETITORS.md`
-25. `docs/SOURCES.md`
+8. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
+9. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
+10. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+11. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+12. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+13. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+14. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+15. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+16. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+17. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+18. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+19. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+20. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+21. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+22. `docs/canonical/ZYARA_ROADMAP.md`
+23. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+24. current V1 founder/scope/canonicalization documents;
+25. `docs/VOICE_AGENT_RUNTIME.md`
+26. `docs/COMPETITORS.md`
+27. `docs/SOURCES.md`
 
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
 
@@ -331,6 +333,7 @@ The founder has explicitly stated permission to copy/use source from these suppl
 - Jitsi organization / use `jitsi/jitsi-meet` as the primary evaluated meeting repository unless research selects another exact component;
 - `bigbluebutton/bigbluebutton`
 - `nextcloud/talk-desktop`
+- `block/buzz`
 - relevant `TheHalfMoon/*` repositories.
 
 Read `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`.
@@ -340,6 +343,7 @@ Permission does not waive exact provenance, license/NOTICE handling, security re
 Mandatory source research includes:
 
 - founder-supplied meeting/media sources;
+- `block/buzz`;
 - `TheHalfMoon/MedScale`;
 - `TheHalfMoon/MESC`;
 - `TheHalfMoon/commandMed`;
@@ -396,9 +400,19 @@ Define message purpose, consent/preferences, template/version, locale, delivery 
 
 Clinic operations require staff roles, branch/team assignments, shifts/availability, leave, onboarding/offboarding and credential/privilege lifecycle.
 
-Study `TheHalfMoon/Qdrat`/Horilla patterns where useful.
+Study `TheHalfMoon/Qdrat` deeply, starting with `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`. Do not treat Qdrat as a generic name-only reference: reconcile workforce structure, shifts, leave, staff lifecycle, approvals, helpdesk/tasks, WhatsApp, reporting, audit and company-scoping patterns against Zyara's healthcare-specific model.
 
 Do not automatically build full payroll/recruitment/accounting into the healthcare core. Astro must classify each broad ERP function as native Network 1.0, integration, later extension or reject.
+
+## Human-agent clinic collaboration boundary
+
+Read `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md` and evaluate `block/buzz` at an exact revision.
+
+Astro must plan a transparent operations collaboration plane in which humans and authorized agents can share task/workflow context while retaining distinct identities, permissions and audit trails. Study Buzz for channels/threads, human-agent membership, activity/event streams, workflow approval patterns, tenant scoping, search and tamper-evident audit concepts.
+
+Do **not** make Nostr/Buzz events the canonical healthcare record. Appointments, encounters, prescriptions, claims, results and other authoritative healthcare state remain owned by Zyara's typed domain systems/FHIR/integration boundaries. Generic shell/file MCP tools are engineering-only and must not be exposed to production care agents.
+
+Any `buzz-workflow` or `buzz-audit` reuse requires exact component qualification, maturity verification, security review and comparison with the chosen durable workflow/audit architecture before admission.
 
 ## Imaging/labs/documents
 
@@ -541,6 +555,10 @@ Front desk, calendar/capacity, patient operations, staff/roles, communications, 
 ### 7A. AI-era automation and control-plane plan
 
 Clinic-work inventory; `ELIMINATE / AUTOMATE / ASSIST / KEEP_HUMAN` decisions; GenHealth/Plena feature reconciliation; workflow runtime/state/versioning; authority classes; typed connectors; workflow discovery/compiler; API-first vs browser/fax/phone fallback; human exception queue; action receipts/outcome verification; operator control plane; staged rollout, SLA/anomaly and quality-review model.
+
+### 7B. Workforce and human-agent collaboration plan
+
+Qdrat donor reconciliation for organization/workforce, shifts/leave, staff lifecycle, approvals, WhatsApp, helpdesk/tasks and reports; Buzz donor reconciliation for human-agent identity, operations rooms/activity, workflow approvals, tenant scoping and audit concepts; explicit healthcare source-of-truth boundaries; copy/adapt/reject decisions at exact component revisions.
 
 ### 8. Doctor workspace plan
 

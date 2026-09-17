@@ -182,6 +182,8 @@ REJECT
 
 - [ ] all founder-supplied meeting/media repositories assessed;
 - [ ] relevant TheHalfMoon repositories assessed;
+- [ ] `TheHalfMoon/Qdrat@e2d288940aab52af881786678b2fc86dfa5c272a` deep-dive reconciliation completed, including exact copy/adapt/reject decisions and file-level provenance for admitted code;
+- [ ] `block/buzz@4ab4f786085a23fe6126529861840eff6048ceee` deep-dive reconciliation completed, including working-vs-incomplete feature verification and exact crate/file admission decisions;
 - [ ] OpenEMR assessed;
 - [ ] Medplum assessed;
 - [ ] OpenMRS/Bahmni assessed;
@@ -333,8 +335,23 @@ GenHealth and Plena Health require explicit feature-family reconciliation from c
 - [ ] Saudi/MENA competitors and official authorities are explicitly covered.
 - [ ] RCM, prior-auth, patient-engagement, ambient-clinical, telehealth, interoperability, imaging/labs, eRx and workforce categories are not omitted.
 - [ ] Founder-owned public sources `commandF`, `Tarif`, `Ecra`, `Delethos`, `MSTR` and `Flake` are evaluated where relevant.
+- [ ] Qdrat workforce/WhatsApp/reporting/audit candidates and Buzz human-agent/workflow/audit candidates are mapped to bounded Zyara domains without replacing healthcare source-of-truth models.
 - [ ] Private founder-owned repository names/content are not disclosed into this public repository without separate founder authorization for public disclosure.
 - [ ] Overlapping source platforms are converged to a small maintainable dependency/adaptation set rather than accumulated.
+
+## 22. Qdrat + Buzz donor reconciliation
+
+- [ ] Qdrat workforce entities are mapped around, not over, `Practitioner` / `PractitionerRole` / healthcare organization semantics.
+- [ ] Qdrat shifts/leave/approvals are reconciled with appointment/resource scheduling authority.
+- [ ] Qdrat WhatsApp code is evaluated for credential isolation, webhook verification, templates/flows, idempotency, consent and PHI-safe adaptation.
+- [ ] Qdrat report/subscription/helpdesk/task patterns are reconciled with Zyara Insights and the human exception queue.
+- [ ] Payroll, recruitment, biometrics, geofencing and face-recognition scope have explicit `BUILD / INTEGRATE / DEFER / REJECT` decisions.
+- [ ] Buzz human/agent identity pattern is mapped to scoped Zyara service/agent identities.
+- [ ] Buzz activity/event concepts are used only as operational context/receipts, not canonical clinical/financial truth.
+- [ ] `buzz-workflow` is compared against the selected durable workflow engine/current jobs before any copy/adaptation.
+- [ ] `buzz-audit` is compared against Zyara audit/provenance requirements before any copy/adaptation.
+- [ ] Generic shell/file MCP capabilities are explicitly excluded from production clinic/care agents.
+- [ ] Exact source revisions, file/crate paths, license/NOTICE/provenance, security review and update strategy are recorded for every admitted Qdrat/Buzz component.
 
 ## Completion marker
 

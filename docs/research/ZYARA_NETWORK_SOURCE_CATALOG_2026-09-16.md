@@ -3,7 +3,7 @@
 **Research date:** 2026-09-16
 **Purpose:** give Astro a focused donor/reference set for the complete Zyara Network product.
 
-> **AI-era expansion:** also read [`ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md) for the expanded founder-owned/public automation, interoperability, workflow, communications, security and infrastructure source universe.
+> **AI-era expansion:** also read [`ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md) for the expanded founder-owned/public automation, interoperability, workflow, communications, security and infrastructure source universe. For source-level donor analysis, also read [`ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`](ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md) and [`ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`](ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md).
 
 
 ## Source-use rule
@@ -49,6 +49,7 @@ All `*_CANDIDATE` modes require Astro's exact-source qualification before implem
 | [bigbluebutton/bigbluebutton](https://github.com/bigbluebutton/bigbluebutton) | Group care, patient education, multidisciplinary case conferences, breakout rooms, polls, whiteboard, shared notes, recording/playback and session analytics. | REFERENCE_ONLY / group-care component study |
 | [nextcloud/talk-desktop](https://github.com/nextcloud/talk-desktop) | Desktop/background call-client patterns, tray lifecycle and cross-platform packaging. Useful if Zyara Doctor/Clinic later needs a dedicated desktop communications client. | REFERENCE_ONLY / ADAPTED_DERIVATIVE_CANDIDATE |
 | [livekit/livekit](https://github.com/livekit/livekit) | Real-time media server/infrastructure candidate; Suite Meet already demonstrates this architecture. Keep clinical state outside the media engine. | DEPENDENCY_CANDIDATE |
+| [block/buzz](https://github.com/block/buzz) | Human-agent workspace, scoped identities, operational event/activity streams, workflow approval patterns, search, tenant isolation and tamper-evident audit concepts. Not a healthcare source-of-truth model. | SELECTIVE ADAPTATION / REFERENCE CANDIDATE |
 
 ### Zyara Connect source decision Astro must make
 
@@ -79,7 +80,7 @@ The GitHub search of founder-owned repositories identified these as materially u
 | [TheHalfMoon/commandMed](https://github.com/TheHalfMoon/commandMed) | Medical AI safety, Arabic/English medical intelligence evaluation, evidence/tool separation, deterministic safety checks and abstention/escalation patterns. | Research only until separately qualified; never use it as autonomous prescribing/diagnosis authority. |
 | [TheHalfMoon/Himsat](https://github.com/TheHalfMoon/Himsat) | Local-first audio capture, transcription, diarization, source-linked summaries, document intelligence and portable context. Strong reference for ambient visit capture/consultation intelligence. | Recording/transcription requires explicit healthcare consent/privacy design. |
 | [TheHalfMoon/Wispral](https://github.com/TheHalfMoon/Wispral) | Voice control semantics, interruption/cancellation, ambiguity/provenance, structured session state and local-first voice architecture. | Reference for Zyara voice/phone UX, not direct medical authority. |
-| [TheHalfMoon/Qdrat](https://github.com/TheHalfMoon/Qdrat) | Staff directory, onboarding/offboarding, roles, attendance/time, leave, performance, assets, helpdesk and reporting patterns inherited from Horilla. | Use for clinic workforce/admin patterns; do not transplant generic HR identity into healthcare privilege models. |
+| [TheHalfMoon/Qdrat](https://github.com/TheHalfMoon/Qdrat) | Staff/workforce donor: org structure, shifts/leave, onboarding/offboarding, approvals, helpdesk/tasks, WhatsApp, notifications, reporting, audit and company scoping. Dedicated deep dive pins `e2d288940aab52af881786678b2fc86dfa5c272a`. | High-priority selective adaptation source for clinic workforce/admin; preserve healthcare identity/privilege authority and perform file-level Horilla/LGPL provenance review before copying. |
 | [TheHalfMoon/Signthos](https://github.com/TheHalfMoon/Signthos) | Document workflow, PDF and e-signature planning; upstream Documenso/Stirling-PDF research. | Useful for intake/consent/admin signatures and document operations. |
 | [TheHalfMoon/Sentrdel](https://github.com/TheHalfMoon/Sentrdel) | Cross-layer authorization invariants, security evidence/control-plane patterns, local-first policy and explicit coverage gaps. | Engineering/security reference for tenant isolation and sensitive operations. |
 | [TheHalfMoon/Golam](https://github.com/TheHalfMoon/Golam) | Local-first agent OS, model/tool/memory/policy separation. | Later provider/patient agent architecture reference only. |
