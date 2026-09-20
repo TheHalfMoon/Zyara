@@ -72,6 +72,7 @@ export interface LeaveRequest {
   id: WorkforceId;
   tenantId: string;
   staffAssignmentId: WorkforceId;
+  branchId: string;
   startsOn: string;
   endsOn: string;
   status: LeaveRequestStatus;
@@ -223,6 +224,9 @@ export class WorkforceStore {
     const assignment = this.staffAssignments.get(request.staffAssignmentId);
     if (!assignment) this.fail("WORKFORCE_UNKNOWN_REFERENCE", `assignment ${request.staffAssignmentId}`);
     this.checkTenant(assignment.tenantId, scopeTenant);
+    if (assignment.branchId !== request.branchId) {
+      this.fail("WORKFORCE_CROSS_BRANCH", "leave branch must match the staff assignment branch");
+    }
     if (!validDate(request.startsOn) || !validDate(request.endsOn) || request.endsOn < request.startsOn) {
       this.fail("WORKFORCE_INVALID_INTERVAL", "leave dates must be valid and ordered");
     }
