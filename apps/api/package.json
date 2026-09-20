@@ -12,13 +12,14 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
+    "@zyara/authorization": "workspace:*",
     "@zyara/contracts": "workspace:*",
     "@zyara/domain": "workspace:*",
+    "@zyara/enterprise-access": "workspace:*",
     "@zyara/identity": "workspace:*",
-    "@zyara/authorization": "workspace:*",
-    "@zyara/verification": "workspace:*",
     "@zyara/search": "workspace:*",
     "@zyara/search-contract": "workspace:*",
+    "@zyara/verification": "workspace:*",
     "fastify": "5.12.4",
     "pg": "8.13.1"
   },
