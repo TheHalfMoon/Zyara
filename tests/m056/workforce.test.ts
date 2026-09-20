@@ -159,6 +159,7 @@ describe("W1 workforce graph", () => {
       id: "leave-1",
       tenantId: "t1",
       staffAssignmentId: "assignment-1",
+      branchId: "branch-1",
       startsOn: "2026-09-22",
       endsOn: "2026-09-23",
       status: "requested",
@@ -168,6 +169,21 @@ describe("W1 workforce graph", () => {
     const leave = store.leaveRequests.get("leave-1");
     assert.equal(leave?.status, "requested");
     assert.equal(leave?.provenance.source, "qdrat-adapted");
+
+    assert.throws(
+      () => store.addLeaveRequest({
+        id: "leave-cross-branch",
+        tenantId: "t1",
+        staffAssignmentId: "assignment-1",
+        branchId: "branch-2",
+        startsOn: "2026-09-24",
+        endsOn: "2026-09-24",
+        status: "requested",
+        approverAccountId: null,
+        provenance,
+      }, "t1"),
+      (error: unknown) => error instanceof WorkforceError && error.code === "WORKFORCE_CROSS_BRANCH",
+    );
   });
 
   it("migration enforces tenant RLS and keeps workforce separate from clinical authority", () => {
