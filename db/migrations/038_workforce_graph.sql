@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS departments (
   source_revision TEXT NOT NULL,
   observed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (id, tenant_id),
   FOREIGN KEY (organization_id, tenant_id)
     REFERENCES organizations(id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (branch_id, tenant_id)
@@ -31,8 +32,6 @@ CREATE TABLE IF NOT EXISTS departments (
     REFERENCES departments(id, tenant_id) ON DELETE RESTRICT
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS departments_id_tenant_uidx
-  ON departments(id, tenant_id);
 
 CREATE TABLE IF NOT EXISTS workforce_teams (
   id TEXT PRIMARY KEY,
@@ -114,6 +113,7 @@ CREATE TABLE IF NOT EXISTS leave_requests (
   id TEXT PRIMARY KEY,
   tenant_id TEXT NOT NULL,
   staff_assignment_id TEXT NOT NULL,
+  branch_id TEXT NOT NULL,
   starts_on DATE NOT NULL,
   ends_on DATE NOT NULL,
   status TEXT NOT NULL CHECK (status IN ('requested', 'approved', 'rejected', 'cancelled')),
@@ -124,7 +124,9 @@ CREATE TABLE IF NOT EXISTS leave_requests (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CHECK (ends_on >= starts_on),
   FOREIGN KEY (staff_assignment_id, tenant_id)
-    REFERENCES staff_assignments(id, tenant_id) ON DELETE RESTRICT
+    REFERENCES staff_assignments(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (branch_id, tenant_id)
+    REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT
 );
 
 ALTER TABLE departments ENABLE ROW LEVEL SECURITY;
