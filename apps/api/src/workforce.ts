@@ -220,7 +220,7 @@ export function registerWorkforceRoutes(app: FastifyInstance) {
         branchId: body.branchId,
         startsAt: body.startsAt,
         endsAt: body.endsAt,
-        status: body.status ?? "planned",
+        status: "planned",
         provenance: nativeProvenance(),
       };
       workforceStore.addShift(shift, claims.tenant);
@@ -250,8 +250,8 @@ export function registerWorkforceRoutes(app: FastifyInstance) {
         branchId: body.branchId,
         startsOn: body.startsOn,
         endsOn: body.endsOn,
-        status: body.status ?? "requested",
-        approverAccountId: body.approverAccountId ?? null,
+        status: "requested",
+        approverAccountId: null,
         provenance: nativeProvenance(),
       };
       workforceStore.addLeaveRequest(leave, claims.tenant);
