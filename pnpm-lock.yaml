@@ -29,6 +29,9 @@ importers:
       '@zyara/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@zyara/enterprise-access':
+        specifier: workspace:*
+        version: link:../../packages/enterprise-access
       '@zyara/identity':
         specifier: workspace:*
         version: link:../../packages/identity
