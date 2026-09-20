@@ -85,7 +85,8 @@ export type WorkforceErrorCode =
   | "WORKFORCE_CROSS_TENANT"
   | "WORKFORCE_CROSS_BRANCH"
   | "WORKFORCE_UNKNOWN_REFERENCE"
-  | "WORKFORCE_INVALID_INTERVAL";
+  | "WORKFORCE_INVALID_INTERVAL"
+  | "WORKFORCE_INVALID_STATUS";
 
 export class WorkforceError extends Error {
   code: WorkforceErrorCode;
@@ -97,7 +98,13 @@ export class WorkforceError extends Error {
 }
 
 function validDate(value: string): boolean {
-  return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+  const match = /^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }
 
 function validInstant(value: string): boolean {
@@ -195,6 +202,9 @@ export class WorkforceStore {
         this.fail("WORKFORCE_UNKNOWN_REFERENCE", "assignment team belongs to another organization");
       }
       this.checkBranch(team.branchId, assignment.branchId);
+      if (assignment.departmentId && team.departmentId && team.departmentId !== assignment.departmentId) {
+        this.fail("WORKFORCE_UNKNOWN_REFERENCE", "assignment team belongs to another department");
+      }
     }
     // practitionerRoleId is only an opaque linkage. It never grants clinical
     // authority; credential/privilege validation remains in the provider graph.
@@ -209,6 +219,9 @@ export class WorkforceStore {
     this.checkTenant(assignment.tenantId, scopeTenant);
     if (assignment.branchId !== shift.branchId) {
       this.fail("WORKFORCE_CROSS_BRANCH", "shift branch must match the staff assignment branch");
+    }
+    if (shift.status !== "planned" && shift.status !== "cancelled") {
+      this.fail("WORKFORCE_INVALID_STATUS", "unsupported shift status");
     }
     if (!validInstant(shift.startsAt) || !validInstant(shift.endsAt) || Date.parse(shift.endsAt) <= Date.parse(shift.startsAt)) {
       this.fail("WORKFORCE_INVALID_INTERVAL", "shift endsAt must be after startsAt");
@@ -226,6 +239,9 @@ export class WorkforceStore {
     this.checkTenant(assignment.tenantId, scopeTenant);
     if (assignment.branchId !== request.branchId) {
       this.fail("WORKFORCE_CROSS_BRANCH", "leave branch must match the staff assignment branch");
+    }
+    if (!["requested", "approved", "rejected", "cancelled"].includes(request.status)) {
+      this.fail("WORKFORCE_INVALID_STATUS", "unsupported leave status");
     }
     if (!validDate(request.startsOn) || !validDate(request.endsOn) || request.endsOn < request.startsOn) {
       this.fail("WORKFORCE_INVALID_INTERVAL", "leave dates must be valid and ordered");
