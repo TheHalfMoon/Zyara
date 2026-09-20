@@ -247,6 +247,7 @@ export function registerWorkforceRoutes(app: FastifyInstance) {
         id: body.id,
         tenantId: claims.tenant,
         staffAssignmentId: body.staffAssignmentId,
+        branchId: body.branchId,
         startsOn: body.startsOn,
         endsOn: body.endsOn,
         status: body.status ?? "requested",
