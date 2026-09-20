@@ -8,8 +8,12 @@ CREATE UNIQUE INDEX IF NOT EXISTS organizations_id_tenant_uidx
   ON organizations(id, tenant_id);
 CREATE UNIQUE INDEX IF NOT EXISTS branch_locations_id_tenant_uidx
   ON branch_locations(id, tenant_id);
+CREATE UNIQUE INDEX IF NOT EXISTS branch_locations_id_org_tenant_uidx
+  ON branch_locations(id, organization_id, tenant_id);
 CREATE UNIQUE INDEX IF NOT EXISTS practitioner_roles_id_tenant_uidx
   ON practitioner_roles(id, tenant_id);
+CREATE UNIQUE INDEX IF NOT EXISTS practitioner_roles_id_branch_tenant_uidx
+  ON practitioner_roles(id, branch_id, tenant_id);
 
 CREATE TABLE IF NOT EXISTS departments (
   id TEXT PRIMARY KEY,
@@ -26,8 +30,8 @@ CREATE TABLE IF NOT EXISTS departments (
   UNIQUE (id, tenant_id),
   FOREIGN KEY (organization_id, tenant_id)
     REFERENCES organizations(id, tenant_id) ON DELETE RESTRICT,
-  FOREIGN KEY (branch_id, tenant_id)
-    REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (branch_id, organization_id, tenant_id)
+    REFERENCES branch_locations(id, organization_id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (parent_department_id, tenant_id)
     REFERENCES departments(id, tenant_id) ON DELETE RESTRICT
 );
@@ -47,8 +51,8 @@ CREATE TABLE IF NOT EXISTS workforce_teams (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   FOREIGN KEY (organization_id, tenant_id)
     REFERENCES organizations(id, tenant_id) ON DELETE RESTRICT,
-  FOREIGN KEY (branch_id, tenant_id)
-    REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (branch_id, organization_id, tenant_id)
+    REFERENCES branch_locations(id, organization_id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (department_id, tenant_id)
     REFERENCES departments(id, tenant_id) ON DELETE RESTRICT
 );
@@ -73,16 +77,17 @@ CREATE TABLE IF NOT EXISTS staff_assignments (
   observed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   CHECK (effective_to IS NULL OR effective_to >= effective_from),
+  CHECK (practitioner_role_id IS NULL OR branch_id IS NOT NULL),
   FOREIGN KEY (organization_id, tenant_id)
     REFERENCES organizations(id, tenant_id) ON DELETE RESTRICT,
-  FOREIGN KEY (branch_id, tenant_id)
-    REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (branch_id, organization_id, tenant_id)
+    REFERENCES branch_locations(id, organization_id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (department_id, tenant_id)
     REFERENCES departments(id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (team_id, tenant_id)
     REFERENCES workforce_teams(id, tenant_id) ON DELETE RESTRICT,
-  FOREIGN KEY (practitioner_role_id, tenant_id)
-    REFERENCES practitioner_roles(id, tenant_id) ON DELETE RESTRICT
+  FOREIGN KEY (practitioner_role_id, branch_id, tenant_id)
+    REFERENCES practitioner_roles(id, branch_id, tenant_id) ON DELETE RESTRICT
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS staff_assignments_id_tenant_uidx
