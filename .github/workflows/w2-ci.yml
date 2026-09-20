@@ -1,0 +1,32 @@
+name: w2-ci
+on:
+  push:
+    branches:
+      - "feat/zyara-network-w2-coverage"
+  pull_request:
+    paths:
+      - "packages/enterprise-access/**"
+      - "apps/api/**"
+      - "db/migrations/039_coverage_exceptions.sql"
+      - "tests/m056/**"
+      - "docs/evidence/W2/**"
+      - ".github/workflows/w2-ci.yml"
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/enterprise-access typecheck
+      - run: pnpm --filter @zyara/api typecheck
+      - run: pnpm --filter @zyara/m056-tests test
+      - run: pnpm --filter @zyara/enterprise-access lint
+      - run: pnpm --filter @zyara/api lint
+      - run: pnpm --filter @zyara/m056-tests lint
+      - run: node scripts/check-boundaries.mjs
