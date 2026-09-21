@@ -1,0 +1,19 @@
+{
+  "name": "@zyara/n5c4-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo ok",
+    "typecheck": "tsx -e \"1\"",
+    "lint": "eslint .",
+    "test": "tsx --test *.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "4.19.2",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "@zyara/collaboration": "workspace:*"
+  }
+}

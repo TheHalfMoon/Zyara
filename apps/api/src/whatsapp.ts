@@ -116,6 +116,16 @@ export function registerWhatsAppRoutes(app: FastifyInstance) {
       }
 
       const digest = await sha256Hex(rawBody);
+      // N5/C4: a verified inbound provider event has no Zyara correlation id, so the boundary
+      // mints a deterministic, tenant-scoped correlation reference for the receipt. It is
+      // derived from the tenant, the account and the provider event key, so a replay produces
+      // the same reference and the receipt becomes joinable to the chain it triggers.
+      const receiptCorrelationRef = `whatsapp_${await sha256Hex(
+        new TextEncoder().encode(
+          `${runtime.descriptor.tenantId}\u0000${runtime.descriptor.id}\u0000` +
+            events.map((event) => event.providerEventKey).join("\u001f"),
+        ),
+      )}`;
       let applied = 0;
       let replayed = 0;
       const receipts: WhatsappWebhookReceipt[] = [];
@@ -131,6 +141,7 @@ export function registerWhatsAppRoutes(app: FastifyInstance) {
             status: event.status,
             payloadDigest: digest,
             receivedAt: new Date().toISOString(),
+            correlationRef: receiptCorrelationRef,
           });
           if (result.applied) applied += 1;
           else replayed += 1;
