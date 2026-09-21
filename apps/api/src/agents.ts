@@ -114,7 +114,11 @@ export function registerAgentAuthorityRoutes(app: FastifyInstance) {
   app.post("/agents", async (req, reply) => {
     try {
       const body = (req.body ?? {}) as CreateAgentBody;
-      // Secret-bearing input is categorically rejected, not ignored.
+      const branchId = text(body.branchId);
+      const { claims, decision } = scoped(req, "agents.create", branchId, WRITERS);
+      if (!decision.allow) return reply.code(403).send({ error: decision.denial });
+      // Secret-bearing input is categorically rejected, not ignored, and only
+      // after caller authentication/authorization has succeeded.
       if (body.credential !== undefined || body.token !== undefined || body.secret !== undefined) {
         return reply.code(400).send({ error: "AGENT_SECRET_INPUT_REJECTED" });
       }
@@ -122,12 +126,9 @@ export function registerAgentAuthorityRoutes(app: FastifyInstance) {
       const kind = text(body.kind);
       const displayName = text(body.displayName);
       const purpose = text(body.purpose);
-      const branchId = text(body.branchId);
       if (!id || !kind || !displayName || !purpose) {
         return reply.code(400).send({ error: "AGENT_MALFORMED" });
       }
-      const { claims, decision } = scoped(req, "agents.create", branchId, WRITERS);
-      if (!decision.allow) return reply.code(403).send({ error: decision.denial });
       const now = new Date().toISOString();
       const identity: AgentIdentity = {
         id,
@@ -184,18 +185,7 @@ export function registerAgentAuthorityRoutes(app: FastifyInstance) {
       const { id } = (req.params ?? {}) as { id?: string };
       const body = (req.body ?? {}) as GrantBody;
       const agentId = text(id);
-      const grantId = text(body.id);
-      const capability = text(body.capability);
-      const reasonCode = text(body.reasonCode);
-      const effectiveFrom = text(body.effectiveFrom);
-      const effectiveTo = text(body.effectiveTo);
-      const branchId = text(body.branchId);
-      if (!agentId || !grantId || !capability || !reasonCode || !effectiveFrom) {
-        return reply.code(400).send({ error: "AGENT_GRANT_MALFORMED" });
-      }
-      if (!(AGENT_CAPABILITIES as readonly string[]).includes(capability)) {
-        return reply.code(400).send({ error: "AGENT_INVALID_CAPABILITY" });
-      }
+      if (!agentId) return reply.code(400).send({ error: "AGENT_GRANT_MALFORMED" });
       const { claims } = requestTenant(req);
       const identity = agentAuthorityStore.identities.get(agentId);
       if (!identity || identity.tenantId !== claims.tenant) {
@@ -203,6 +193,18 @@ export function registerAgentAuthorityRoutes(app: FastifyInstance) {
       }
       const { decision } = scoped(req, "agents.grants.write", identity.branchId, WRITERS);
       if (!decision.allow) return reply.code(403).send({ error: decision.denial });
+      const grantId = text(body.id);
+      const capability = text(body.capability);
+      const reasonCode = text(body.reasonCode);
+      const effectiveFrom = text(body.effectiveFrom);
+      const effectiveTo = text(body.effectiveTo);
+      const branchId = text(body.branchId);
+      if (!grantId || !capability || !reasonCode || !effectiveFrom) {
+        return reply.code(400).send({ error: "AGENT_GRANT_MALFORMED" });
+      }
+      if (!(AGENT_CAPABILITIES as readonly string[]).includes(capability)) {
+        return reply.code(400).send({ error: "AGENT_INVALID_CAPABILITY" });
+      }
       return reply.code(201).send(agentAuthorityStore.grant({
         id: grantId,
         tenantId: claims.tenant,
