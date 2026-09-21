@@ -28,6 +28,11 @@ for (const file of [
 
 // Seed the tenant/organization/branch/staff graph as the owning role: the
 // application always connects as zyara_app, which is what the checks below use.
+// The reset makes the smoke re-runnable against an existing database; the graph
+// inserts below are conflict-tolerant because only work-queue rows are cleared.
+for (const table of ["ops_task_events", "ops_task_comments", "ops_tasks"]) {
+  await client.query(`DELETE FROM ${table}`);
+}
 await client.query(`INSERT INTO tenants(id,name) VALUES ('t1','Clinic One'),('t2','Clinic Two') ON CONFLICT DO NOTHING`);
 await client.query(
   `INSERT INTO organizations(id,tenant_id) VALUES ('org-1','t1'),('org-2','t2') ON CONFLICT DO NOTHING`,

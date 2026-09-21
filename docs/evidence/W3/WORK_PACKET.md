@@ -21,6 +21,7 @@ or financial authority.
 - `apps/api/src/tasks.ts`
 - `apps/api/src/workforce.ts` (read-only membership accessor only)
 - `apps/api/src/index.ts`
+- `apps/api/scripts/w3-task-rls-smoke.mjs`
 - `tests/m056/helpdesk.test.ts`
 - `.github/workflows/w3-ci.yml`
 - `docs/evidence/W3/**`
@@ -66,4 +67,8 @@ or financial authority.
    membership;
 8. exact-head W3 CI passes before merge;
 9. no completion claim is made for real-provider, production or external
-   validation.
+   validation;
+10. external review findings are resolved or explicitly deferred with rationale
+    (`docs/evidence/W3/OCR_REVIEW.md`), and the qualification includes a real
+    database run of the migration and its RLS policies, not only schema-text
+    assertions.

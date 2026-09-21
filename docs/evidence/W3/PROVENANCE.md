@@ -57,7 +57,45 @@ claimed decoratively.
    confirmed defect found during this work (resolved work could never be reopened
    because the terminal guard ran before the lifecycle table) was fixed forward.
 
-2. **Diff review (after implementation)** — recorded in `RESULT.md`.
+2. **Diff review (after implementation)** — two passes over the exact staged diff
+   (first pass: `authority 0.03 / isolation 0.28 / assignee 0.13 / lifecycle 0.05 /
+   security 0.23 / correctness yes 0.64 / scope 0.06 / test adequacy yes 0.91`;
+   targeted probes: `guard order yes 0.57`, `unproven claim yes 0.91`).
+   The correctness and guard-order flags were verified against the code and found a
+   real defect: idempotent replay was evaluated after assignee eligibility, so a
+   retry after the assignment expired failed instead of returning the original
+   record. That was fixed forward, with a regression test.
+3. **Diff review (final)** — after the fixes and the external review:
+   `authority 0.02 / isolation 0.14 / assignee 0.10 / lifecycle 0.03 / security 0.15 /
+   correctness no 0.41 / scope 0.03 / test adequacy yes 0.52`; targeted probes
+   `idempotency fingerprint no 0.27 / guard order no 0.43 / schema mismatch no 0.37 /
+   route authority no 0.27 / retention no 0.10 / unproven claim yes 0.85`.
+   Full result tables are in `RESULT.md`.
+
+Rejected and negative findings are preserved with rationale:
+
+- `test adequacy` remained above threshold (0.52). Verified rather than accepted:
+  each named failure mode has a concrete unit assertion or a live database
+  assertion; the residual gap is that this repository has no HTTP route test
+  harness, which is recorded in `RESULT.md` instead of being papered over.
+- `unproven claim` (0.85) is treated as a standing hazard for evidence files. The
+  response is a claims rule in `RESULT.md`: PR numbers and CI identifiers are added
+  only after they have been observed, never predicted.
+
+## External reviewer (tool, not donor code)
+
+| Item | Value |
+| --- | --- |
+| Tool | `alibaba/open-code-review` (Apache-2.0) |
+| Revision | `01cf7ff8b94c5087205eaf47a6e67f94dabb2a32`, CLI `v1.12.8 (5c7b383)` |
+| Mode | delegation mode: deterministic file selection and rule resolution; review judgement by the host agent |
+| Disposition | `REFERENCE` only — used as a review tool, nothing copied into Zyara, no runtime dependency, no license or NOTICE obligation added |
+
+Four findings were fixed (duplicate helpers, duplicated status allowlist, missing
+job `permissions`, missing job `timeout-minutes`); four were deferred with rationale
+(unpinned third-party action tag, no dependency cache, no concurrency group, and the
+tool's own exclusion of the test file and evidence documents). The exact commands,
+condensed output and the reason delegation mode was used are in `OCR_REVIEW.md`.
 
 ## Limits
 
