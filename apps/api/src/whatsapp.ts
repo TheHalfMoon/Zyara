@@ -13,7 +13,9 @@ import {
   verifyMetaChallenge,
   verifyMetaWebhookSignature,
   type WhatsappAccountDescriptor,
+  type WhatsappWebhookReceipt,
 } from "@zyara/communication";
+import { projectWhatsappReceiptActivity } from "./activity.js";
 
 interface RuntimeWhatsappAccount {
   descriptor: WhatsappAccountDescriptor;
@@ -116,6 +118,7 @@ export function registerWhatsAppRoutes(app: FastifyInstance) {
       const digest = await sha256Hex(rawBody);
       let applied = 0;
       let replayed = 0;
+      const receipts: WhatsappWebhookReceipt[] = [];
       for (const event of events) {
         try {
           const result = whatsappReceiptStore.record({
@@ -131,11 +134,24 @@ export function registerWhatsAppRoutes(app: FastifyInstance) {
           });
           if (result.applied) applied += 1;
           else replayed += 1;
+          receipts.push(result.receipt);
         } catch {
           // Same provider event key with different authenticated bytes is not
           // silently accepted: preserve evidence and force manual inspection.
           return reply.code(409).send({ error: "WHATSAPP_IDEMPOTENCY_CONFLICT" });
         }
+      }
+
+      // C2: verified provider metadata becomes derived operational activity. Only the
+      // provider event kind is projected, never a phone number, contact name or message
+      // body, and a replay is deduplicated by source event id. Projection runs after the
+      // authoritative receipt is committed and never fails the webhook response.
+      for (const receipt of receipts) {
+        await projectWhatsappReceiptActivity(
+          runtime.descriptor.tenantId,
+          runtime.descriptor.id,
+          receipt,
+        );
       }
 
       return reply.code(202).send({

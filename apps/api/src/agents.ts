@@ -28,6 +28,7 @@ import {
 } from "@zyara/collaboration";
 import { authorize, requestTenant } from "./auth.js";
 import { workforceMembershipsFor } from "./workforce.js";
+import { projectAgentIdentityActivity } from "./activity.js";
 
 export const agentIdentityStore = new AgentIdentityStore();
 
@@ -210,6 +211,9 @@ export function registerAgentRoutes(app: FastifyInstance) {
         claims.tenant,
         workforceSponsorDirectory,
       );
+      // C2: derive operational activity from the authoritative C1 event. Agent
+      // authority changes describe that authority moved; they never grant it.
+      await projectAgentIdentityActivity(claims.tenant, identity.id);
       return reply.code(201).send(identity);
     } catch (error) {
       return agentFailure(reply, error);
@@ -238,15 +242,19 @@ export function registerAgentRoutes(app: FastifyInstance) {
       const at = new Date().toISOString();
       const actor = { kind: "human" as const, accountId: claims.sub };
       if (action === "grant") {
-        return agentIdentityStore.grantCapability(id, capability as AgentCapability, actor, claims.tenant, {
+        const granted = agentIdentityStore.grantCapability(id, capability as AgentCapability, actor, claims.tenant, {
           at,
           reason: text(body.reason) ?? "",
         });
+        await projectAgentIdentityActivity(claims.tenant, granted.id);
+        return granted;
       }
-      return agentIdentityStore.revokeCapability(id, capability as AgentCapability, actor, claims.tenant, {
+      const revoked = agentIdentityStore.revokeCapability(id, capability as AgentCapability, actor, claims.tenant, {
         at,
         reason: text(body.reason) ?? "",
       });
+      await projectAgentIdentityActivity(claims.tenant, revoked.id);
+      return revoked;
     } catch (error) {
       return agentFailure(reply, error);
     }
@@ -329,7 +337,7 @@ export function registerAgentRoutes(app: FastifyInstance) {
 
 }
 
-function lifecycle(
+async function lifecycle(
   req: FastifyRequest,
   reply: { code(code: number): { send(body: unknown): unknown } },
   act: (
@@ -351,7 +359,9 @@ function lifecycle(
     }
     const { decision } = scoped(req, "workforce.agents.authority", identity.branchId, AGENT_ADMINS);
     if (!decision.allow) return reply.code(403).send({ error: decision.denial });
-    return act(id, claims.tenant, { kind: "human", accountId: claims.sub }, body);
+    const updated = act(id, claims.tenant, { kind: "human", accountId: claims.sub }, body);
+    await projectAgentIdentityActivity(claims.tenant, updated.id);
+    return updated;
   } catch (error) {
     return agentFailure(reply, error);
   }

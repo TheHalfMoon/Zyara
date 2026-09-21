@@ -22,6 +22,7 @@ import {
 } from "@zyara/enterprise-access";
 import { authorize, requestTenant } from "./auth.js";
 import { workforceMembershipsFor, workforceStore } from "./workforce.js";
+import { projectTaskActivity } from "./activity.js";
 
 export const taskStore = new OpsTaskStore();
 
@@ -182,6 +183,9 @@ export function registerTaskRoutes(app: FastifyInstance) {
         claims.tenant,
         workforceStore,
       );
+      // C2: derive operational activity from the authoritative W3 event. A projection
+      // failure is recorded and never fails or rolls back this task operation.
+      await projectTaskActivity(claims.tenant, task.id);
       return reply.code(201).send(task);
     } catch (error) {
       return taskFailure(reply, error);
@@ -206,7 +210,7 @@ export function registerTaskRoutes(app: FastifyInstance) {
       }
       const { decision } = scoped(req, "workforce.tasks.assign", task.branchId, BRANCH_MANAGERS);
       if (!decision.allow) return reply.code(403).send({ error: decision.denial });
-      return taskStore.assign(
+      const assigned = taskStore.assign(
         id,
         { accountId: assigneeAccountId, staffAssignmentId: assigneeStaffAssignmentId },
         claims.tenant,
@@ -214,6 +218,8 @@ export function registerTaskRoutes(app: FastifyInstance) {
         { kind: "human", accountId: claims.sub },
         new Date().toISOString(),
       );
+      await projectTaskActivity(claims.tenant, assigned.id);
+      return assigned;
     } catch (error) {
       return taskFailure(reply, error);
     }
@@ -234,11 +240,19 @@ export function registerTaskRoutes(app: FastifyInstance) {
       }
       const { decision } = scoped(req, "workforce.tasks.transition", task.branchId, BRANCH_WRITERS);
       if (!decision.allow) return reply.code(403).send({ error: decision.denial });
-      return taskStore.transition(id, status as OpsTaskStatus, { kind: "human", accountId: claims.sub }, claims.tenant, {
-        at: new Date().toISOString(),
-        reason: text(body.reason) ?? "",
-        resolutionNote: text(body.resolutionNote),
-      });
+      const transitioned = taskStore.transition(
+        id,
+        status as OpsTaskStatus,
+        { kind: "human", accountId: claims.sub },
+        claims.tenant,
+        {
+          at: new Date().toISOString(),
+          reason: text(body.reason) ?? "",
+          resolutionNote: text(body.resolutionNote),
+        },
+      );
+      await projectTaskActivity(claims.tenant, transitioned.id);
+      return transitioned;
     } catch (error) {
       return taskFailure(reply, error);
     }
@@ -262,7 +276,7 @@ export function registerTaskRoutes(app: FastifyInstance) {
       }
       const { decision } = scoped(req, "workforce.tasks.comment", task.branchId, BRANCH_WRITERS);
       if (!decision.allow) return reply.code(403).send({ error: decision.denial });
-      return taskStore.addComment(
+      const commented = taskStore.addComment(
         {
           id: commentId,
           tenantId: claims.tenant,
@@ -273,6 +287,8 @@ export function registerTaskRoutes(app: FastifyInstance) {
         },
         claims.tenant,
       );
+      await projectTaskActivity(claims.tenant, commented.id);
+      return commented;
     } catch (error) {
       return taskFailure(reply, error);
     }

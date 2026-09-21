@@ -1,0 +1,33 @@
+{
+  "description": "N5/C2 privacy finding triage: which residual leak vector remains",
+  "threshold": 0.5,
+  "questions": {
+    "residual_vector": {
+      "type": "choice",
+      "instructions": "In this design, which single residual vector is the most plausible way sensitive healthcare information still reaches or is inferable from a stored activity record?",
+      "criteria": {
+        "caller_supplied_reference": "Opaque reference fields are minted by the calling source, so an identifier that embeds a name, phone number, national id or medical record number can be stored even though it has no spaces",
+        "read_time_join": "The read surface derives a title from enumerations and could join the subject reference to clinical data, exposing clinical detail outside the activity row itself",
+        "metadata_inference": "Even with codes only, an operations reader can infer a clinically sensitive fact from branch, actor, category and timing correlated with an identified patient",
+        "guessable_reference": "Reference tokens are not unguessable, so activity rows can be enumerated to learn which subjects have activity",
+        "other": "None of the above; the residual risk lies elsewhere"
+      }
+    },
+    "no_direct_identifier": {
+      "type": "noul",
+      "instructions": "The design refuses a direct patient identifier (name, phone number, national id, email, medical record number) that is smuggled in as a reference-shaped token with no spaces",
+      "criteria": {
+        "true": "A pattern or registry control refuses reference tokens that are direct identifiers even when they contain no whitespace",
+        "false": "A direct identifier with no whitespace passes every stated control"
+      }
+    },
+    "metadata_only_disclosure": {
+      "type": "noul",
+      "instructions": "The design's disclosure is limited to the fact that an operational, non-clinical event occurred; the design does not let activity describe a clinical finding, result value, medication, diagnosis or note",
+      "criteria": {
+        "true": "The closed source registry and severity registry admit only operational, non-clinical events, so no clinical finding is expressible",
+        "false": "A clinical finding, result value, medication, diagnosis or note can be expressed or inferred from a record"
+      }
+    }
+  }
+}
