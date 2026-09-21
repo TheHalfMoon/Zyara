@@ -1,0 +1,59 @@
+{
+  "description": "N5/C2 exact-diff review: database contract only (activity_events migration)",
+  "threshold": 0.5,
+  "questions": {
+    "db_registry_closed": {
+      "type": "noul",
+      "instructions": "This migration makes an unqualified source domain, category, action, result, actor kind, sensitivity class, subject type or visibility scope impossible to persist",
+      "criteria": {
+        "true": "Every enumerated column carries a closed CHECK, and the payload is constrained to a closed key allow-list with per-key closed vocabularies",
+        "false": "At least one enumerated column or payload position accepts a value outside its registry"
+      }
+    },
+    "db_reference_shape": {
+      "type": "noul",
+      "instructions": "This migration refuses prose, an unqualified direct identifier and credential material in every stored string column",
+      "criteria": {
+        "true": "Every text column is bounded to a reference shape excluding whitespace, email and international phone syntax, long digit runs and credential patterns",
+        "false": "At least one text column can persist prose, a direct identifier or a credential"
+      }
+    },
+    "db_append_only": {
+      "type": "noul",
+      "instructions": "This migration prevents the ordinary application role from rewriting or deleting a stored activity row",
+      "criteria": {
+        "true": "The application role is granted SELECT and INSERT only on the activity table",
+        "false": "The application role receives UPDATE or DELETE privilege on the activity table"
+      }
+    },
+    "db_tenant_rls": {
+      "type": "noul",
+      "instructions": "This migration enforces tenant isolation on the activity table for the application role",
+      "criteria": {
+        "true": "Row level security is enabled and forced, with select and insert policies bound to the session tenant",
+        "false": "Tenant isolation relies on application code alone, or RLS is enabled without being forced"
+      }
+    },
+    "db_dedupe_uniqueness": {
+      "type": "noul",
+      "instructions": "This migration makes a duplicate derived record for the same canonical event impossible at the storage layer",
+      "criteria": {
+        "true": "A unique index covers tenant, source domain, source event id and projection version",
+        "false": "No storage-level uniqueness prevents a duplicate derived record"
+      }
+    },
+    "db_referential_integrity": {
+      "type": "noul",
+      "instructions": "This migration binds an agent actor to a real bounded identity and binds branch and correction references inside the same tenant",
+      "criteria": {
+        "true": "Composite foreign keys carry the tenant and target the agent identity, branch location and prior activity rows with restrictive deletes",
+        "false": "A reference can point outside the tenant or to a non-existent target"
+      }
+    },
+    "residual_db_risk": {
+      "type": "score",
+      "instructions": "How much residual data-integrity or privacy risk remains in this migration as written",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    }
+  }
+}

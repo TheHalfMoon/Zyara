@@ -1,0 +1,57 @@
+{
+  "description": "N5/C2 pre-implementation design challenge (derived human + agent activity)",
+  "threshold": 0.5,
+  "questions": {
+    "no_authority_confusion": {
+      "type": "noul",
+      "instructions": "The derived activity design cannot become authoritative healthcare state and offers no path that mutates source-domain state (appointments, encounters, prescriptions, orders, results, claims, payments, eligibility, authorizations, staff authority, patient clinical facts)",
+      "criteria": {
+        "true": "Activity is derived-only and append-only, holds no handle to a domain store, and exposes no write-back path",
+        "false": "Some read or write path lets activity own, overwrite or mutate authoritative domain state"
+      }
+    },
+    "privacy_controls": {
+      "type": "noul",
+      "instructions": "The payload controls are sufficient to stop PHI, clinical narrative and credential material from entering a stored activity record",
+      "criteria": {
+        "true": "Closed key allowlist, flat bounded string values, size bound, and refusal of secret/credential and clinical-content patterns cover the realistic leak vectors for a metadata feed",
+        "false": "A realistic input can still persist PHI, clinical narrative, secrets or tokens in an activity record"
+      }
+    },
+    "tenant_isolation": {
+      "type": "noul",
+      "instructions": "The tenant and branch controls prevent cross-tenant leakage and cross-branch over-visibility on both the projection path and the read path",
+      "criteria": {
+        "true": "Projection refuses foreign tenants and reads are tenant- and branch-scoped with deny-by-default membership",
+        "false": "A caller can project into or read from a tenant or branch it does not belong to"
+      }
+    },
+    "agent_attribution": {
+      "type": "noul",
+      "instructions": "The design prevents an agent actor from acquiring or implying authority it does not hold, including after suspension, revocation or sponsor loss",
+      "criteria": {
+        "true": "Agent activity must reference a real bounded identity, and historical activity is annotated so it never implies current authority",
+        "false": "Historical or unattributed agent activity can be read as a current grant of authority"
+      }
+    },
+    "replay_safety": {
+      "type": "noul",
+      "instructions": "The deduplication key and conflict behaviour make at-least-once redelivery of canonical events deterministic and non-duplicating",
+      "criteria": {
+        "true": "Uniqueness on tenant plus source domain plus source event id plus projection version, with a content-conflict refusal, handles replay and divergence",
+        "false": "A replayed or divergent canonical event creates duplicate or silently rewritten activity history"
+      }
+    },
+    "residual_implementation_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this design before it is safe to implement as a bounded synthetic slice",
+      "criteria": [
+        "negligible",
+        "low",
+        "moderate",
+        "high",
+        "severe"
+      ]
+    }
+  }
+}

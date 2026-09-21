@@ -1,0 +1,33 @@
+{
+  "description": "N5/C2 exact-diff review: does the qualification actually prove the claims",
+  "threshold": 0.5,
+  "questions": {
+    "tests_prove_claims": {
+      "type": "noul",
+      "instructions": "This suite genuinely proves the required C2 behaviours (human and agent projection, revoked-agent history, duplicate suppression, cross-tenant refusal, cross-branch enforcement, payload and credential refusal, append-only history, provenance, correlation retention, unsupported actor refusal, unknown source refusal, no source mutation) rather than asserting only surface shape",
+      "criteria": {
+        "true": "Each required behaviour is exercised with a positive case and, where relevant, a negative case that would fail if the control were removed",
+        "false": "One or more required behaviours are claimed but not actually exercised"
+      }
+    },
+    "no_overclaim": {
+      "type": "noul",
+      "instructions": "The suite avoids implying production readiness, real-provider validation, clinical authority or a cryptographic guarantee",
+      "criteria": {
+        "true": "All qualification is explicitly synthetic and local, and the suite asserts no production or clinical property",
+        "false": "The suite or its naming implies validation that synthetic tests cannot establish"
+      }
+    },
+    "missing_assertion": {
+      "type": "choice",
+      "instructions": "Which single gap in this suite would a careful reviewer flag as the most material missing assertion?",
+      "criteria": {
+        "restricted_surface": "That a restricted record can never be reached through the operations read path, including by direct id",
+        "employee_uniqueness": "That deduplication holds under genuinely concurrent or interleaved delivery rather than sequential replay only",
+        "provenance_immutability": "That a superseding correction cannot retroactively change the provenance or source identity of the record it supersedes",
+        "identifier_leak_via_payload": "That a closed-vocabulary payload value cannot itself encode a subject through a caller-controlled code",
+        "other": "None of the above; the material gap lies elsewhere"
+      }
+    }
+  }
+}
