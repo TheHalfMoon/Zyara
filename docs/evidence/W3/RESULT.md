@@ -3,8 +3,8 @@
 - Base SHA: `a7ef63d7c00151c6977437760d911533255f5e6d` (fresh `origin/main` after W1 `33d837f7` and W2 `a7ef63d7`).
 - Branch: `feat/zyara-network-w3-helpdesk-tasks`.
 - Implementation commit: `213abcf102819fd57ef13f38c8396ed988fdd7e8`.
-- Pull request: number and exact-head CI run identifiers are recorded in this file
-  only once they exist and have been observed; they are deliberately not predicted.
+- Review/evidence commit: `14cd08541837ae4a68a4a2ababf42bad68a1f298`.
+- Pull request: `#101` (`feat(network): add W3 clinic helpdesk task queue`).
 
 ## Behavior delivered
 
@@ -60,8 +60,26 @@ Review:
   `01cf7ff8b94c5087205eaf47a6e67f94dabb2a32` (CLI `v1.12.8`); four findings fixed, four
   deferred with rationale, dismissed items recorded (see `OCR_REVIEW.md`).
 
-CI: pending at the time this file was written; the exact workflow conclusions are
-appended after the pull request runs complete.
+CI on exact head `14cd08541837ae4a68a4a2ababf42bad68a1f298` (observed live):
+
+| Check | Conclusion | Run |
+| --- | --- | --- |
+| `helpdesk` (W3 CI, includes the database smoke against the PostgreSQL 16 service) | pass | `35621309414` (push run `35621274764` also pass) |
+| `foundation` | pass | `35621274687`, `35621309898` |
+| `workforce` (W1 CI) | pass | `35621309373` |
+| `coverage` (W2 CI) | pass | `35621309401` |
+| `m002` | pass | `35621309287` |
+| `m008` | pass | `35621309329` |
+| `m016` (booking smoke, PostgreSQL service) | pass | `35621309945` |
+| `cubic · AI code reviewer` | skipped by the service | n/a |
+| `CodeRabbit` | skipped — manual review required for this OSS repository | n/a |
+
+Pull request merge state on that head: `MERGEABLE` / `CLEAN`. This evidence file was
+additionally updated after those runs; the required workflows are re-run on the
+updated head by the same pull request and their conclusions are visible on `#101`.
+No third-party automated review was performed: both configured reviewers skipped
+the pull request, which is why the `open-code-review` delegation-mode review and
+the Jev passes above are the only review evidence for this slice.
 
 ## Review outcomes on the exact head
 
