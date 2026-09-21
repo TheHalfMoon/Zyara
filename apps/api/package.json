@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@zyara/authorization": "workspace:*",
+    "@zyara/collaboration": "workspace:*",
     "@zyara/communication": "workspace:*",
     "@zyara/contracts": "workspace:*",
     "@zyara/domain": "workspace:*",

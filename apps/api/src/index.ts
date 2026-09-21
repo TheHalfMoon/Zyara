@@ -10,6 +10,7 @@ import { registerBookingRoutes } from "./bookings.js";
 import { registerWorkforceRoutes } from "./workforce.js";
 import { registerCoverageRoutes } from "./coverage.js";
 import { registerTaskRoutes } from "./tasks.js";
+import { registerAgentRoutes } from "./agents.js";
 import { registerWhatsAppRoutes } from "./whatsapp.js";
 import { authError } from "@zyara/identity";
 
@@ -45,6 +46,7 @@ export function buildServer() {
   registerWorkforceRoutes(app);
   registerCoverageRoutes(app);
   registerTaskRoutes(app);
+  registerAgentRoutes(app);
   registerWhatsAppRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
