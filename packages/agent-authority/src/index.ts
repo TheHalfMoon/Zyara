@@ -237,8 +237,7 @@ export class AgentAuthorityStore {
     }
     if (
       identity.branchId !== null &&
-      input.branchId !== null &&
-      identity.branchId !== input.branchId
+      input.branchId !== identity.branchId
     ) {
       this.fail("AGENT_CROSS_BRANCH", "grant branch exceeds identity branch scope");
     }
@@ -314,7 +313,7 @@ export class AgentAuthorityStore {
     branchId: string | null;
     capability: AgentCapability;
     at: string;
-    humanApprovalPresent: boolean;
+    verifiedHumanApproval: boolean;
   }): AgentDecision {
     const identity = this.identities.get(args.agentId);
     if (!identity || identity.tenantId !== args.tenantId) {
@@ -353,7 +352,9 @@ export class AgentAuthorityStore {
         identity,
       };
     }
-    if (grant.requiresHumanApproval && !args.humanApprovalPresent) {
+    // This signal must come from a separately verified human approval receipt.
+    // Agent/model input must never be allowed to self-assert it.
+    if (grant.requiresHumanApproval && !args.verifiedHumanApproval) {
       return {
         allow: false,
         reason: "human_approval_required",
