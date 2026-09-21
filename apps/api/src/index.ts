@@ -11,6 +11,7 @@ import { registerWorkforceRoutes } from "./workforce.js";
 import { registerCoverageRoutes } from "./coverage.js";
 import { registerTaskRoutes } from "./tasks.js";
 import { registerWhatsAppRoutes } from "./whatsapp.js";
+import { registerAgentAuthorityRoutes } from "./agents.js";
 import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
@@ -46,6 +47,7 @@ export function buildServer() {
   registerCoverageRoutes(app);
   registerTaskRoutes(app);
   registerWhatsAppRoutes(app);
+  registerAgentAuthorityRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
     const database = await checkDatabase();
