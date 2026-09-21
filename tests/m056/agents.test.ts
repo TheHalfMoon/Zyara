@@ -142,7 +142,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b1",
       capability: "ops.tasks.read",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: false,
+      verifiedHumanApproval: false,
     }).reason, "agent_not_active");
 
     store.transitionIdentity(
@@ -154,7 +154,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b1",
       capability: "ops.tasks.read",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: false,
+      verifiedHumanApproval: false,
     }).allow, true);
     assert.equal(store.authorize({
       tenantId: "t1",
@@ -162,7 +162,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b2",
       capability: "ops.tasks.read",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: false,
+      verifiedHumanApproval: false,
     }).reason, "branch_out_of_scope");
   });
 
@@ -183,7 +183,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b1",
       capability: "ops.tasks.comment",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: false,
+      verifiedHumanApproval: false,
     });
     assert.equal(denied.allow, false);
     assert.equal(denied.reason, "human_approval_required");
@@ -194,7 +194,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b1",
       capability: "ops.tasks.comment",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: true,
+      verifiedHumanApproval: true,
     });
     assert.equal(allowed.allow, true);
   });
@@ -214,7 +214,7 @@ describe("N5/C1 agent authority", () => {
       branchId: "b1",
       capability: "ops.tasks.read",
       at: "2026-09-21T16:10:00Z",
-      humanApprovalPresent: false,
+      verifiedHumanApproval: false,
     }).reason, "grant_missing");
   });
 
