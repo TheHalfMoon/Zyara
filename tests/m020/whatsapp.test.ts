@@ -8,6 +8,7 @@ import {
   extractMetaWebhookEvents,
   gateWhatsappOutbound,
   sha256Hex,
+  validateMetaWebhookTarget,
   verifyMetaChallenge,
   verifyMetaWebhookSignature,
 } from "@zyara/communication";
@@ -16,8 +17,10 @@ const SECRET = "meta-app-secret-synthetic-only";
 const rawPayload = JSON.stringify({
   object: "whatsapp_business_account",
   entry: [{
+    id: "business-1",
     changes: [{
       value: {
+        metadata: { phone_number_id: "phone-id-1" },
         contacts: [{ profile: { name: "Sensitive Patient Name" }, wa_id: "966500000001" }],
         messages: [{
           id: "wamid.1",
@@ -72,6 +75,22 @@ describe("W4 WhatsApp adapter", () => {
     }), null);
   });
 
+  it("binds authenticated payloads to the configured business and phone-number target", () => {
+    const payload = JSON.parse(rawPayload);
+    assert.equal(validateMetaWebhookTarget(payload, {
+      businessAccountId: "business-1",
+      phoneNumberId: "phone-id-1",
+    }), true);
+    assert.equal(validateMetaWebhookTarget(payload, {
+      businessAccountId: "business-2",
+      phoneNumberId: "phone-id-1",
+    }), false);
+    assert.equal(validateMetaWebhookTarget(payload, {
+      businessAccountId: "business-1",
+      phoneNumberId: "phone-id-2",
+    }), false);
+  });
+
   it("extracts metadata-only inbound events and drops message content/contact identity", () => {
     const events = extractMetaWebhookEvents(JSON.parse(rawPayload));
     assert.deepEqual(events, [{
@@ -90,8 +109,10 @@ describe("W4 WhatsApp adapter", () => {
     const events = extractMetaWebhookEvents({
       object: "whatsapp_business_account",
       entry: [{
+        id: "business-1",
         changes: [{
           value: {
+            metadata: { phone_number_id: "phone-id-1" },
             statuses: [{ id: "wamid.2", status: "delivered", timestamp: "1790000000" }],
           },
         }],
