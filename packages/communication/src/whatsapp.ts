@@ -130,6 +130,30 @@ function text(value: unknown): string | null {
  * patient-authored content are deliberately not returned or persisted by W4.
  * N5+ may introduce a separately governed inbox/content boundary.
  */
+export function validateMetaWebhookTarget(
+  payload: unknown,
+  descriptor: Pick<WhatsappAccountDescriptor, "businessAccountId" | "phoneNumberId">,
+): boolean {
+  const root = object(payload);
+  if (!root || root.object !== "whatsapp_business_account") return false;
+  let sawTarget = false;
+  for (const entryValue of array(root.entry)) {
+    const entry = object(entryValue);
+    if (!entry) return false;
+    const businessAccountId = text(entry.id);
+    if (!businessAccountId || businessAccountId !== descriptor.businessAccountId) return false;
+    for (const changeValue of array(entry.changes)) {
+      const change = object(changeValue);
+      const value = object(change?.value);
+      const metadata = object(value?.metadata);
+      const phoneNumberId = text(metadata?.phone_number_id);
+      if (!phoneNumberId || phoneNumberId !== descriptor.phoneNumberId) return false;
+      sawTarget = true;
+    }
+  }
+  return sawTarget;
+}
+
 export function extractMetaWebhookEvents(payload: unknown): WhatsappWebhookEvent[] {
   const root = object(payload);
   if (!root || root.object !== "whatsapp_business_account") {
@@ -190,8 +214,7 @@ export class WhatsappWebhookReceiptStore {
       const same =
         existing.kind === receipt.kind &&
         existing.providerMessageRef === receipt.providerMessageRef &&
-        existing.status === receipt.status &&
-        existing.payloadDigest === receipt.payloadDigest;
+        existing.status === receipt.status;
       if (!same) {
         throw new WhatsappAdapterError(
           "WHATSAPP_IDEMPOTENCY_CONFLICT",
