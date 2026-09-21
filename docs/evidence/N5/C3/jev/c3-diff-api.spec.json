@@ -1,0 +1,64 @@
+{
+  "description": "N5/C3 exact-diff review (API routes: approvals + exception queue + derived activity)",
+  "threshold": 0.5,
+  "questions": {
+    "caller_supplied_authority": {
+      "type": "noul",
+      "instructions": "In this route code, a caller can never supply the requester, the approver or the approval authority, and tenant identity can never come from a request body",
+      "criteria": {
+        "true": "The proposer and approver are always the verified session account, a body that claims a requester, approver or authority is refused with an explicit error, and every scope decision comes from verified claims plus the server-side membership registry",
+        "false": "A body field, query parameter or role label can change who proposes, who decides or under which authority"
+      }
+    },
+    "scope_enforcement": {
+      "type": "noul",
+      "instructions": "In this route code, branch and tenant boundaries are enforced on list, read-by-id, decide, execute, sweep and exception routes",
+      "criteria": {
+        "true": "Each route resolves the resource first, refuses a cross-tenant resource as not found, requires the caller's membership to cover the branch, and requires a tenant-wide role for tenant-wide surfaces",
+        "false": "A caller can read or act on another tenant's or another branch's approval or exception state"
+      }
+    },
+    "exception_ownership_wiring": {
+      "type": "noul",
+      "instructions": "In this route code, an exception case is always owned by a task/helpdesk work item, and the case lifecycle cannot drift away from the work item it owns",
+      "criteria": {
+        "true": "Opening a case creates or validates its work item first, assignment goes through the task store, review and resolution move the work item with the case, and closing requires the work item to be resolved",
+        "false": "A case can exist without an owned work item, or the case and the work item can disagree about the outcome"
+      }
+    },
+    "automation_origin": {
+      "type": "noul",
+      "instructions": "In this route code, a client cannot declare itself automation, and the only automation-sourced exception path is one the server can verify from C3 state",
+      "criteria": {
+        "true": "A declared automation origin without a C3 request that the server itself placed in a human-required state is refused, and a linked case inherits that request's correlation id and branch",
+        "false": "A caller can open an exception as automation without server-verifiable C3 state"
+      }
+    },
+    "activity_is_derived": {
+      "type": "noul",
+      "instructions": "In this route code, the derived activity feed remains a projection of C3 truth and cannot authorise, mutate or fabricate approval or execution state",
+      "criteria": {
+        "true": "The projection re-reads the authoritative store, there is no public write route, and a projection failure is recorded without failing or rolling back the authoritative operation",
+        "false": "An activity record can be used as approval or execution state, or a caller can write one"
+      }
+    },
+    "residual_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this API implementation, given that it is a bounded synthetic slice with no production identity provider",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    },
+    "weakest_area": {
+      "type": "choice",
+      "instructions": "Which single area of this route code is the weakest and most likely to be defeated by a realistic input",
+      "criteria": {
+        "authority_source": "Keeping authority resolution server-side only",
+        "scope": "Tenant and branch boundary enforcement",
+        "exception_wiring": "Keeping the exception case and its work item in step",
+        "automation_origin": "Refusing fabricated automation identity",
+        "activity": "Keeping the derived feed from becoming authority",
+        "expiry": "Expiry handling and the sweep surface",
+        "other": "None of the above"
+      }
+    }
+  }
+}

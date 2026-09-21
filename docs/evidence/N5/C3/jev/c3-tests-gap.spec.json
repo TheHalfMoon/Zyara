@@ -1,0 +1,40 @@
+{
+  "description": "N5/C3 test-gap triage over the new qualification tests and smokes",
+  "threshold": 0.5,
+  "questions": {
+    "required_behaviours_covered": {
+      "type": "noul",
+      "instructions": "The tests in this diff cover every required behaviour of the slice: binding, parameter substitution, expiry, live authority, self-approval, agent refusal, agent requester eligibility, cross-tenant and cross-branch refusal, idempotency and replay, state machine and terminal states, unknown outcomes, exception ownership, evidence-gated closure, unknown-resolution closure refusal, and activity derivation",
+      "criteria": {
+        "true": "Each listed behaviour has at least one explicit assertion at the domain layer, the database layer, or the HTTP layer",
+        "false": "At least one required behaviour has no assertion anywhere in the diff"
+      }
+    },
+    "negative_path_quality": {
+      "type": "noul",
+      "instructions": "The negative tests assert the specific refusal code rather than merely asserting that some error occurred, so a weakened control would be caught",
+      "criteria": {
+        "true": "Refusal tests compare the exact error code or SQLSTATE, and positive controls confirm the same call succeeds when the condition is satisfied",
+        "false": "Refusal tests only assert a non-success status or a thrown error of any kind"
+      }
+    },
+    "gap": {
+      "type": "choice",
+      "instructions": "If a reviewer added one test to this slice, which gap is most material",
+      "criteria": {
+        "expiry_http": "Approval expiry is asserted in the domain and the database, but not end to end over HTTP",
+        "concurrency": "Concurrent duplicate submissions are not exercised",
+        "clock_boundaries": "Boundary equality of the expiry instant is not exercised",
+        "unknown_retry_evidence": "A definitive outcome for an unsettled attempt with evidence is not asserted end to end",
+        "exception_drift": "Case and work item drift is asserted on close but not on reopen",
+        "activity_divergence": "Divergent activity replay for the C3 sources is not asserted",
+        "other": "No material gap"
+      }
+    },
+    "coverage_confidence": {
+      "type": "score",
+      "instructions": "How complete is this test set for a bounded synthetic slice",
+      "criteria": ["very incomplete", "partial", "adequate", "strong", "exhaustive"]
+    }
+  }
+}

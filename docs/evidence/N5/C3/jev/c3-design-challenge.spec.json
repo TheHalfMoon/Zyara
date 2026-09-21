@@ -1,0 +1,104 @@
+{
+  "description": "N5/C3 pre-implementation design challenge (approvals + human exception queue)",
+  "threshold": 0.5,
+  "questions": {
+    "binding_strength": {
+      "type": "noul",
+      "instructions": "The design binds an approval to exactly one operation, so an approval granted for one action cannot be replayed, reused or repointed at another action, subject or parameter set",
+      "criteria": {
+        "true": "The request carries tenant, branch, action type, a digest of the protected parameters, requester, required authority, risk class, expiry and correlation id, and execution is refused when the presented digest differs",
+        "false": "A granted approval can authorize a different operation, a different subject, or parameters the approver never saw"
+      }
+    },
+    "stale_authority": {
+      "type": "noul",
+      "instructions": "The design prevents an unused approval from remaining usable after the approver's authority changes, and prevents approval authority from being inferred from UI role labels or request bodies",
+      "criteria": {
+        "true": "Approver authority is resolved from a trusted server-side directory at decision time and re-resolved at execution time, so revocation, suspension, expiry or a sponsor change invalidates the unused approval",
+        "false": "A revoked, expired or unverified approver keeps an approval valid, or role labels / body fields can supply approval authority"
+      }
+    },
+    "agent_boundary": {
+      "type": "noul",
+      "instructions": "The design prevents an agent (bounded automation identity) from approving anything, including its own proposal or another agent's proposal, and prevents agent self-approval through any indirection",
+      "criteria": {
+        "true": "Only a human account with live required authority can decide, an agent actor is refused as an approver, and a proposal by an agent identity remains subject to human approval",
+        "false": "An agent actor can decide, or two agents can satisfy each other's approval requirement"
+      }
+    },
+    "unknown_outcome": {
+      "type": "noul",
+      "instructions": "The design keeps an unevidenced or unknown external outcome unknown, instead of converting it into success or failure",
+      "criteria": {
+        "true": "An unknown/unevidenced execution result is recorded as unknown and moves the request to a human-required state, and a later definitive outcome for the same attempt is refused without evidence",
+        "false": "An unevidenced outcome can be recorded as succeeded or failed, or a missing provider result is scored as success or failure"
+      }
+    },
+    "exception_queue_integrity": {
+      "type": "noul",
+      "instructions": "The human exception queue is owned work rather than an unowned record: every case carries the reason automation stopped, the evidence requirement, SLA ownership in the existing task/helpdesk system, and closure rules that require evidence when evidence is required",
+      "criteria": {
+        "true": "Each case links to a task/helpdesk work item that owns assignment, due date, escalation and follow-up, carries a closed kind and severity, and cannot be closed without evidence when evidence is required or while the resolution is unknown",
+        "false": "A case can exist without an owner, be closed by anyone without required evidence, or be resolved as unknown and still closed"
+      }
+    },
+    "state_machine_integrity": {
+      "type": "noul",
+      "instructions": "The approval state machine is explicit, with an enumerated legal-transition set, refused illegal jumps, terminal states that cannot silently move, and idempotent retries that reconcile the original operation instead of duplicating it",
+      "criteria": {
+        "true": "Every transition is enumerated; illegal jumps and terminal moves are refused in both the domain layer and the database; a repeated idempotency key returns the original record and a divergent reuse is refused",
+        "false": "States can be skipped, terminal states can change, or retries create duplicate approvals, decisions or executions"
+      }
+    },
+    "tenant_branch_isolation": {
+      "type": "noul",
+      "instructions": "The design prevents cross-tenant and cross-branch approval, decision, execution or exception access, including through identifiers supplied in a request body or query string",
+      "criteria": {
+        "true": "Tenant and branch scope come only from verified session authority, every read and write is scoped, and row-level security plus a cross-branch authority check refuse foreign scope",
+        "false": "A caller can read, decide, execute or open a case across a tenant or branch boundary it does not hold"
+      }
+    },
+    "activity_authority_confusion": {
+      "type": "noul",
+      "instructions": "The design keeps the derived operational activity feed (human + agent activity) from becoming approval or execution authority",
+      "criteria": {
+        "true": "Activity rows are projected from approval truth and hold no path that can authorize, approve, execute or mutate a request",
+        "false": "A derived activity record can be used as, or mutated into, approval or execution state"
+      }
+    },
+    "audit_completeness": {
+      "type": "noul",
+      "instructions": "For an important protected action, the recorded C3 trail is sufficient to reconstruct who or what proposed it, under which tenant and branch, which authority and policy applied, who approved or rejected it, what was executed, what receipt returned and what canonical outcome or exception resulted",
+      "criteria": {
+        "true": "Proposal, requirement, decision, execution, receipt and exception rows are append-only or transition-guarded, correlated, and enough to reconstruct the decision chain",
+        "false": "A material step of the approval or exception chain is unrecorded, unattributed or not correlatable"
+      }
+    },
+    "residual_implementation_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this design before it is safe to implement as a bounded synthetic slice",
+      "criteria": [
+        "negligible",
+        "low",
+        "moderate",
+        "high",
+        "severe"
+      ]
+    },
+    "weakest_control": {
+      "type": "choice",
+      "instructions": "Which single control is the weakest in this design and most likely to be defeated by a realistic input",
+      "criteria": {
+        "binding": "The binding of the approval to one operation and one parameter set",
+        "authority": "Resolving and re-resolving the approver's live authority",
+        "agent": "The agent-versus-human approval boundary",
+        "unknown": "Keeping an unknown external outcome unknown",
+        "exception": "Exception queue ownership, evidence and closure rules",
+        "state": "State machine, terminal states and idempotency",
+        "tenant": "Tenant and branch isolation",
+        "activity": "Keeping derived activity from becoming authority",
+        "other": "None of the above"
+      }
+    }
+  }
+}
