@@ -1,0 +1,62 @@
+{
+  "description": "N5/C3 round 2 targeted triage of the weakest design verdicts",
+  "threshold": 0.5,
+  "questions": {
+    "audit_completeness": {
+      "type": "noul",
+      "instructions": "The named record-and-field mapping is sufficient to reconstruct the whole decision chain for an important protected action, from the initiating proposer through authority, policy, human approval, execution, receipt, canonical outcome and any exception",
+      "criteria": {
+        "true": "Every chain question is answered by a specific recorded field, status history is an ordered append-only trail, and all records are correlated",
+        "false": "Some material step of the chain is still unrecorded, unattributed, only inferable, or not correlatable"
+      }
+    },
+    "agent_boundary": {
+      "type": "noul",
+      "instructions": "The explicit refusal set prevents any agent actor from deciding, prevents self-approval, prevents two agents from satisfying each other's requirement, and prevents approval authority from being supplied by a role label, request body or query string",
+      "criteria": {
+        "true": "Human-only decisions, self-approval refusal, requester-agent eligibility resolution and server-side-only authority resolution close every listed indirection",
+        "false": "A realistic input still lets an agent approve, lets a requester approve itself, or lets a caller inject approval authority"
+      }
+    },
+    "privacy_controls": {
+      "type": "noul",
+      "instructions": "The C3 state controls stop protected health information, clinical narrative, direct identifiers and credential material from being persisted",
+      "criteria": {
+        "true": "Parameter values are never stored, evidence and receipt fields are bounded reference tokens with credential refusal, no free-text field exists, and subject references are pseudonymised",
+        "false": "A realistic input can still persist PHI, an identifier, prose or a secret in C3 state"
+      }
+    },
+    "tenant_branch_isolation": {
+      "type": "noul",
+      "instructions": "The explicit tenant and branch controls, including the cross-branch authority rule and the immutable scope columns, prevent cross-tenant and cross-branch approval, decision, execution and exception access",
+      "criteria": {
+        "true": "Scope comes only from verified claims and the server-side registry, the branch authority rule is enforced at decision and execution, and row-level security plus immutable scope columns hold in the database",
+        "false": "A caller can still reach another tenant's or another branch's approval or exception state"
+      }
+    },
+    "residual_vector": {
+      "type": "choice",
+      "instructions": "If this design still fails, which single vector is the most likely cause",
+      "criteria": {
+        "agent_requester_attribution": "Agent requesters are only exercised through a trusted server-side path that does not yet exist as a verified credential",
+        "authority_snapshot_freshness": "The authority snapshot can be stale between decision and a later execution window",
+        "digest_collision_or_canonicalisation": "Parameter canonicalisation or digest handling could bind an approval to the wrong parameter set",
+        "execution_receipt_evidence": "The receipt or evidence reference is a pointer whose truth depends on the typed operation",
+        "exception_ownership_drift": "The linked W3 work item could drift out of sync with the exception case semantics",
+        "human_factor": "A human approver approves without reading the parameters",
+        "other": "None of the above"
+      }
+    },
+    "residual_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains after revision 2 before implementing this as a bounded synthetic slice",
+      "criteria": [
+        "negligible",
+        "low",
+        "moderate",
+        "high",
+        "severe"
+      ]
+    }
+  }
+}

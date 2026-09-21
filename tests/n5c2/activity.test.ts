@@ -287,6 +287,16 @@ describe("N5/C2 derived human + agent activity", () => {
       "previousValue",
       "newValue",
       "originKind",
+      // N5/C3 extended this closed registry forward-only with the approval and exception
+      // payload keys. Every C2 key is unchanged and the registry is still closed.
+      "riskClass",
+      "requiredAuthority",
+      "approvalStatus",
+      "executionOutcome",
+      "exceptionKind",
+      "exceptionSeverity",
+      "exceptionStatus",
+      "workItemStatus",
     ]);
     await expectActivityError(
       () => store.record(taskEvent({ payload: { summary: "patient reports chest pain" } }), "t1", agents),
@@ -431,6 +441,9 @@ describe("N5/C2 derived human + agent activity", () => {
       "workforce.tasks",
       "identity.agents",
       "communications.whatsapp",
+      // N5/C3 additions; the registry stays closed and every C2 value is preserved.
+      "collaboration.approvals",
+      "collaboration.exceptions",
     ]);
     await expectActivityError(
       () =>
@@ -524,6 +537,9 @@ describe("N5/C2 derived human + agent activity", () => {
       "staff_assignment",
       "facility",
       "conversation",
+      // N5/C3 extended this closed registry forward-only; every C2 value is preserved.
+      "approval_request",
+      "exception_case",
     ]);
   });
 

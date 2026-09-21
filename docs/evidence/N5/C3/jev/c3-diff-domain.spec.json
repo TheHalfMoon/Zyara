@@ -1,0 +1,73 @@
+{
+  "description": "N5/C3 exact-diff review (collaboration domain: approvals + exception queue)",
+  "threshold": 0.5,
+  "questions": {
+    "binding_and_replay": {
+      "type": "noul",
+      "instructions": "In this code, an approval binds to exactly one operation and one parameter digest, and it cannot be replayed, reused for another action or repointed after it was granted",
+      "criteria": {
+        "true": "The request stores tenant, branch, action type and a minted parameter digest; execution compares the presented digest, refuses a mismatch and invalidates the approval; replays reconcile through scoped idempotency keys",
+        "false": "A granted approval can still authorise a different action, subject or parameter set, or a replay creates a second approval or execution"
+      }
+    },
+    "authority_freshness": {
+      "type": "noul",
+      "instructions": "In this code, approval authority is resolved from a supplied trusted directory at decision time and re-resolved at execution time, so revoked or scope-widened authority cannot keep an unused approval alive",
+      "criteria": {
+        "true": "The decision stores the resolved authority snapshot, every execution re-resolves it, and a missing or scope-mismatched authority refuses or invalidates the approval",
+        "false": "An approval can execute on a stale, revoked, cross-tenant or cross-branch authority, or authority can arrive from a caller-supplied value"
+      }
+    },
+    "agent_human_boundary": {
+      "type": "noul",
+      "instructions": "In this code, an agent actor can never decide, a requester can never approve its own protected proposal, and an agent requester must resolve to a live bounded identity",
+      "criteria": {
+        "true": "The decision path rejects any non-human actor and any requester/approver identity collision, and the proposal path rejects an agent identity that is unknown, revoked, suspended, expired, not yet effective or branch-mismatched",
+        "false": "An agent, system actor or self-requester can decide, or an ineligible agent identity can propose"
+      }
+    },
+    "unknown_stays_unknown": {
+      "type": "noul",
+      "instructions": "In this code, an unevidenced or unknown external outcome is recorded as unknown and handed to a human, and it is never converted into success or failure",
+      "criteria": {
+        "true": "An unknown result moves the request to needs_human, a definitive outcome requires a receipt or evidence, an unsettled attempt cannot be relabelled, and an attempt ordinal separates a later retry",
+        "false": "An unknown or unevidenced outcome can be recorded as succeeded or failed, or a later outcome silently overwrites the earlier one"
+      }
+    },
+    "exception_queue_rules": {
+      "type": "noul",
+      "instructions": "In this code, the exception queue is owned work with closed kinds, derived evidence requirements, immutable case semantics and closure rules that refuse an unknown resolution or a missing required evidence reference",
+      "criteria": {
+        "true": "A case requires a work item, its kind registry is closed, evidence_required is derived from the kind, kind/severity/SLA/work item are immutable, and closing refuses an unknown resolution or missing evidence",
+        "false": "A case can be unowned, opened with a free-text kind, closed without required evidence, or closed while its outcome is unknown"
+      }
+    },
+    "state_machine_and_privacy": {
+      "type": "noul",
+      "instructions": "In this code, every status change goes through one guarded transition path with an enumerated legal-edge table, terminal states are frozen, and no stored field can hold protected parameter values, prose or credential material",
+      "criteria": {
+        "true": "A single transition helper enforces the table for both approvals and cases, terminal states refuse every edge, and stored records hold only codes, opaque references, digests and timestamps with credential shapes refused",
+        "false": "A status can move outside the table, a terminal state can change, or a parameter value, prose or secret can be persisted"
+      }
+    },
+    "residual_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this domain implementation, given that it is a bounded synthetic slice",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    },
+    "weakest_area": {
+      "type": "choice",
+      "instructions": "Which single area of this code is the weakest and most likely to be defeated by a realistic input",
+      "criteria": {
+        "binding": "Binding an approval to one operation and one parameter digest",
+        "authority": "Resolving and re-resolving live approver authority",
+        "actor": "The human-versus-agent approval boundary",
+        "unknown": "Keeping an unknown outcome unknown",
+        "exception": "Exception queue ownership, evidence and closure",
+        "state": "The state machine, terminal states and idempotency",
+        "privacy": "Keeping parameter values, prose and secrets out of stored records",
+        "other": "None of the above"
+      }
+    }
+  }
+}

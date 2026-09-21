@@ -23,14 +23,22 @@ import {
   resolvedStatus,
   type ActivityActorAuthority,
   type ActivityAgentDirectory,
+  type ActivityAction,
   type ActivityProjectionInput,
   type ActivityReadAudience,
   type ActivityRecord,
   type ActivityResult,
+  type ApprovalEvent,
+  type ApprovalRequest,
+  type ApprovalStatus,
   type AgentIdentityEvent,
+  type ExceptionCase,
+  type ExceptionEvent,
+  type ExceptionStatus,
 } from "@zyara/collaboration";
 import type { OpsTask, OpsTaskComment, OpsTaskEvent } from "@zyara/enterprise-access";
 import { agentIdentityStore } from "./agents.js";
+import { approvalStore } from "./approvals.js";
 import { taskStore } from "./tasks.js";
 import { authorize, requestTenant } from "./auth.js";
 import { workforceMembershipsFor } from "./workforce.js";
@@ -248,6 +256,165 @@ export async function projectWhatsappReceiptActivity(
     occurredAt: receipt.receivedAt,
     provenance: provenance(PROJECTION_SOURCE_REF),
   });
+}
+
+// ---------------------------------------------------------------------------
+// N5/C3: approvals and the human exception queue are derived into C2 activity
+// ---------------------------------------------------------------------------
+//
+// Activity stays derived. An approval or exception record remains the authority; an
+// activity row is a projection of it, and there is no path from the feed back into C3
+// state. This is why the projection re-reads the authoritative store every time instead of
+// accepting a caller-supplied status.
+
+const APPROVAL_STATUS_ACTIONS: Record<ApprovalStatus, ActivityAction> = {
+  proposed: "proposed",
+  awaiting_approval: "approval_requested",
+  approved: "approved",
+  rejected: "rejected",
+  expired: "expired",
+  cancelled: "cancelled",
+  superseded: "superseded",
+  executing: "execution_attempted",
+  succeeded: "execution_succeeded",
+  failed: "execution_failed",
+  needs_human: "needs_human",
+};
+
+const APPROVAL_STATUS_RESULTS: Record<ApprovalStatus, ActivityResult> = {
+  proposed: "proposed",
+  awaiting_approval: "proposed",
+  approved: "succeeded",
+  rejected: "rejected",
+  expired: "expired",
+  cancelled: "rejected",
+  superseded: "denied",
+  executing: "observed",
+  succeeded: "succeeded",
+  failed: "failed",
+  needs_human: "unresolved",
+};
+
+const EXCEPTION_STATUS_ACTIONS: Record<ExceptionStatus, ActivityAction> = {
+  open: "opened",
+  assigned: "assigned",
+  in_review: "transitioned",
+  escalated: "escalated",
+  resolved: "resolved",
+  closed: "closed",
+  cancelled: "cancelled",
+};
+
+const EXCEPTION_STATUS_RESULTS: Record<ExceptionStatus, ActivityResult> = {
+  open: "observed",
+  assigned: "observed",
+  in_review: "observed",
+  escalated: "unresolved",
+  resolved: "succeeded",
+  closed: "succeeded",
+  cancelled: "rejected",
+};
+
+// A C3 actor is typed exactly like every other collaboration actor: a human resolves to a
+// server-authoritative account, an agent to a live bounded C1 identity, and anything else
+// stays a namespaced system reference. A free-text actor name can never satisfy this.
+function collaborationActor(
+  tenantId: string,
+  actor: {
+    kind: string;
+    accountId?: string | null;
+    agentIdentityId?: string | null;
+    actorRef?: string | null;
+  },
+) {
+  if (actor.kind === "human" && isActivityToken(actor.accountId)) {
+    return { kind: "human", accountId: actor.accountId as string };
+  }
+  if (actor.kind === "agent") {
+    const agentIdentityId = actor.agentIdentityId ?? "";
+    const state = activityAgentDirectory.resolveAuthorityState(
+      tenantId,
+      agentIdentityId,
+      new Date().toISOString(),
+    );
+    if (state !== null) return { kind: "agent", agentIdentityId };
+    return { kind: "system", actorRef: optionalToken(agentIdentityId) ?? "agent-unattributed" };
+  }
+  return {
+    kind: "system",
+    actorRef: optionalToken(actor.actorRef ?? null) ?? "automation-unattributed",
+  };
+}
+
+// Approval trail -> derived operational activity. Only closed codes are projected: the
+// action type, the risk class, the required authority and the resulting status. Protected
+// parameter values were never stored in C3 and cannot appear here either.
+export async function projectApprovalActivity(tenantId: string, requestId: string): Promise<void> {
+  const request: ApprovalRequest | undefined = approvalStore.requests.get(requestId);
+  if (!request || request.tenantId !== tenantId) return;
+  const events: ApprovalEvent[] = approvalStore.eventsFor(requestId, tenantId);
+  for (const event of events) {
+    await project({
+      id: `activity-${request.id}-${event.id}`,
+      tenantId,
+      branchId: request.branchId,
+      actor: collaborationActor(tenantId, event.actor),
+      sourceDomain: "collaboration.approvals",
+      sourceEventId: event.id,
+      category: "approval",
+      action: APPROVAL_STATUS_ACTIONS[event.toStatus],
+      result: APPROVAL_STATUS_RESULTS[event.toStatus],
+      subjectType: "approval_request",
+      subjectId: request.id,
+      sensitivity: "operational",
+      // A tenant-wide protected action stays tenant-scoped; a branch request stays inside
+      // its branch.
+      visibilityScope: request.branchId === null ? "tenant" : "branch",
+      correlationId: optionalToken(request.correlationId),
+      occurredAt: event.occurredAt,
+      payload: {
+        riskClass: request.riskClass,
+        requiredAuthority: request.requiredAuthority,
+        approvalStatus: event.toStatus,
+      },
+      provenance: provenance(PROJECTION_SOURCE_REF),
+    });
+  }
+}
+
+// Exception trail -> derived operational activity. The payload holds only properties of the
+// event itself: the owning work item's mutable status belongs to W3 and is read from the
+// queue, so re-projecting the same event stays byte-identical instead of diverging.
+export async function projectExceptionActivity(tenantId: string, caseId: string): Promise<void> {
+  const record: ExceptionCase | undefined = approvalStore.exceptions.get(caseId);
+  if (!record || record.tenantId !== tenantId) return;
+  const events: ExceptionEvent[] = approvalStore.exceptionEventsFor(caseId, tenantId);
+  for (const event of events) {
+    const payload: Record<string, string> = {
+      exceptionKind: record.kind,
+      exceptionSeverity: record.severity,
+      exceptionStatus: event.toStatus,
+    };
+    await project({
+      id: `activity-${record.id}-${event.id}`,
+      tenantId,
+      branchId: record.branchId,
+      actor: collaborationActor(tenantId, event.actor),
+      sourceDomain: "collaboration.exceptions",
+      sourceEventId: event.id,
+      category: "exception",
+      action: EXCEPTION_STATUS_ACTIONS[event.toStatus],
+      result: EXCEPTION_STATUS_RESULTS[event.toStatus],
+      subjectType: "exception_case",
+      subjectId: record.id,
+      sensitivity: "operational",
+      visibilityScope: "branch",
+      correlationId: optionalToken(record.correlationId),
+      occurredAt: event.occurredAt,
+      payload,
+      provenance: provenance(PROJECTION_SOURCE_REF),
+    });
+  }
 }
 
 const ACTIVITY_BRANCH_READERS: BranchRole[] = ["org_admin", "branch_admin", "clinician", "receptionist"];

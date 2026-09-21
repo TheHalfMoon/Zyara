@@ -1,0 +1,64 @@
+{
+  "description": "N5/C3 exact-diff review (migration: approvals, exception queue, C2 registry extension)",
+  "threshold": 0.5,
+  "questions": {
+    "immutability": {
+      "type": "noul",
+      "instructions": "In this migration, the protected columns of an approval and the semantics of an exception case are immutable once written, for both the table owner and the application role",
+      "criteria": {
+        "true": "Column-level grants restrict the application role to the lifecycle columns, and a BEFORE UPDATE trigger refuses any change to the action type, parameter digest, keys, risk class, authority, requester, scope, expiry, kind, severity, owner work item or SLA",
+        "false": "An approval can be repointed at another action or parameter set, or a case's semantics can be rewritten"
+      }
+    },
+    "transition_guards": {
+      "type": "noul",
+      "instructions": "In this migration, illegal state transitions and terminal-state moves are impossible for the application role and for the table owner",
+      "criteria": {
+        "true": "An enumerated legality function plus triggers on both request updates and event inserts refuse any edge outside the state machine, including a move away from a terminal state",
+        "false": "A status can move outside the enumerated edges, or a terminal state can change"
+      }
+    },
+    "evidence_and_unknown_rules": {
+      "type": "noul",
+      "instructions": "In this migration, a decision or definitive execution outcome without evidence is impossible when evidence is required, and an unknown outcome cannot be closed as settled",
+      "criteria": {
+        "true": "The decision trigger checks the parent's evidence requirement, the execution CHECK requires a receipt or evidence for a definitive outcome, and the case CHECKs refuse closure without required evidence or closure of an unknown resolution",
+        "false": "An unevidenced decision, an unevidenced definitive outcome or a closed unknown resolution can be persisted"
+      }
+    },
+    "human_only_and_closed_registries": {
+      "type": "noul",
+      "instructions": "In this migration, a decision can only be human, and every registry (action, risk, authority, status, kind, severity, resolution, activity source/category/action/subject) is closed by constraint",
+      "criteria": {
+        "true": "approver_kind is constrained to human, and each registry column and payload vocabulary is guarded by a CHECK so an unknown value cannot be stored",
+        "false": "An agent decision or an unregistered action, kind, severity, status or payload value can be persisted"
+      }
+    },
+    "registry_extension_safety": {
+      "type": "noul",
+      "instructions": "The change that extends the derived-activity registry is forward-only and preserves every value that was already permitted, without rewriting existing rows",
+      "criteria": {
+        "true": "The extension re-declares the affected constraints by name with all previous values plus the new ones, drops nothing else, and rewrites no row",
+        "false": "The extension removes a previously permitted value, rewrites or backfills stored rows, or silently re-creates the table"
+      }
+    },
+    "residual_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this database contract, given that it is a bounded synthetic slice",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    },
+    "weakest_area": {
+      "type": "choice",
+      "instructions": "Which single area of this migration is the weakest and most likely to be defeated by a realistic input",
+      "criteria": {
+        "immutability": "Column immutability for approvals and cases",
+        "transitions": "The transition and terminal-state guards",
+        "evidence": "The evidence and unknown-outcome rules",
+        "registries": "The closed registries and human-only decisions",
+        "rls": "Row-level security and grant scoping",
+        "extension": "The forward-only activity registry extension",
+        "other": "None of the above"
+      }
+    }
+  }
+}
