@@ -94,6 +94,18 @@ await expectDbError(
   "agent identity must use dedicated namespace",
 );
 
+await expectDbError(
+  () => client.query(
+    `INSERT INTO agent_identities(
+       id,tenant_id,branch_id,kind,display_name,purpose,status,
+       created_by_account_id,source_ref,source_revision)
+     VALUES ('agt_activebad01','t1','b1','workflow_agent','Active Too Early',
+       'Should fail','active','admin-1','c1-smoke','c1-smoke')`,
+  ),
+  "23514",
+  "new agent identity must start as draft",
+);
+
 await client.query(
   `INSERT INTO agent_grants(
      id,tenant_id,agent_id,branch_id,capability,requires_human_approval,
@@ -138,6 +150,15 @@ await expectDbError(
   "generic shell capability must not exist",
 );
 
+
+await expectDbError(
+  () => client.query(
+    `UPDATE agent_grants SET capability='ops.tasks.create' WHERE id='grant-read'`,
+  ),
+  "42501",
+  "grant capability must be immutable for the application role",
+);
+
 await client.query(
   `INSERT INTO agent_authority_events(
      id,tenant_id,agent_id,action,actor_account_id,grant_id,reason_code)
@@ -157,6 +178,18 @@ await expectDbError(
   "authority events must not be deleted by application role",
 );
 
+await client.query(
+  `UPDATE agent_identities SET status='active', updated_at=now()
+   WHERE id='agt_frontdesk01'`,
+);
+await expectDbError(
+  () => client.query(
+    `UPDATE agent_identities SET status='draft', updated_at=now()
+     WHERE id='agt_frontdesk01'`,
+  ),
+  "23514",
+  "agent lifecycle must not move active back to draft",
+);
 await client.query(
   `UPDATE agent_identities SET status='revoked', updated_at=now()
    WHERE id='agt_frontdesk01'`,
