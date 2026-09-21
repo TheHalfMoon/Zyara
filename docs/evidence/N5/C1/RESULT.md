@@ -4,6 +4,39 @@
 - Branch: `feat/zyara-network-n5c1-agent-identities`.
 - Implementation commit: `bf64187053e7dca2cb415e1d04ac2fe37464d9d7`.
 - Pull request: `#103` (`feat(network): add N5/C1 bounded agent identities`).
+- Exact qualified head: `f7b61caa105a2b1605c9e33544313ce23ad375f7`.
+- Merge SHA: `09b646262d3cf65a8a064740e8e588d9e336a808`.
+
+## Post-merge verification
+
+Fresh `origin/main` after the merge: `09b646262d3cf65a8a064740e8e588d9e336a808`.
+
+Post-merge workflow conclusions observed live on that commit:
+
+| Check | Conclusion |
+| --- | --- |
+| `foundation` (m001 CI) | pass |
+| `m002` | pass |
+| `m008` | pass |
+| `m016` (PostgreSQL service) | pass |
+
+The N5/C1 workflow is bound to its feature branch and to pull-request paths, so it
+does not re-run on a main push by design; its exact-head runs are recorded above.
+
+Post-merge local re-verification on the merged tree (`09b6462`):
+
+- `tests/n5c1/agent-identity.test.ts` — 13 pass, 0 fail;
+- regression: `tests/m020` (W4) — 21 pass, 0 fail; `tests/m056` (W1–W3) — 25 pass, 0 fail;
+- `tsc` for `packages/collaboration` and `apps/api` — clean;
+- `node scripts/check-boundaries.mjs` — passed;
+- live PostgreSQL smokes, each in its own freshly created database so that fixtures
+  cannot interfere (a shared database makes the W3 and W4 fixtures collide on
+  `branch_locations`, which is a fixture artefact, not a defect):
+  - `n5c1-agent-rls-smoke.mjs` — PASS;
+  - `w3-task-rls-smoke.mjs` — PASS;
+  - `w4-whatsapp-rls-smoke.mjs` — PASS.
+
+Open pull requests after the merge: `#94` only (preserved, unabsorbed).
 
 ## Behavior delivered
 
