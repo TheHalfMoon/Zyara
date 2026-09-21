@@ -9,6 +9,7 @@ import {
   WhatsappWebhookReceiptStore,
   extractMetaWebhookEvents,
   sha256Hex,
+  validateMetaWebhookTarget,
   verifyMetaChallenge,
   verifyMetaWebhookSignature,
   type WhatsappAccountDescriptor,
@@ -99,6 +100,10 @@ export function registerWhatsAppRoutes(app: FastifyInstance) {
         payload = JSON.parse(rawBody.toString("utf8"));
       } catch {
         return reply.code(400).send({ error: "WHATSAPP_PAYLOAD_INVALID" });
+      }
+
+      if (!validateMetaWebhookTarget(payload, runtime.descriptor)) {
+        return reply.code(403).send({ error: "WHATSAPP_TARGET_MISMATCH" });
       }
 
       let events;
