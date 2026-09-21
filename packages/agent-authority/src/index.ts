@@ -52,6 +52,25 @@ export interface AgentGrant {
   createdAt: string;
 }
 
+export type AgentAuthorityAction =
+  | "identity_created"
+  | "identity_activated"
+  | "identity_paused"
+  | "identity_revoked"
+  | "grant_created"
+  | "grant_revoked";
+
+export interface AgentAuthorityEvent {
+  id: string;
+  tenantId: string;
+  agentId: AgentId;
+  action: AgentAuthorityAction;
+  actorAccountId: string;
+  grantId: string | null;
+  reasonCode: string;
+  occurredAt: string;
+}
+
 export interface AgentDecision {
   allow: boolean;
   reason:
@@ -126,6 +145,7 @@ export function capabilityRequiresHumanApproval(capability: AgentCapability): bo
 export class AgentAuthorityStore {
   readonly identities = new Map<AgentId, AgentIdentity>();
   readonly grants = new Map<string, AgentGrant>();
+  readonly events = new Map<string, AgentAuthorityEvent>();
 
   private fail(code: AgentAuthorityErrorCode, message: string): never {
     throw new AgentAuthorityError(code, message);
@@ -150,6 +170,15 @@ export class AgentAuthorityStore {
     }
     const copy = { ...identity };
     this.identities.set(identity.id, copy);
+    this.recordEvent({
+      tenantId: scopeTenant,
+      agentId: identity.id,
+      action: "identity_created",
+      actorAccountId: identity.createdByAccountId,
+      grantId: null,
+      reasonCode: "admin_created",
+      occurredAt: identity.createdAt,
+    });
     return copy;
   }
 
@@ -158,6 +187,8 @@ export class AgentAuthorityStore {
     scopeTenant: string,
     next: AgentStatus,
     at: string,
+    actorAccountId: string,
+    reasonCode: string,
   ): AgentIdentity {
     const current = this.identityFor(agentId, scopeTenant);
     if (!includes(STATUSES, next)) {
@@ -168,6 +199,21 @@ export class AgentAuthorityStore {
     }
     const updated = { ...current, status: next, updatedAt: at };
     this.identities.set(agentId, updated);
+    const action: AgentAuthorityAction =
+      next === "active"
+        ? "identity_activated"
+        : next === "paused"
+          ? "identity_paused"
+          : "identity_revoked";
+    this.recordEvent({
+      tenantId: scopeTenant,
+      agentId,
+      action,
+      actorAccountId,
+      grantId: null,
+      reasonCode,
+      occurredAt: at,
+    });
     return updated;
   }
 
@@ -221,6 +267,15 @@ export class AgentAuthorityStore {
     }
     const copy = { ...input };
     this.grants.set(input.id, copy);
+    this.recordEvent({
+      tenantId: scopeTenant,
+      agentId: input.agentId,
+      action: "grant_created",
+      actorAccountId: input.grantedByAccountId,
+      grantId: input.id,
+      reasonCode: input.reason,
+      occurredAt: input.createdAt,
+    });
     return copy;
   }
 
@@ -241,6 +296,15 @@ export class AgentAuthorityStore {
       revokedByAccountId,
     };
     this.grants.set(grantId, updated);
+    this.recordEvent({
+      tenantId: scopeTenant,
+      agentId: grant.agentId,
+      action: "grant_revoked",
+      actorAccountId: revokedByAccountId,
+      grantId,
+      reasonCode: "admin_revoked",
+      occurredAt: at,
+    });
     return updated;
   }
 
@@ -309,6 +373,18 @@ export class AgentAuthorityStore {
     return [...this.grants.values()].filter(
       (grant) => grant.tenantId === scopeTenant && grant.agentId === agentId,
     );
+  }
+
+  listEvents(agentId: AgentId, scopeTenant: string): AgentAuthorityEvent[] {
+    this.identityFor(agentId, scopeTenant);
+    return [...this.events.values()].filter(
+      (event) => event.tenantId === scopeTenant && event.agentId === agentId,
+    );
+  }
+
+  private recordEvent(event: Omit<AgentAuthorityEvent, "id">): void {
+    const id = `agent-authority-event-${this.events.size + 1}`;
+    this.events.set(id, { id, ...event });
   }
 
   private identityFor(agentId: AgentId, scopeTenant: string): AgentIdentity {
