@@ -32,6 +32,13 @@ export function replaceWorkforceMemberships(
   MEMBERSHIPS.set(membershipKey(tenantId, accountId), [...memberships]);
 }
 
+// Read accessor for the trusted server-side membership registry. Later slices
+// (W3 task queue) reuse the same deny-by-default membership source instead of
+// creating a second authorization path.
+export function workforceMembershipsFor(tenantId: string, accountId: string): Membership[] {
+  return MEMBERSHIPS.get(membershipKey(tenantId, accountId)) ?? [];
+}
+
 function nativeProvenance(): WorkforceProvenance {
   return {
     source: "zyara-native",
@@ -48,7 +55,7 @@ function requireScopedRole(
   allowRoles: BranchRole[],
 ) {
   const { claims } = requestTenant(req);
-  const memberships = MEMBERSHIPS.get(membershipKey(claims.tenant, claims.sub)) ?? [];
+  const memberships = workforceMembershipsFor(claims.tenant, claims.sub);
   const decision = authorize(
     { claims, memberships },
     {
