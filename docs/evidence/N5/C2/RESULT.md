@@ -4,8 +4,37 @@
 - Branch: `feat/zyara-network-n5c2-activity-derived`.
 - Implementation commit: `4b3b4295621c71e438c389d1932ac03bd20aa562`.
 - Review/tests commit: `7481ed4b8af7df5397e2cd506add76544b879d2f`.
+- Result-packet commit: `6bc02db5f5ef7b6e520df392854cb3becfcfa718`.
 - Pull request: `#105` (`feat(network): add N5/C2 derived human and agent activity`).
-- Merge SHA: recorded in the post-merge evidence update.
+- Exact qualified head: `6bc02db5f5ef7b6e520df392854cb3becfcfa718`.
+- Merge SHA: `e0425e0215ab385893cdce6bcaec2a43d187d9b9`.
+
+## Post-merge verification
+
+Fresh `origin/main` after the merge: `e0425e0215ab385893cdce6bcaec2a43d187d9b9`.
+
+Post-merge workflow conclusions observed live on that commit:
+
+| Check | Conclusion |
+| --- | --- |
+| `foundation` (m001 CI) | pass |
+| `m002` | pass |
+| `m008` | pass |
+| `m016` (PostgreSQL service) | pass |
+
+The N5/C2 workflow is bound to its feature branch and to pull-request paths, so it does
+not re-run on a main push by design; its exact-head runs are recorded above.
+
+Post-merge local re-verification on the merged tree (`e0425e0`):
+
+- `tests/n5c2/activity.test.ts` — 14 pass, 0 fail;
+- `node apps/api/scripts/n5c2-activity-rls-smoke.mjs` against a **newly created**
+  `zyara_postmerge_c2` database — PASS;
+- `apps/api/scripts/n5c2-activity-http-smoke.ts` — passed;
+- `tsc` for `packages/collaboration` and `apps/api` — clean;
+- `node scripts/check-boundaries.mjs` — passed.
+
+Open pull requests after the merge: `#94` only (preserved, unabsorbed).
 
 Live truth was reverified before starting: `origin/main` was `01bb1da0…`, the only open
 pull request was `#94` (`ui/zyara-v1-patient-experience`, failing `m012`, preserved and
@@ -227,7 +256,8 @@ Head `7481ed4b8af7df5397e2cd506add76544b879d2f`, observed live:
 
 ## Completion semantics
 
-`REPOSITORY_IMPLEMENTATION_COMPLETE` for this bounded slice: after merge.
+`REPOSITORY_IMPLEMENTATION_COMPLETE` for this bounded slice: yes — merged into `main` as
+`e0425e0215ab385893cdce6bcaec2a43d187d9b9` from qualified head `6bc02db5…`.
 `SYNTHETIC_QUALIFICATION_COMPLETE`: yes for this slice.
 `REAL_CLINIC_VALIDATION_COMPLETE`, `REAL_PROVIDER_VALIDATION_COMPLETE`,
 `REAL_NPHIES_VALIDATION_COMPLETE`, `COMMERCIAL_VALIDATION_COMPLETE`,
