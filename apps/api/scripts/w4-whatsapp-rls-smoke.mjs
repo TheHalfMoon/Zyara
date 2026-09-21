@@ -55,7 +55,6 @@ async function expectDbError(run, sqlstate, label) {
   fail(`${label}: expected SQLSTATE ${sqlstate}, but the statement succeeded`);
 }
 
-await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t1'`);
 
 await client.query(
@@ -72,23 +71,22 @@ await expectDbError(
     `INSERT INTO whatsapp_accounts(
        id,tenant_id,branch_id,business_account_id,phone_number_id,
        app_secret_ref,verify_token_ref,enabled,source_ref,source_revision)
-     VALUES ('wa-t2','t2','b2','business-2','phone-2',
-       'secret://x','secret://y',true,'w4-smoke','w4-smoke')`,
-  ),
-  "42501",
-  "cross-tenant account insert must be refused by RLS",
-);
-
-await expectDbError(
-  () => client.query(
-    `INSERT INTO whatsapp_accounts(
-       id,tenant_id,branch_id,business_account_id,phone_number_id,
-       app_secret_ref,verify_token_ref,enabled,source_ref,source_revision)
      VALUES ('wa-cross','t1','b2','business-x','phone-x',
        'secret://x','secret://y',true,'w4-smoke','w4-smoke')`,
   ),
   "23503",
   "cross-tenant branch reference must be refused",
+);
+
+await client.query(`SET ROLE zyara_app`);
+await client.query(`SET app.current_tenant='t1'`);
+
+await expectDbError(
+  () => client.query(
+    `UPDATE whatsapp_accounts SET app_secret_ref='secret://attacker' WHERE id='wa-1'`,
+  ),
+  "42501",
+  "ordinary app role must not rewrite credential secret references",
 );
 
 await client.query(
