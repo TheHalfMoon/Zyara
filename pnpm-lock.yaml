@@ -20,6 +20,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@zyara/agent-authority':
+        specifier: workspace:*
+        version: link:../../packages/agent-authority
       '@zyara/authorization':
         specifier: workspace:*
         version: link:../../packages/authorization
@@ -129,6 +132,8 @@ importers:
       typescript:
         specifier: 5.6.3
         version: 5.6.3
+
+  packages/agent-authority: {}
 
   packages/action-confirmation:
     dependencies:
