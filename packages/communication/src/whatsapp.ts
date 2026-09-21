@@ -210,6 +210,10 @@ export class WhatsappWebhookReceiptStore {
       (receipt) => receipt.tenantId === tenantId && receipt.accountId === accountId,
     );
   }
+
+  clear(): void {
+    this.receipts.clear();
+  }
 }
 
 export interface WhatsappOutboundGateInput {
