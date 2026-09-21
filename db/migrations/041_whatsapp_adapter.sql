@@ -115,7 +115,10 @@ CREATE POLICY whatsapp_receipts_insert ON whatsapp_webhook_receipts
   FOR INSERT
   WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
 
-GRANT SELECT, INSERT, UPDATE ON whatsapp_accounts TO zyara_app;
+-- Credential descriptors are provisioned by a separate privileged integration
+-- path. The ordinary application role may read descriptors but cannot rewrite
+-- secret references or provider account routing.
+GRANT SELECT ON whatsapp_accounts TO zyara_app;
 GRANT SELECT, INSERT, UPDATE ON whatsapp_outbound_operations TO zyara_app;
 GRANT SELECT, INSERT ON whatsapp_webhook_receipts TO zyara_app;
 
