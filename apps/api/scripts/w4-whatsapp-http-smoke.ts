@@ -50,8 +50,10 @@ assert.equal(badChallenge.statusCode, 403);
 const payload = JSON.stringify({
   object: "whatsapp_business_account",
   entry: [{
+    id: "business-1",
     changes: [{
       value: {
+        metadata: { phone_number_id: "phone-id-1" },
         contacts: [{ profile: { name: "Sensitive Name" }, wa_id: "966500000001" }],
         messages: [{
           id: "wamid.http.1",
@@ -82,6 +84,18 @@ const wrong = await app.inject({
   payload,
 });
 assert.equal(wrong.statusCode, 403);
+
+const wrongTargetPayload = payload.replace('"phone-id-1"', '"phone-id-2"');
+const wrongTarget = await app.inject({
+  method: "POST",
+  url: "/integrations/whatsapp/wa-1/webhook",
+  headers: {
+    "content-type": "application/json",
+    "x-hub-signature-256": sign(wrongTargetPayload),
+  },
+  payload: wrongTargetPayload,
+});
+assert.equal(wrongTarget.statusCode, 403);
 
 const accepted = await app.inject({
   method: "POST",
