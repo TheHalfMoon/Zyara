@@ -141,9 +141,17 @@ describe("W4 WhatsApp adapter", () => {
       receivedAt: "2026-09-21T16:00:00Z",
     };
     assert.equal(store.record(receipt).applied, true);
-    assert.equal(store.record({ ...receipt, receivedAt: "2026-09-21T16:00:01Z" }).applied, false);
+    assert.equal(store.record({
+      ...receipt,
+      payloadDigest: "0".repeat(64),
+      receivedAt: "2026-09-21T16:00:01Z",
+    }).applied, false);
     assert.throws(
-      () => store.record({ ...receipt, payloadDigest: "0".repeat(64) }),
+      () => store.record({
+        ...receipt,
+        kind: "delivery_status",
+        status: "delivered",
+      }),
       (error: unknown) =>
         error instanceof WhatsappAdapterError &&
         error.code === "WHATSAPP_IDEMPOTENCY_CONFLICT",
