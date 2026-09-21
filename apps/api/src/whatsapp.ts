@@ -39,6 +39,7 @@ export function installWhatsappRuntimeAccount(account: RuntimeWhatsappAccount): 
 
 export function clearWhatsappRuntimeAccounts(): void {
   RUNTIME_ACCOUNTS.clear();
+  whatsappReceiptStore.clear();
 }
 
 function headerValue(value: string | string[] | undefined): string | undefined {
