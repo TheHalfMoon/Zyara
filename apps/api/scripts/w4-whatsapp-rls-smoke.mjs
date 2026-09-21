@@ -38,7 +38,7 @@ await client.query(
 );
 await client.query(
   `INSERT INTO branch_locations(id,tenant_id,organization_id)
-   VALUES ('b1','t1','org-1'),('b2','t2','org-2') ON CONFLICT DO NOTHING`,
+   VALUES ('b1','t1','org-1'),('b1-alt','t1','org-1'),('b2','t2','org-2') ON CONFLICT DO NOTHING`,
 );
 
 function fail(message) {
@@ -107,6 +107,18 @@ await expectDbError(
   ),
   "23505",
   "duplicate outbound idempotency key must be refused",
+);
+
+await expectDbError(
+  () => client.query(
+    `INSERT INTO whatsapp_outbound_operations(
+       id,tenant_id,branch_id,account_id,patient_ref,destination_ref,
+       template_id,locale,purpose,consent_assertion_ref,idempotency_key,status)
+     VALUES ('out-cross-branch','t1','b1-alt','wa-1','patient-ref-1','contact-ref-1',
+       'reminder','ar','appointment_operations','consent-ref-1','idem-cross','queued')`,
+  ),
+  "23503",
+  "outbound operation must use the branch owning the WhatsApp account",
 );
 
 await client.query(
