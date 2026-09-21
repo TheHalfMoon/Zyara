@@ -12,6 +12,7 @@
     "start": "tsx src/index.ts"
   },
   "dependencies": {
+    "@zyara/agent-authority": "workspace:*",
     "@zyara/authorization": "workspace:*",
     "@zyara/communication": "workspace:*",
     "@zyara/contracts": "workspace:*",
