@@ -43,7 +43,7 @@ function grant(overrides: Partial<AgentGrant> = {}): AgentGrant {
     grantedByAccountId: "admin-1",
     revokedAt: null,
     revokedByAccountId: null,
-    reason: "admin_scoped",
+    reasonCode: "admin_scoped",
     createdAt: BASE,
     ...overrides,
   };
