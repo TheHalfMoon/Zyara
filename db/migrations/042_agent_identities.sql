@@ -140,7 +140,7 @@ BEGIN
       USING ERRCODE = '23503';
   END IF;
 
-  IF identity_status = 'revoked' THEN
+  IF TG_OP = 'INSERT' AND identity_status = 'revoked' THEN
     RAISE EXCEPTION 'revoked agent cannot receive grants'
       USING ERRCODE = '23514';
   END IF;
