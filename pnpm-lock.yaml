@@ -1267,6 +1267,22 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  tests/n5c3:
+    dependencies:
+      '@zyara/collaboration':
+        specifier: workspace:*
+        version: link:../../packages/collaboration
+      '@zyara/enterprise-access':
+        specifier: workspace:*
+        version: link:../../packages/enterprise-access
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
   tests/reliability:
     dependencies:
       '@zyara/analytics':

@@ -28,15 +28,30 @@ export const ACTIVITY_ACTOR_KINDS = ["human", "agent", "system", "external"] as 
 export type ActivitySourceDomain =
   | "workforce.tasks"
   | "identity.agents"
-  | "communications.whatsapp";
+  | "communications.whatsapp"
+  | "collaboration.approvals"
+  | "collaboration.exceptions";
 export const ACTIVITY_SOURCE_DOMAINS = [
   "workforce.tasks",
   "identity.agents",
   "communications.whatsapp",
+  "collaboration.approvals",
+  "collaboration.exceptions",
 ] as const;
 
-export type ActivityCategory = "task" | "agent_identity" | "communication";
-export const ACTIVITY_CATEGORIES = ["task", "agent_identity", "communication"] as const;
+export type ActivityCategory =
+  | "task"
+  | "agent_identity"
+  | "communication"
+  | "approval"
+  | "exception";
+export const ACTIVITY_CATEGORIES = [
+  "task",
+  "agent_identity",
+  "communication",
+  "approval",
+  "exception",
+] as const;
 
 export type ActivityAction =
   | "created"
@@ -50,7 +65,23 @@ export type ActivityAction =
   | "revoked"
   | "credential_rotated"
   | "received"
-  | "observed";
+  | "observed"
+  | "proposed"
+  | "approval_requested"
+  | "approved"
+  | "rejected"
+  | "expired"
+  | "superseded"
+  | "cancelled"
+  | "execution_attempted"
+  | "execution_succeeded"
+  | "execution_failed"
+  | "execution_unknown"
+  | "needs_human"
+  | "opened"
+  | "escalated"
+  | "resolved"
+  | "closed";
 export const ACTIVITY_ACTIONS = [
   "created",
   "assigned",
@@ -64,6 +95,22 @@ export const ACTIVITY_ACTIONS = [
   "credential_rotated",
   "received",
   "observed",
+  "proposed",
+  "approval_requested",
+  "approved",
+  "rejected",
+  "expired",
+  "superseded",
+  "cancelled",
+  "execution_attempted",
+  "execution_succeeded",
+  "execution_failed",
+  "execution_unknown",
+  "needs_human",
+  "opened",
+  "escalated",
+  "resolved",
+  "closed",
 ] as const;
 
 export type ActivityResult =
@@ -94,7 +141,9 @@ export type ActivitySubjectType =
   | "agent_identity"
   | "staff_assignment"
   | "facility"
-  | "conversation";
+  | "conversation"
+  | "approval_request"
+  | "exception_case";
 export const ACTIVITY_SUBJECT_TYPES = [
   "none",
   "task",
@@ -102,6 +151,8 @@ export const ACTIVITY_SUBJECT_TYPES = [
   "staff_assignment",
   "facility",
   "conversation",
+  "approval_request",
+  "exception_case",
 ] as const;
 
 export type ActivitySensitivity = "operational" | "restricted";
@@ -136,6 +187,14 @@ export const ACTIVITY_PAYLOAD_KEYS = [
   "previousValue",
   "newValue",
   "originKind",
+  "riskClass",
+  "requiredAuthority",
+  "approvalStatus",
+  "executionOutcome",
+  "exceptionKind",
+  "exceptionSeverity",
+  "exceptionStatus",
+  "workItemStatus",
 ] as const;
 export type ActivityPayloadKey = (typeof ACTIVITY_PAYLOAD_KEYS)[number];
 
@@ -161,6 +220,50 @@ export const ACTIVITY_PAYLOAD_ENUMS: Record<string, readonly string[]> = {
     "none",
   ],
   newValue: ["open", "in_progress", "blocked", "resolved", "cancelled", "none"],
+  riskClass: ["routine", "elevated", "high", "critical"],
+  requiredAuthority: ["branch_admin", "org_admin", "clinical_lead", "compliance_officer"],
+  approvalStatus: [
+    "proposed",
+    "awaiting_approval",
+    "approved",
+    "rejected",
+    "expired",
+    "cancelled",
+    "superseded",
+    "executing",
+    "succeeded",
+    "failed",
+    "needs_human",
+  ],
+  executionOutcome: ["attempted", "succeeded", "failed", "unknown"],
+  exceptionKind: [
+    "ambiguous_patient_request",
+    "missing_consent",
+    "unavailable_authority",
+    "conflicting_provider_data",
+    "whatsapp_delivery_failure",
+    "external_provider_timeout",
+    "insurer_ambiguity",
+    "prior_auth_mismatch",
+    "stale_schedule",
+    "duplicate_identity_ambiguity",
+    "low_confidence_automation",
+    "policy_refusal",
+    "reconciliation_failure",
+    "unknown_external_outcome",
+    "approval_outcome_unknown",
+  ],
+  exceptionSeverity: ["low", "medium", "high", "critical"],
+  exceptionStatus: [
+    "open",
+    "assigned",
+    "in_review",
+    "escalated",
+    "resolved",
+    "closed",
+    "cancelled",
+  ],
+  workItemStatus: ["open", "in_progress", "blocked", "resolved", "cancelled"],
 };
 
 export const ACTIVITY_NUMERIC_PAYLOAD_KEYS = ["attempt", "count"] as const;
@@ -192,6 +295,27 @@ export const ACTIVITY_SOURCE_RULES: Record<
     category: "communication",
     actions: ["received", "observed"],
   },
+  "collaboration.approvals": {
+    category: "approval",
+    actions: [
+      "proposed",
+      "approval_requested",
+      "approved",
+      "rejected",
+      "expired",
+      "superseded",
+      "cancelled",
+      "execution_attempted",
+      "execution_succeeded",
+      "execution_failed",
+      "execution_unknown",
+      "needs_human",
+    ],
+  },
+  "collaboration.exceptions": {
+    category: "exception",
+    actions: ["opened", "assigned", "escalated", "resolved", "closed", "transitioned"],
+  },
 };
 
 // Read-time titles. Nothing here is stored, so a feed title can never carry
@@ -210,6 +334,23 @@ const ACTIVITY_TITLES: Record<string, string> = {
   "agent_identity:credential_rotated": "Agent credential reference rotated",
   "communication:received": "Inbound message metadata received",
   "communication:observed": "Communication event observed",
+  "approval:proposed": "Protected action proposed",
+  "approval:approval_requested": "Human approval requested",
+  "approval:approved": "Protected action approved",
+  "approval:rejected": "Protected action rejected",
+  "approval:expired": "Protected action approval expired",
+  "approval:superseded": "Protected action approval superseded",
+  "approval:cancelled": "Protected action approval cancelled",
+  "approval:execution_attempted": "Protected action execution attempted",
+  "approval:execution_succeeded": "Protected action execution succeeded",
+  "approval:execution_failed": "Protected action execution failed",
+  "approval:execution_unknown": "Protected action outcome unknown",
+  "approval:needs_human": "Protected action handed to a human",
+  "exception:opened": "Human exception case opened",
+  "exception:assigned": "Human exception case assigned",
+  "exception:escalated": "Human exception case escalated",
+  "exception:resolved": "Human exception case resolved",
+  "exception:closed": "Human exception case closed",
 };
 
 export function activityTitle(record: Pick<ActivityRecord, "category" | "action">): string {

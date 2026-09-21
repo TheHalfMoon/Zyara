@@ -13,6 +13,7 @@ import { registerTaskRoutes } from "./tasks.js";
 import { registerAgentRoutes } from "./agents.js";
 import { registerWhatsAppRoutes } from "./whatsapp.js";
 import { registerActivityRoutes } from "./activity.js";
+import { registerApprovalRoutes } from "./approvals.js";
 import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
@@ -50,6 +51,7 @@ export function buildServer() {
   registerAgentRoutes(app);
   registerWhatsAppRoutes(app);
   registerActivityRoutes(app);
+  registerApprovalRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
     const database = await checkDatabase();
