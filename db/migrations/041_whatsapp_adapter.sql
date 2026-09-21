@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS whatsapp_accounts (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (id, tenant_id),
+  UNIQUE (id, branch_id, tenant_id),
   UNIQUE (tenant_id, business_account_id, phone_number_id),
   FOREIGN KEY (branch_id, tenant_id)
     REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT
@@ -44,8 +45,8 @@ CREATE TABLE IF NOT EXISTS whatsapp_outbound_operations (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (id, tenant_id),
   UNIQUE (tenant_id, idempotency_key),
-  FOREIGN KEY (account_id, tenant_id)
-    REFERENCES whatsapp_accounts(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (account_id, branch_id, tenant_id)
+    REFERENCES whatsapp_accounts(id, branch_id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (branch_id, tenant_id)
     REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT
 );
