@@ -89,10 +89,44 @@ CREATE TABLE IF NOT EXISTS agent_authority_events (
   FOREIGN KEY (agent_id, tenant_id)
     REFERENCES agent_identities(id, tenant_id) ON DELETE RESTRICT,
   FOREIGN KEY (actor_account_id)
-    REFERENCES accounts(id) ON DELETE RESTRICT
+    REFERENCES accounts(id) ON DELETE RESTRICT,
+  FOREIGN KEY (grant_id, tenant_id)
+    REFERENCES agent_grants(id, tenant_id) ON DELETE RESTRICT
 );
 
-CREATE OR REPLACE FUNCTION enforce_agent_grant_scope() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION enforce_agent_identity_lifecycle() RETURNS trigger AS $
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    IF NEW.status <> 'draft' THEN
+      RAISE EXCEPTION 'new agent identity must start as draft'
+        USING ERRCODE = '23514';
+    END IF;
+    RETURN NEW;
+  END IF;
+
+  IF NEW.status = OLD.status THEN
+    RETURN NEW;
+  END IF;
+
+  IF NOT (
+    (OLD.status = 'draft' AND NEW.status IN ('active','revoked')) OR
+    (OLD.status = 'active' AND NEW.status IN ('paused','revoked')) OR
+    (OLD.status = 'paused' AND NEW.status IN ('active','revoked'))
+  ) THEN
+    RAISE EXCEPTION 'invalid agent identity lifecycle transition'
+      USING ERRCODE = '23514';
+  END IF;
+
+  RETURN NEW;
+END;
+$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS agent_identity_lifecycle_guard ON agent_identities;
+CREATE TRIGGER agent_identity_lifecycle_guard
+  BEFORE INSERT OR UPDATE OF status ON agent_identities
+  FOR EACH ROW EXECUTE FUNCTION enforce_agent_identity_lifecycle();
+
+CREATE OR REPLACE FUNCTION enforce_agent_grant_scope() RETURNS trigger AS $
 DECLARE
   identity_branch TEXT;
   identity_status TEXT;
@@ -169,7 +203,9 @@ CREATE POLICY agent_event_insert ON agent_authority_events
   FOR INSERT
   WITH CHECK (tenant_id = current_setting('app.current_tenant', true));
 
-GRANT SELECT, INSERT, UPDATE ON agent_identities, agent_grants TO zyara_app;
+GRANT SELECT, INSERT ON agent_identities, agent_grants TO zyara_app;
+GRANT UPDATE(status, updated_at) ON agent_identities TO zyara_app;
+GRANT UPDATE(revoked_at, revoked_by_account_id) ON agent_grants TO zyara_app;
 GRANT SELECT, INSERT ON agent_authority_events TO zyara_app;
 
 -- C1 deliberately has no secret/API-token/private-key columns, no generic
@@ -178,3 +214,4 @@ GRANT SELECT, INSERT ON agent_authority_events TO zyara_app;
 -- ROLLBACK (manual, audited):
 -- DROP TABLE IF EXISTS agent_authority_events, agent_grants, agent_identities;
 -- DROP FUNCTION IF EXISTS enforce_agent_grant_scope();
+-- DROP FUNCTION IF EXISTS enforce_agent_identity_lifecycle();
