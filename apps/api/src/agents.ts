@@ -215,7 +215,7 @@ export function registerAgentAuthorityRoutes(app: FastifyInstance) {
         grantedByAccountId: claims.sub,
         revokedAt: null,
         revokedByAccountId: null,
-        reason: reasonCode,
+        reasonCode,
         createdAt: new Date().toISOString(),
       }, claims.tenant));
     } catch (error) {
