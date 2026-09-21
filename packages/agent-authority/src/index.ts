@@ -329,6 +329,10 @@ export class AgentAuthorityStore {
     ) {
       return { allow: false, reason: "branch_out_of_scope", identity };
     }
+    const atMs = Date.parse(args.at);
+    if (!Number.isFinite(atMs)) {
+      return { allow: false, reason: "grant_expired", identity };
+    }
     const candidates = [...this.grants.values()].filter(
       (grant) =>
         grant.tenantId === args.tenantId &&
@@ -337,11 +341,11 @@ export class AgentAuthorityStore {
         grant.revokedAt === null &&
         (grant.branchId === null || grant.branchId === args.branchId),
     );
-    const grant = candidates.find(
-      (candidate) =>
-        candidate.effectiveFrom <= args.at &&
-        (candidate.effectiveTo === null || candidate.effectiveTo > args.at),
-    );
+    const grant = candidates.find((candidate) => {
+      const fromMs = Date.parse(candidate.effectiveFrom);
+      const toMs = candidate.effectiveTo === null ? null : Date.parse(candidate.effectiveTo);
+      return fromMs <= atMs && (toMs === null || toMs > atMs);
+    });
     if (!grant) {
       return {
         allow: false,
