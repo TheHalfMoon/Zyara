@@ -1,0 +1,64 @@
+{
+  "description": "N5/C4 design challenge and exact-diff review (audit-chain qualification)",
+  "threshold": 0.5,
+  "questions": {
+    "reconstructs_the_chain": {
+      "type": "noul",
+      "instructions": "This design/code can answer the twelve chain questions for one correlation id from the records the owning slices keep, without inventing evidence",
+      "criteria": {
+        "true": "Every step is answered by a named record from an owning slice, a required step with no evidence is reported as a gap, and a step outside the declared profile is explicitly not applicable",
+        "false": "A step is filled in by inference, inferred from another slice's record, or silently omitted from the report"
+      }
+    },
+    "scope_and_correlation_integrity": {
+      "type": "noul",
+      "instructions": "This design/code refuses evidence that belongs to another tenant, another branch or another correlation id, and refuses a reader that attributes evidence to a source domain it does not own",
+      "criteria": {
+        "true": "Every entry declares its scope, a foreign tenant or branch is refused, a correlation mismatch is refused, and a misattributed source domain is refused",
+        "false": "A reader can widen the chain across a tenant, a branch, a correlation id or a source domain"
+      }
+    },
+    "no_prose_or_secrets": {
+      "type": "noul",
+      "instructions": "This design/code cannot store or quote prose, a direct identifier, a payload, a message body or credential material in a chain entry",
+      "criteria": {
+        "true": "References, actor references and outcome codes must be bounded tokens; a value that cannot satisfy the shape becomes unknown rather than quoted; provider free text is reduced to a closed code",
+        "false": "A realistic source field can still place prose, an identifier, a payload or a secret into a reported chain entry"
+      }
+    },
+    "no_overclaim": {
+      "type": "noul",
+      "instructions": "This design/code does not overstate what it proves: the fingerprint is presented as reproducibility, not tamper-evidence, and the open gaps are reported with the same visibility as the closed ones",
+      "criteria": {
+        "true": "The digest is explicitly a reconstruction fingerprint, append-only is described as absent update/delete privileges, and the gap register records cryptographic tamper-evidence, durable outbox and agent credential gaps as open",
+        "false": "The implementation or its documentation claims immutability, tamper-evidence, signatures, Merkle proofs or WORM storage, or hides an open gap"
+      }
+    },
+    "read_only_surface": {
+      "type": "noul",
+      "instructions": "This design/code adds no new authority: the reconstruction surface is a read-only projection, it cannot be written, and row-level security still applies through it",
+      "criteria": {
+        "true": "The view is security_invoker with SELECT only, the module holds no store and exposes no write path, and the API route is read-only and administrator-scoped",
+        "false": "A caller can write through the reconstruction surface, or a branch-scoped or clinical-only caller can read a tenant-wide chain"
+      }
+    },
+    "residual_risk": {
+      "type": "score",
+      "instructions": "How much residual risk remains in this audit-chain qualification, given that it is a bounded synthetic slice whose stores are in-process",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    },
+    "weakest_area": {
+      "type": "choice",
+      "instructions": "Which single area of this design/code is the weakest and most likely to be defeated by a realistic input",
+      "criteria": {
+        "completeness": "Claiming a chain is reconstructable when a slice silently returns nothing",
+        "scope": "Tenant, branch and correlation integrity of evidence",
+        "privacy": "Keeping prose, identifiers and secrets out of the report",
+        "honesty": "Not overstating immutability or hiding open gaps",
+        "read_only": "Keeping the reconstruction surface read-only and administrator-scoped",
+        "coverage": "The set of source domains and steps covered",
+        "other": "None of the above"
+      }
+    }
+  }
+}

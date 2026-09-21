@@ -1,6 +1,6 @@
 // W2 scoped coverage API (advisory only).
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { BranchRole, Membership } from "@zyara/authorization";
+import type { BranchRole } from "@zyara/authorization";
 import {
   CoverageError,
   CoverageStore,
@@ -10,7 +10,7 @@ import {
   type WorkforceProvenance,
 } from "@zyara/enterprise-access";
 import { authorize, requestTenant } from "./auth.js";
-import { workforceStore } from "./workforce.js";
+import { workforceMembershipsFor, workforceStore } from "./workforce.js";
 export const coverageStore = new CoverageStore();
 function provenance(): WorkforceProvenance {
   return {
@@ -23,8 +23,11 @@ function provenance(): WorkforceProvenance {
 
 function scoped(req: FastifyRequest, action: string, branchId: string | null) {
   const { claims } = requestTenant(req);
+  // N5/C4 forward-only fix: this route passed an empty membership list, so every W2 write was
+  // denied for every caller. It now uses the same trusted server-side membership registry as
+  // the other workforce routes, which is what the denial was accidentally standing in for.
   const decision = authorize(
-    { claims, memberships: [] as Membership[] },
+    { claims, memberships: workforceMembershipsFor(claims.tenant, claims.sub) },
     { action, resourceTenant: claims.tenant, resourceBranch: branchId, requireAssurance: "aal2", allowRoles: ["org_admin", "branch_admin"] as BranchRole[] },
   );
   return { claims, decision };
@@ -74,6 +77,13 @@ export function registerCoverageRoutes(app: FastifyInstance) {
         kind: body.kind,
         detail: body.detail ?? "",
         status: "open",
+        // N5/C4: an optional correlation reference so a coverage exception can be joined to the
+        // chain that produced it. Shape-checked here; it is context, never authority.
+        correlationId:
+          typeof body.correlationId === "string" &&
+          /^[A-Za-z0-9_.:-]{1,128}$/.test(body.correlationId)
+            ? body.correlationId
+            : null,
         provenance: provenance(),
       };
       coverageStore.record(e, claims.tenant, workforceStore);

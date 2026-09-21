@@ -40,6 +40,10 @@ export interface WhatsappWebhookReceipt {
   status: string | null;
   payloadDigest: string;
   receivedAt: string;
+  // N5/C4 forward-only addition: a deterministic, tenant-scoped correlation reference minted
+  // at the boundary, because the provider supplies no Zyara correlation id. It makes an
+  // inbound-triggered chain joinable without inventing provider semantics.
+  correlationRef?: string | null;
 }
 
 export type WhatsappReceiptResult =
@@ -232,6 +236,13 @@ export class WhatsappWebhookReceiptStore {
     return [...this.receipts.values()].filter(
       (receipt) => receipt.tenantId === tenantId && receipt.accountId === accountId,
     );
+  }
+
+  // N5/C4 forward-only addition: a tenant-wide read for audit-chain reconstruction. It exposes
+  // exactly the same metadata-only receipts the account-scoped read already exposes, so it adds
+  // no new field, no new record and no new authority.
+  listForTenant(tenantId: string): WhatsappWebhookReceipt[] {
+    return [...this.receipts.values()].filter((receipt) => receipt.tenantId === tenantId);
   }
 
   clear(): void {

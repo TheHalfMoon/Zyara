@@ -16,6 +16,10 @@ export interface CoverageException {
   kind: CoverageKind;
   detail: string;
   status: CoverageStatus;
+  // N5/C4 forward-only addition: an optional correlation reference so a coverage exception can
+  // be joined to the operational chain that produced it. It is context, never authority, and
+  // an unset value is legitimate for an ad-hoc detection run.
+  correlationId?: string | null;
   provenance: WorkforceProvenance;
 }
 export type CoverageErrorCode =
