@@ -9,6 +9,7 @@ import { registerSearchRoutes } from "./search.js";
 import { registerBookingRoutes } from "./bookings.js";
 import { registerWorkforceRoutes } from "./workforce.js";
 import { registerCoverageRoutes } from "./coverage.js";
+import { registerTaskRoutes } from "./tasks.js";
 import { authError } from "@zyara/identity";
 
 const BUILD = process.env.ZYARA_BUILD ?? "m001-dev";
@@ -42,6 +43,7 @@ export function buildServer() {
   registerBookingRoutes(app);
   registerWorkforceRoutes(app);
   registerCoverageRoutes(app);
+  registerTaskRoutes(app);
   app.get("/live", async () => ({ alive: true }));
   app.get("/ready", async (): Promise<ReadyResponse> => {
     const database = await checkDatabase();
