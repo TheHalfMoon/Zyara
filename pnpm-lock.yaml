@@ -1165,6 +1165,9 @@ importers:
 
   tests/m056:
     dependencies:
+      '@zyara/agent-authority':
+        specifier: workspace:*
+        version: link:../../packages/agent-authority
       '@zyara/enterprise-access':
         specifier: workspace:*
         version: link:../../packages/enterprise-access
