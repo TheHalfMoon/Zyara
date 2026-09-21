@@ -5,7 +5,7 @@
 // enqueue. Stale reminders are suppressed against authoritative appointment
 // version and lifecycle. Callbacks are idempotent. Telemetry is counts only.
 
-export type Channel = "email" | "sms" | "inapp";
+export type Channel = "email" | "sms" | "whatsapp" | "inapp";
 export type MessageState =
   | "queued" | "suppressed" | "deferred_quiet_hours" | "sending"
   | "sent" | "delivered" | "failed_transient" | "failed_permanent";
@@ -57,7 +57,7 @@ const PHONE_RE = /^\+[1-9]\d{7,14}$/;
 /** Explicit invalid-destination handling. No endless retry of permanent faults. */
 export function validateDestination(channel: Channel, destination: string): boolean {
   if (channel === "email") return EMAIL_RE.test(destination) && destination.length <= 320;
-  if (channel === "sms") return PHONE_RE.test(destination);
+  if (channel === "sms" || channel === "whatsapp") return PHONE_RE.test(destination);
   return destination.length >= 1 && destination.length <= 128;
 }
 
