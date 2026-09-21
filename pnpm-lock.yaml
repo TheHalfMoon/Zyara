@@ -23,6 +23,9 @@ importers:
       '@zyara/authorization':
         specifier: workspace:*
         version: link:../../packages/authorization
+      '@zyara/communication':
+        specifier: workspace:*
+        version: link:../../packages/communication
       '@zyara/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
