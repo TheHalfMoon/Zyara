@@ -48,7 +48,7 @@ export interface AgentGrant {
   grantedByAccountId: string;
   revokedAt: string | null;
   revokedByAccountId: string | null;
-  reason: string;
+  reasonCode: string;
   createdAt: string;
 }
 
@@ -272,7 +272,7 @@ export class AgentAuthorityStore {
       action: "grant_created",
       actorAccountId: input.grantedByAccountId,
       grantId: input.id,
-      reasonCode: input.reason,
+      reasonCode: input.reasonCode,
       occurredAt: input.createdAt,
     });
     return copy;
