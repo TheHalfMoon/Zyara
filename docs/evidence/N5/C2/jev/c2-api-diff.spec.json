@@ -1,0 +1,59 @@
+{
+  "description": "N5/C2 exact-diff review: API boundary only (read routes and source projection)",
+  "threshold": 0.5,
+  "questions": {
+    "api_no_public_write": {
+      "type": "noul",
+      "instructions": "This module exposes no route or path by which a client can declare an authoritative event and thereby fabricate activity or source-domain authority",
+      "criteria": {
+        "true": "Only read routes are registered and projection runs on the server-side call path after an authoritative operation",
+        "false": "A client-facing input can create or alter an activity record, or claim an authoritative origin"
+      }
+    },
+    "api_clinical_separation": {
+      "type": "noul",
+      "instructions": "An operations or administrative audience cannot obtain restricted activity without an explicit clinical authorization",
+      "criteria": {
+        "true": "Restricted reads require a clinical role resolved from the trusted membership registry and are refused rather than downgraded otherwise",
+        "false": "An administrator obtains restricted activity by requesting it, or the gate is bypassable"
+      }
+    },
+    "api_branch_and_tenant": {
+      "type": "noul",
+      "instructions": "Reads are scoped by server-side membership so a caller cannot widen its branch or tenant reach through request parameters",
+      "criteria": {
+        "true": "Tenant comes only from verified claims, branch reach comes from the membership registry, and record-level visibility is re-evaluated per row",
+        "false": "A query parameter or body field can widen what the caller sees"
+      }
+    },
+    "api_projection_cannot_break_source": {
+      "type": "noul",
+      "instructions": "A projection failure cannot fail or roll back the authoritative domain operation it is derived from",
+      "criteria": {
+        "true": "Projection runs after the authoritative write and records its own failure instead of throwing into the caller path",
+        "false": "A projection error propagates and can fail or roll back the authoritative operation"
+      }
+    },
+    "api_no_prose_projection": {
+      "type": "noul",
+      "instructions": "This module copies no title, detail, comment body, message body, phone number or contact name from a source record into an activity row",
+      "criteria": {
+        "true": "Only state codes, identifiers and timestamps are projected, and caller-supplied identifiers are dropped when they fail the reference shape",
+        "false": "Some source prose or direct identifier is copied into the feed"
+      }
+    },
+    "api_failure_visibility": {
+      "type": "noul",
+      "instructions": "A projection failure is observable to the operator rather than silently swallowed",
+      "criteria": {
+        "true": "Failures are appended to an exported in-process list with tenant, source domain, source event id and code",
+        "false": "A projection failure disappears without a trace"
+      }
+    },
+    "residual_api_risk": {
+      "type": "score",
+      "instructions": "How much residual authority or privacy risk remains at this API boundary as written",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    }
+  }
+}

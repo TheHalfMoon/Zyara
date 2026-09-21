@@ -1,0 +1,67 @@
+{
+  "description": "N5/C2 exact-diff review: migration contract and API boundary",
+  "threshold": 0.5,
+  "questions": {
+    "db_registry_closed": {
+      "type": "noul",
+      "instructions": "The database contract makes an unqualified source domain, category, action, result, actor kind, sensitivity class, subject type or visibility scope impossible to persist",
+      "criteria": {
+        "true": "Every enumerated field is constrained by a closed CHECK and the payload is constrained to a closed key allow-list with closed vocabularies",
+        "false": "Some enumerated field can accept a value outside its registry"
+      }
+    },
+    "db_reference_shape": {
+      "type": "noul",
+      "instructions": "The database contract refuses prose, an unqualified direct identifier and credential material in every stored string field",
+      "criteria": {
+        "true": "Every text column is bounded to a reference shape that excludes whitespace, email and international phone syntax, long digit runs and credential patterns",
+        "false": "Some text column can persist prose, a direct identifier or a credential"
+      }
+    },
+    "db_append_only": {
+      "type": "noul",
+      "instructions": "The ordinary application role cannot rewrite or delete a stored activity record",
+      "criteria": {
+        "true": "The application role holds SELECT and INSERT only, and forced row level security applies tenant scoping on insert",
+        "false": "The application role can update or delete activity history"
+      }
+    },
+    "api_no_public_write": {
+      "type": "noul",
+      "instructions": "The API exposes no route by which a client can declare an authoritative event and thereby fabricate activity or source-domain authority",
+      "criteria": {
+        "true": "Only read routes are registered; projection happens on the server-side call path after an authoritative operation",
+        "false": "A client-facing route can create or alter activity records"
+      }
+    },
+    "api_clinical_separation": {
+      "type": "noul",
+      "instructions": "An operations or administrative audience cannot obtain restricted clinical activity without an explicit clinical authorization",
+      "criteria": {
+        "true": "Restricted reads require a clinical role in the trusted membership registry and are refused rather than downgraded otherwise",
+        "false": "An administrator can obtain restricted activity by requesting it"
+      }
+    },
+    "api_branch_and_tenant": {
+      "type": "noul",
+      "instructions": "Reads are scoped by server-side membership, so a caller cannot widen its branch or tenant reach through request parameters",
+      "criteria": {
+        "true": "Branch and tenant scope come from verified claims plus the server-side membership registry, and record-level visibility is re-checked per record",
+        "false": "A request parameter can widen what the caller sees"
+      }
+    },
+    "projection_cannot_break_authoritative_path": {
+      "type": "noul",
+      "instructions": "A projection failure cannot fail, roll back or corrupt the authoritative domain operation it was derived from",
+      "criteria": {
+        "true": "Projection runs after the authoritative write commits and its failure is recorded rather than thrown",
+        "false": "A projection failure can break or roll back the authoritative operation"
+      }
+    },
+    "residual_boundary_risk": {
+      "type": "score",
+      "instructions": "How much residual authority, privacy or tenancy risk remains at this boundary as written",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    }
+  }
+}

@@ -14,6 +14,7 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
   ACTIVITY_ACTOR_KINDS,
+  ACTIVITY_PAYLOAD_ENUMS,
   ACTIVITY_PAYLOAD_KEYS,
   ACTIVITY_SOURCE_DOMAINS,
   ACTIVITY_SUBJECT_TYPES,
@@ -222,6 +223,22 @@ describe("N5/C2 derived human + agent activity", () => {
       "ACTIVITY_IDEMPOTENCY_CONFLICT",
       "a divergent replay of the same canonical event must be refused",
     );
+
+    // Interleaved (concurrent) delivery of the same canonical event must still yield
+    // exactly one record: the dedupe decision is not order-dependent.
+    const concurrent = new ActivityStore();
+    const [left, right] = await Promise.all([
+      concurrent.record(taskEvent({ id: "activity-race-a" }), "t1", agents),
+      concurrent.record(taskEvent({ id: "activity-race-b" }), "t1", agents),
+    ]);
+    assert.equal(concurrent.records.size, 1);
+    assert.equal(left.record.id, right.record.id);
+    assert.equal(
+      [left, right].filter((outcome) => outcome.replayed === false).length,
+      1,
+      "exactly one interleaved delivery may create the record",
+    );
+    assert.deepEqual(concurrent.list("t1").map((record) => record.id), [left.record.id]);
   });
 
   it("refuses a cross-tenant projection and denies a cross-tenant read", async () => {
@@ -303,6 +320,23 @@ describe("N5/C2 derived human + agent activity", () => {
     // Only closed codes are present: no field of the record holds a sentence.
     for (const value of Object.values(record)) {
       if (typeof value === "string") assert.ok(!value.includes(" "), `${value} must not be prose`);
+    }
+    // A payload value can never encode a subject through a caller-controlled code:
+    // every stored key is from the exported allow-list and every enum-valued key is
+    // drawn from its own fixed vocabulary.
+    for (const row of store.list("t1")) {
+      for (const [key, value] of Object.entries(row.payload)) {
+        assert.ok(
+          (ACTIVITY_PAYLOAD_KEYS as readonly string[]).includes(key),
+          `${key} is not a closed payload key`,
+        );
+        const vocabulary = ACTIVITY_PAYLOAD_ENUMS[key];
+        if (vocabulary) {
+          assert.ok(vocabulary.includes(value as string), `${key} must be a fixed vocabulary code`);
+        } else {
+          assert.ok(Number.isInteger(value), `${key} must hold a small integer`);
+        }
+      }
     }
   });
 
@@ -436,6 +470,17 @@ describe("N5/C2 derived human + agent activity", () => {
     assert.equal(correction.record.supersedesActivityId, original.id);
     // The original record is byte-identical: history was appended to, not rewritten.
     assert.equal(JSON.stringify(store.get(original.id, "t1")), snapshot);
+    // A correction cannot move provenance or the source identity of the record it
+    // supersedes: those still describe the original authoritative event.
+    const superseded = store.get(original.id, "t1");
+    assert.equal(superseded.sourceRef, original.sourceRef);
+    assert.equal(superseded.sourceRevision, original.sourceRevision);
+    assert.equal(superseded.sourceDomain, original.sourceDomain);
+    assert.equal(superseded.sourceEventId, original.sourceEventId);
+    assert.equal(superseded.occurredAt, original.occurredAt);
+    assert.equal(superseded.recordedAt, original.recordedAt);
+    assert.equal(superseded.result, "observed");
+    assert.equal(correction.record.result, "succeeded");
     assert.equal(store.records.size, 2);
 
     await expectActivityError(
@@ -508,6 +553,15 @@ describe("N5/C2 derived human + agent activity", () => {
       { includeRestricted: true },
     );
     assert.equal(clinical.length, 2);
+    // The operations path cannot reach a restricted record by direct id either: the
+    // record exists in the store, and the audience gate still refuses it.
+    const restricted = activityRecordOf(store, "activity-restricted");
+    assert.equal(restricted.sensitivity, "restricted");
+    assert.equal(store.get("activity-restricted", "t1").id, "activity-restricted");
+    assert.ok(
+      !store.listVisible(audience()).some((record) => record.id === "activity-restricted"),
+      "an operations audience must never receive a restricted record",
+    );
     assert.equal(store.visibleTo(activityRecordOf(store, "activity-restricted"), audience()), false);
     assert.equal(
       store.visibleTo(activityRecordOf(store, "activity-restricted"), audience({ allowRestricted: true })),

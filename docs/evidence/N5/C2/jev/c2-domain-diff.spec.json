@@ -1,0 +1,59 @@
+{
+  "description": "N5/C2 exact-diff review: derived activity domain module",
+  "threshold": 0.5,
+  "questions": {
+    "no_authority_confusion": {
+      "type": "noul",
+      "instructions": "This module has no path by which a derived activity record can become authoritative healthcare state or mutate source-domain state",
+      "criteria": {
+        "true": "The module only derives and reads records, holds no domain-store handle, and offers no write-back",
+        "false": "Some path lets a record become or change authoritative domain state"
+      }
+    },
+    "no_hidden_write_path": {
+      "type": "noul",
+      "instructions": "No hidden or indirect write path exists from this module back into a source domain",
+      "criteria": {
+        "true": "No import, callback, effect or side channel in the module writes outside its own store",
+        "false": "An indirect mechanism in the module could write outside its own store"
+      }
+    },
+    "cross_tenant_isolation": {
+      "type": "noul",
+      "instructions": "No cross-tenant projection or read can succeed through this module",
+      "criteria": {
+        "true": "Tenant scope is checked on write and on every read, and a foreign record is unreachable",
+        "false": "A caller can write into or read from a tenant it does not belong to"
+      }
+    },
+    "replay_determinism": {
+      "type": "noul",
+      "instructions": "Redelivery of the same canonical event is deterministic and cannot duplicate or silently rewrite activity history",
+      "criteria": {
+        "true": "The dedupe key and the content fingerprint together make a replay idempotent and a divergent replay an explicit error",
+        "false": "A replay can duplicate history, or a divergent replay can overwrite or silently pass"
+      }
+    },
+    "stale_authority": {
+      "type": "noul",
+      "instructions": "Historical agent activity can never read as current authority after suspension, revocation, expiry or sponsor loss",
+      "criteria": {
+        "true": "Authority state is recorded at projection time and re-checked against the live registry before authority is implied",
+        "false": "A stale record can be read as a live grant"
+      }
+    },
+    "payload_no_phi_or_secret": {
+      "type": "noul",
+      "instructions": "No realistic input can store prose, a clinical narrative, a direct patient identifier or credential material in an activity record through this module",
+      "criteria": {
+        "true": "The reference minting, the token shape rules, the closed payload vocabulary and the secret patterns together close the realistic vectors",
+        "false": "A realistic input still reaches storage as prose, an identifier or a secret"
+      }
+    },
+    "residual_correctness_risk": {
+      "type": "score",
+      "instructions": "How much residual correctness or security risk remains in this module as written",
+      "criteria": ["negligible", "low", "moderate", "high", "severe"]
+    }
+  }
+}
