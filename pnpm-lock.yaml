@@ -23,6 +23,9 @@ importers:
       '@zyara/authorization':
         specifier: workspace:*
         version: link:../../packages/authorization
+      '@zyara/collaboration':
+        specifier: workspace:*
+        version: link:../../packages/collaboration
       '@zyara/communication':
         specifier: workspace:*
         version: link:../../packages/communication
@@ -176,6 +179,12 @@ importers:
         version: link:../domain
 
   packages/clinical-workflows:
+    dependencies:
+      '@zyara/domain':
+        specifier: workspace:*
+        version: link:../domain
+
+  packages/collaboration:
     dependencies:
       '@zyara/domain':
         specifier: workspace:*
@@ -1215,6 +1224,22 @@ importers:
       '@zyara/expansion-decision':
         specifier: workspace:*
         version: link:../../packages/expansion-decision
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/n5c1:
+    dependencies:
+      '@zyara/collaboration':
+        specifier: workspace:*
+        version: link:../../packages/collaboration
+      '@zyara/enterprise-access':
+        specifier: workspace:*
+        version: link:../../packages/enterprise-access
     devDependencies:
       tsx:
         specifier: 4.19.2
