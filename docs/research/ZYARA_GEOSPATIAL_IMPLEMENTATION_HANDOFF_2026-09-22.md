@@ -126,6 +126,27 @@ Exit:
 
 `GEO_01B_ACCESS_GEOMETRY_QUALIFIED = TRUE`
 
+### GEO-01C — External spatial identity/conflation
+
+Implement only after GEO-01A:
+
+- external spatial source identifiers;
+- candidate link model;
+- conflict state;
+- audited canonical link/unlink;
+- no distance/name-only auto-merge.
+
+Tests:
+
+- nearby same-name facilities remain distinct without stronger evidence;
+- exact external id can link only within allowed source namespace;
+- conflicting coordinates remain unresolved rather than overwritten;
+- unlink preserves history.
+
+Exit:
+
+`GEO_01C_CONFLATION_QUALIFIED = TRUE`
+
 ## 4. GEO-02 — Renderer + basemap
 
 ### GEO-02A — MapLibre qualification
@@ -330,6 +351,26 @@ Tests:
 Exit:
 
 `GEO_06_LOCAL_ACCESS_QUALIFIED = TRUE`
+
+### GEO-06B — Campus / indoor wayfinding
+
+Optional bounded slice after verified entrances exist.
+
+Plan/implement only with provider-approved facility geometry.
+
+Must preserve:
+
+- floor/building scope;
+- accessibility edges;
+- restricted-area filtering;
+- textual fallback;
+- provider freshness.
+
+Do not implement emergency evacuation guidance under this slice.
+
+Exit if admitted:
+
+`GEO_06B_INDOOR_WAYFINDING_QUALIFIED = TRUE`
 
 ## 9. GEO-07 — Scene, layers and share state
 
