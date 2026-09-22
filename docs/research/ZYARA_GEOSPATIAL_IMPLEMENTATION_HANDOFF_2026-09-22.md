@@ -134,14 +134,20 @@ Implement only after GEO-01A:
 - candidate link model;
 - conflict state;
 - audited canonical link/unlink;
-- no distance/name-only auto-merge.
+- no distance/name-only auto-merge;
+- evidence-backed public coordinate correction;
+- large-distance/bulk-change abuse controls;
+- append-only correction trail.
 
 Tests:
 
 - nearby same-name facilities remain distinct without stronger evidence;
 - exact external id can link only within allowed source namespace;
 - conflicting coordinates remain unresolved rather than overwritten;
-- unlink preserves history.
+- unlink preserves history;
+- low-authority external feed cannot overwrite a verified assertion;
+- material coordinate move records evidence and actor;
+- bulk malicious edits are rate-limited/reviewable.
 
 Exit:
 
@@ -385,7 +391,8 @@ Required:
 - camera/view state;
 - race-safe navigation generations;
 - privacy-safe share serialization;
-- restoration failures are explicit.
+- restoration failures are explicit;
+- optional static/export map contract with attribution/privacy boundaries.
 
 Tests:
 
