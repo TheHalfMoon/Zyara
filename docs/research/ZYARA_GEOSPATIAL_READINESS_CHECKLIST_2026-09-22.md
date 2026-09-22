@@ -155,6 +155,10 @@ Legend:
 | 140 | Static/export map attribution and privacy | COVERED | §30A |
 | 141 | Static renderer/source allowlist | COVERED | §30A |
 
+| 142 | Privacy-preserving browser Referrer-Policy for third-party map origins | COVERED | canonical plan §16 |
+| 143 | Precise location excluded from browser history/persistent storage by default | COVERED | §16 |
+| 144 | Sensitive healthcare intent excluded from map-state URL parameters | COVERED | §16/§16A |
+
 ## Readiness verdict
 
 Known architectural boundaries are covered.
