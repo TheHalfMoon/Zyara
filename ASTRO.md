@@ -113,6 +113,8 @@ Read these first:
 29. `docs/COMPETITORS.md`
 30. `docs/SOURCES.md`
 
+Also read `docs/research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md` before claiming the AIF planning amendment implementation-ready.
+
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
 
 ## AI Operating Fabric authority
