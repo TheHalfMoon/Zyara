@@ -85,32 +85,56 @@ Read these first:
 1. `README.md`
 2. `docs/canonical/ZYARA_NETWORK_MASTER_VISION_2026-09-16.md`
 3. `docs/canonical/ZYARA_AI_ERA_AUTOMATION_PRINCIPLES_2026-09-16.md`
-4. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
-5. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
-6. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
-7. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
-8. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
-9. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
-10. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
-11. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
-12. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
-13. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
-14. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
-15. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
-16. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
-17. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
-18. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
-19. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
-20. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
-21. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
-22. `docs/canonical/ZYARA_ROADMAP.md`
-23. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
-24. current V1 founder/scope/canonicalization documents;
-25. `docs/VOICE_AGENT_RUNTIME.md`
-26. `docs/COMPETITORS.md`
-27. `docs/SOURCES.md`
+4. `docs/canonical/ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md`
+5. `docs/research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+6. `docs/research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`
+7. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
+8. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
+9. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
+10. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
+11. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
+12. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
+13. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+14. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+15. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+16. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+17. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+18. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+19. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+20. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+21. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+22. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+23. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+24. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+25. `docs/canonical/ZYARA_ROADMAP.md`
+26. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+27. current V1 founder/scope/canonicalization documents;
+28. `docs/VOICE_AGENT_RUNTIME.md`
+29. `docs/COMPETITORS.md`
+30. `docs/SOURCES.md`
+
+Also read `docs/research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md` before claiming the AIF planning amendment implementation-ready.
 
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
+
+## AI Operating Fabric authority
+
+The 2026-09-22 AI Operating Fabric packet is a cross-cutting execution amendment to the Network master plan.
+
+It does not replace N6-N10. It defines how models, agents, tools, browsers and local-machine adapters may act safely:
+
+- N5 remains the identity/approval/activity/audit authority plane;
+- AIF-01 Capability Gateway mediates every named execution capability;
+- AIF-02 Privacy/Egress/Credential Mediation controls data and secrets;
+- AIF-03 Decision Plane provides bounded semantic routing, never authority;
+- AIF-04 Agent Runtime provides isolated, budgeted workloads;
+- AIF-05 Governed Browser Bridge is API-last fallback;
+- AIF-06 Local Bridge exposes named local capabilities, not arbitrary shell/filesystem;
+- AIF-07 Action Center is the operator surface;
+- AIF-08 Operations Insights measures quality/cost/reliability;
+- AIF-09 qualifies the whole fabric.
+
+N6 Connect may proceed independently. Browser-portal automation in N8 and broad agent automation in N9 must satisfy the AIF dependencies in the canonical plan.
 
 ## Founder decisions that remain binding
 
