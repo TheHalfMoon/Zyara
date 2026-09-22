@@ -382,7 +382,6 @@ The founder has explicitly stated permission to copy/use source from these suppl
 
 - `bilawalsidhu/gods-eye-view`
 - `hyperknot/openfreemap`
-- `maplibre/maplibre-gl-js` (permissive renderer dependency candidate; founder permission is not required for BSD-3 use, but exact pin/license/NOTICE qualification remains required)
 - `openimsdk/openmeeting`
 - `suitenumerique/meet`
 - Jitsi organization / use `jitsi/jitsi-meet` as the primary evaluated meeting repository unless research selects another exact component;
@@ -390,6 +389,8 @@ The founder has explicitly stated permission to copy/use source from these suppl
 - `nextcloud/talk-desktop`
 - `block/buzz`
 - relevant `TheHalfMoon/*` repositories.
+
+MapLibre GL JS is additionally a permissively licensed renderer dependency candidate and must be qualified by exact revision/release, BSD-3 notices, SBOM, performance, RTL and accessibility. Do not describe this as founder-specific permission.
 
 Read `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`.
 
