@@ -145,6 +145,16 @@ Legend:
 | 131 | Indoor accessibility uses verified edges | COVERED | §17A |
 | 132 | Emergency evacuation routing excluded absent separate authority | COVERED | §17A |
 
+| 133 | Sensitive care-intent + precise-location egress minimized | COVERED | canonical plan §16A |
+| 134 | Basemap requests exclude symptom/specialty identity | COVERED | §16A |
+| 135 | Router/geocoder requests minimize health context | COVERED | §16A |
+| 136 | Sensitive geo analytics require stronger suppression | COVERED | §16A |
+| 137 | Material public pin edits are evidence-backed | COVERED | §26A |
+| 138 | Large/bulk coordinate edits require abuse controls | COVERED | §26A |
+| 139 | Lower-authority map feeds cannot overwrite verified truth | COVERED | §26A |
+| 140 | Static/export map attribution and privacy | COVERED | §30A |
+| 141 | Static renderer/source allowlist | COVERED | §30A |
+
 ## Readiness verdict
 
 Known architectural boundaries are covered.
