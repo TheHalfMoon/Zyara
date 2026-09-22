@@ -100,6 +100,7 @@ Mobile qualification must cover:
 ## 3. hyperknot/openfreemap
 
 **Pin:** `3fff2d80673c0481c4bb2da34df0293f4462a55a`  
+**Founder authorization:** explicit permission stated to copy/use the source code  
 **Observed repo license:** MIT  
 **Recommended mode:** `DEPENDENCY/REFERENCE` for public service during qualification, `ADAPT` for self-hosted infrastructure if selected
 
@@ -171,6 +172,7 @@ Preferred long-term options:
 ## 4. bilawalsidhu/gods-eye-view
 
 **Pin:** `f01b6a5d8462c182e03c94493fa24098c1ac3771`  
+**Founder authorization:** explicit permission stated to copy/use the source code  
 **Observed code license:** MIT  
 **Recommended mode:** `REFERENCE / SELECTIVE_ADAPT / SELECTIVE_COPY`
 
