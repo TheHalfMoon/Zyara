@@ -57,7 +57,7 @@ Zyara is a public repository. Founder-owned private repositories discovered thro
 | Source | Zyara use | Initial mode |
 |---|---|---|
 | [block/buzz](https://github.com/block/buzz) | human-agent collaboration, scoped identities, event/activity streams, workflow approval patterns, tenant isolation, search and tamper-evident audit concepts; see dedicated deep dive | HIGH-PRIORITY SELECTIVE ADAPTATION / REFERENCE |
-| [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) | real-time map/layer state, entity selection and contextual voice/tool UX | PATTERN_REIMPLEMENTED |
+| [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) | scene/layer/source state, share restoration, entity selection, navigation race handling, optional 3D and contextual voice/map UX; exclude surveillance semantics and third-party datasets | SELECTIVE ADAPTATION / COPY after exact-path provenance |
 | [openimsdk/openmeeting](https://github.com/openimsdk/openmeeting) | meeting/mobile component patterns | ADAPTATION CANDIDATE after exact qualification |
 | [suitenumerique/meet](https://github.com/suitenumerique/meet) | LiveKit-based self-hostable meeting product, recording/transcription/telephony patterns | STRONG ZYARA CONNECT CANDIDATE |
 | [jitsi/jitsi-meet](https://github.com/jitsi/jitsi-meet) | mature WebRTC meeting UX and SDK patterns | INTEGRATION / REFERENCE |
@@ -145,7 +145,9 @@ Browser automation is a last-mile adapter for systems without adequate APIs. It 
 | Source | Capability | Mode |
 |---|---|---|
 | [postgis/postgis](https://github.com/postgis/postgis) | geospatial storage/query | DEPENDENCY CANDIDATE |
-| [maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) | map renderer | DEPENDENCY CANDIDATE; tile/geocoder rights separate |
+| [hyperknot/openfreemap](https://github.com/hyperknot/openfreemap) | open vector basemap/tile infrastructure; exact geo planning pin `3fff2d80673c0481c4bb2da34df0293f4462a55a` | DEPENDENCY / SELF-HOST ADAPTATION CANDIDATE; OSM/OpenMapTiles rights, privacy and SLA separate |
+| [maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) | preferred 2D map renderer; exact geo planning pin `a2c78ece5c70c429ae94b2f97ec0c30ad0c11441` | DEPENDENCY CANDIDATE; renderer rights are separate from tiles/geocoder/router/data |
+| [maplibre/maplibre-native](https://github.com/maplibre/maplibre-native) | future native iOS/Android renderer family; research pin `72ec5f5fff701d3db657d4727d8c38c30843e0b6` | LATER QUALIFICATION; mobile privacy/offline/accessibility/binding gates separate |
 | [opensearch-project/OpenSearch](https://github.com/opensearch-project/OpenSearch) | search/index platform | BENCHMARK-GATED DEPENDENCY CANDIDATE |
 | [apache/superset](https://github.com/apache/superset) | BI/analytics reference | INTERNAL ANALYTICS REFERENCE |
 | [metabase/metabase](https://github.com/metabase/metabase) | operational analytics/BI patterns | INTERNAL REFERENCE / license review |
@@ -230,3 +232,15 @@ For the operating fabric, prioritize:
 
 The detailed AIF plan owns admission order. No donor becomes runtime authority merely by appearing in this index.
 
+
+
+## M. 2026-09-22 Geospatial Platform additions
+
+Authoritative packet:
+
+- `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
+
+Source roles are intentionally separated: MapLibre renders; OpenFreeMap supplies a basemap path; Provider Graph/PostGIS own healthcare geo truth; geocoding/routing are independent adapters; God's Eye View is a selective spatial-UX donor.

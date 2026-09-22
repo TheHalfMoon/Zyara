@@ -38,11 +38,13 @@ ENGINEERING_ONLY
 
 All `*_CANDIDATE` modes require Astro's exact-source qualification before implementation.
 
-## A. Founder-supplied real-time / meeting sources
+## A. Founder-supplied real-time / geospatial / meeting sources
 
 | Source | Best Zyara use | Initial mode |
 |---|---|---|
-| [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) | Real-time map/layer architecture, entity selection, serialized/shareable scene state, contextual voice-to-tool interaction. Useful for network/map operations and AI-map UX; reject military/spy visual language. | PATTERN_REIMPLEMENTED / selective component review |
+| [hyperknot/openfreemap](https://github.com/hyperknot/openfreemap) | Open vector basemap/tile infrastructure, OSM/OpenMapTiles/Planetiler operations, public and self-hosted deployment patterns. Explicitly not a geocoder/router/satellite/elevation service. Geo plan pin: `3fff2d80673c0481c4bb2da34df0293f4462a55a`. | DEPENDENCY / SELF-HOST ADAPTATION CANDIDATE; data rights and SLA/privacy separately gated |
+| [maplibre/maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) | Preferred 2D renderer candidate; GPU vector-tile rendering, style/layer/query ecosystem. Geo plan pin: `a2c78ece5c70c429ae94b2f97ec0c30ad0c11441`. | DEPENDENCY; BSD-3 notices, SBOM, RTL/accessibility/performance qualification |
+| [bilawalsidhu/gods-eye-view](https://github.com/bilawalsidhu/gods-eye-view) | Spatial scene/layer architecture, source fallback, entity selection, shareable scene state, navigation race handling, optional 3D and contextual voice-to-tool interaction. Reject military/spy/surveillance product semantics and bundled third-party datasets/assets. Exact geo plan pin: `f01b6a5d8462c182e03c94493fa24098c1ac3771`. | SELECTIVE_ADAPT / SELECTIVE_COPY after exact-path provenance |
 | [openimsdk/openmeeting](https://github.com/openimsdk/openmeeting) | Flutter meeting component/server patterns for mobile video-room UX and theming/localization. | ADAPTED_DERIVATIVE_CANDIDATE after license/security pin |
 | [suitenumerique/meet](https://github.com/suitenumerique/meet) | Browser-first secure meetings on LiveKit, large rooms, multiple screen shares, non-persistent chat, recording/transcription, telephony, authentication/access control, customization and self-hosting. Strong Zyara Connect reference. | ADAPTED_DERIVATIVE_CANDIDATE / DEPENDENCY_CANDIDATE |
 | [jitsi/jitsi-meet](https://github.com/jitsi/jitsi-meet) | Mature WebRTC meeting UX, web/mobile SDK patterns, content sharing, chat, reactions/polls, background effects, E2EE and deployment patterns. | REFERENCE_ONLY or INTEGRATION_CANDIDATE |
@@ -50,6 +52,23 @@ All `*_CANDIDATE` modes require Astro's exact-source qualification before implem
 | [nextcloud/talk-desktop](https://github.com/nextcloud/talk-desktop) | Desktop/background call-client patterns, tray lifecycle and cross-platform packaging. Useful if Zyara Doctor/Clinic later needs a dedicated desktop communications client. | REFERENCE_ONLY / ADAPTED_DERIVATIVE_CANDIDATE |
 | [livekit/livekit](https://github.com/livekit/livekit) | Real-time media server/infrastructure candidate; Suite Meet already demonstrates this architecture. Keep clinical state outside the media engine. | DEPENDENCY_CANDIDATE |
 | [block/buzz](https://github.com/block/buzz) | Human-agent workspace, scoped identities, operational event/activity streams, workflow approval patterns, search, tenant isolation and tamper-evident audit concepts. Not a healthcare source-of-truth model. | SELECTIVE ADAPTATION / REFERENCE CANDIDATE |
+
+### Geospatial source decision
+
+The authoritative geo adoption detail is now `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`.
+
+Keep these source roles separate:
+
+```text
+MapLibre = renderer
+OpenFreeMap = basemap/tile path
+Provider Graph + PostGIS = healthcare geo truth
+Geocoder = separately qualified adapter
+Router = separately qualified adapter
+God's Eye View = selective scene/layer/share/3D UX donor
+```
+
+Code permission does not transfer rights to third-party map data, imagery, live feeds or 3D assets.
 
 ### Zyara Connect source decision Astro must make
 

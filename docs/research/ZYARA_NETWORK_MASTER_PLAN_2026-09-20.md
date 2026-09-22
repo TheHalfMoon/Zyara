@@ -66,3 +66,47 @@ model/tool/browser/agent output != healthcare authority
 
 The first AIF implementation leaf is `AIF-01A Capability contract`. It is dependency-independent from N6/T1 and may proceed concurrently only under repository governance.
 
+
+
+## 2026-09-22 Geospatial Platform amendment
+
+The founder approved a first-class healthcare geospatial architecture using MapLibre, OpenFreeMap and selective God's Eye View patterns.
+
+Authoritative packet:
+
+- `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
+- `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
+
+The amendment adds the cross-cutting GEO program:
+
+```text
+GEO-01 Geo truth / precision / provenance
+GEO-02 MapLibre + OpenFreeMap renderer/basemap
+GEO-03 Map/list discovery parity
+GEO-04 Geocoder contract + Saudi qualification
+GEO-05 Routing / ETA
+GEO-06 Entrances / accessibility / final-100m access
+GEO-07 Scene / layers / privacy-safe share state
+GEO-08 Optional 3D
+GEO-09 Spatial Insights
+GEO-10 AI / voice geo capabilities
+GEO-11 Whole-platform hardening
+```
+
+Permanent rules:
+
+```text
+Provider Graph + PostGIS own healthcare geo truth
+renderer != tiles != geocoder != router != 3D provider
+precise patient location is purpose-bound
+map/list share one result contract
+3D is optional
+spatial analytics are privacy-aggregated
+AI geo actions are typed capabilities
+```
+
+The first GEO implementation leaf is `GEO-01A — Geo assertion and precision contract`. It is independent of N6 and requires no external credentials.
+
+N9 spatial analytics must consume GEO-09 rather than invent a second geospatial stack. AIF-01 is the prerequisite for GEO-10 AI/voice geo capabilities.
