@@ -69,6 +69,14 @@ A checked planning item means the contract is defined in the planning packet. It
 | 58 | Action Center evidence drill-down | COVERED | AIF-07 |
 | 59 | Raw shell/filesystem prohibited for care agents | COVERED | AIF-04/AIF-06 |
 | 60 | Canonical owner remains Zyara domains | COVERED | permanent authority rules |
+| 61 | Capability registry mutation authority | COVERED | frozen architecture decisions |
+| 62 | Capability definition digest/version integrity | COVERED | AIF-01A |
+| 63 | Ephemeral workload identity | COVERED | frozen decisions + AIF-04 |
+| 64 | Credential subject binding | COVERED | AIF-02B |
+| 65 | Local bridge pairing/revocation | COVERED | AIF-06 |
+| 66 | MFA/human takeover without credential capture | COVERED | AIF-05 |
+| 67 | Provider rate limits/backpressure/circuit breakers | COVERED | reliability + frozen decisions |
+| 68 | External portal automation-rights qualification | COVERED | source/admission + frozen decisions |
 
 ## Explicit unresolved items that are intentionally not design gaps
 
