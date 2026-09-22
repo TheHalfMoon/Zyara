@@ -508,6 +508,42 @@ Rules:
 - document provider retention/training/data-use terms;
 - patient route queries require a data-egress decision under the AI/Privacy control plane where applicable.
 
+## 13A. External POI conflation and duplicate prevention
+
+Basemap/geocoder POIs are external observations, not Zyara provider identities.
+
+A hospital or clinic can appear simultaneously in:
+
+- Provider Graph;
+- OpenStreetMap;
+- a geocoder;
+- an official Saudi address source;
+- a provider-supplied record;
+- an external scheduling directory.
+
+Do not generate duplicate Zyara facilities from those feeds.
+
+Maintain explicit external spatial identifiers and a governed conflation workflow:
+
+```text
+external candidate
+-> candidate match
+-> deterministic identifiers / spatial + name evidence
+-> human/provider verification where material
+-> canonical Zyara branch/location link
+-> provenance
+```
+
+Rules:
+
+- no automatic merge based on distance alone;
+- no automatic merge based on normalized name alone;
+- preserve external ids/source refs;
+- merge/unmerge is auditable;
+- external POI disappearance does not silently delete Zyara truth;
+- coordinate conflicts remain visible until reconciled;
+- search projections collapse only after canonical identity resolution.
+
 ## 14. Map/list parity
 
 Map and list are two views of one result contract.
@@ -583,6 +619,32 @@ Model independently:
 Do not infer accessibility from imagery, 3D geometry or AI.
 
 Every claim has source/freshness.
+
+## 17A. Campus and indoor wayfinding
+
+Large hospitals may need navigation beyond the street entrance.
+
+Treat indoor/campus wayfinding as a later bounded capability, separate from the public basemap.
+
+Potential authoritative inputs:
+
+- provider-supplied building/floor plans;
+- facility-approved POI graph;
+- verified entrances/lifts/stairs;
+- accessibility routes;
+- department/clinic room destinations.
+
+Rules:
+
+- no indoor map is inferred from imagery or an LLM;
+- floor/room data may be operationally sensitive and is tenant/provider scoped;
+- patient-facing indoor routes require provider validation and freshness;
+- emergency evacuation routing is out of scope unless separately safety-authorized;
+- accessibility routing must use verified accessible edges;
+- indoor routing failure falls back to textual arrival instructions/help desk;
+- do not expose staff-only/restricted rooms.
+
+A future `IndoorGraph` may use nodes/edges/floors independently of the road router.
 
 ## 18. God's Eye View selective adaptation
 
