@@ -65,6 +65,8 @@ Owns:
 
 PostgreSQL + PostGIS should be the default system of record for geometry.
 
+The detailed canonical renderer/basemap/geocoder/router/3D/privacy contracts are defined in `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`. MapLibre is the preferred 2D renderer candidate, OpenFreeMap is the first open basemap candidate, and geocoding/routing remain separately qualified adapters.
+
 Saudi adapter candidates include National Address APIs for address search/geocode/POI data where terms and access allow.
 
 ### 4. Search and Discovery
