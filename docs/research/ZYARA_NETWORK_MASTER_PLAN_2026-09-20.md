@@ -34,3 +34,35 @@ W1 Clinic-org-workforce-graph: additive migrations, scoped APIs, tests, provenan
 
 ZYARA_NETWORK_MASTER_PLAN_COMPLETE = YES
 
+## 2026-09-22 AI Operating Fabric amendment
+
+The founder approved a deeper AI-era execution architecture after N5 became canonical. The authoritative planning packet is:
+
+- `docs/canonical/ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md`
+- `docs/research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+- `docs/research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`
+
+The amendment adds a cross-cutting `AIF` program:
+
+```text
+AIF-01 Capability Gateway
+AIF-02 Privacy / Egress / Credential Mediation
+AIF-03 Decision Plane
+AIF-04 Agent Workload Runtime
+AIF-05 Governed Browser Bridge
+AIF-06 Local Bridge
+AIF-07 Action Center
+AIF-08 Operations Insights
+AIF-09 Whole-Fabric Qualification
+```
+
+This does not replace N6-N10 and does not block N6 Connect. It supplies the execution substrate required before broad N8 browser fallbacks and N9 agent automation. N5 remains the control/authority plane; the AIF is the execution plane.
+
+Permanent rule:
+
+```text
+model/tool/browser/agent output != healthcare authority
+```
+
+The first AIF implementation leaf is `AIF-01A Capability contract`. It is dependency-independent from N6/T1 and may proceed concurrently only under repository governance.
+
