@@ -600,6 +600,30 @@ Default:
 
 Location telemetry must have its own allowlist.
 
+## 16A. Sensitive care-intent + location egress
+
+A location query combined with a healthcare intent can itself be sensitive.
+
+Examples include searching near:
+
+- oncology;
+- fertility;
+- mental-health;
+- addiction;
+- infectious-disease;
+- sexual-health;
+- genetic services.
+
+Rules:
+
+- basemap providers receive tile coordinates only; never specialty/symptom/patient identifiers;
+- geocoders receive only the minimum place/address text needed;
+- routers receive origin/destination geometry or provider-safe identifiers, not symptom/specialty context;
+- analytics must not retain a precise-location + sensitive-care-intent pair by default;
+- third-party request logs must not join patient/account identity to map intent;
+- sensitive-intent spatial analytics require stronger aggregation/suppression;
+- external directions links should omit patient origin when the destination-only link allows the device map app to resolve current location locally.
+
 ## 17. Entrances, accessibility and final-100m care access
 
 Model independently:
@@ -863,6 +887,33 @@ Qualify at minimum:
 
 Use CSP/network allowlists.
 
+## 26A. Geospatial trust and abuse prevention
+
+Map corrections affect real-world access and require abuse controls.
+
+Threats include:
+
+- malicious pin movement;
+- competitor sabotage;
+- duplicate fake branches;
+- false entrance/accessibility claims;
+- poisoned provider-submitted coordinates;
+- compromised staff bulk edits;
+- stale official/geocoder data overwriting newer provider evidence.
+
+Controls:
+
+- role/branch-scoped correction authority;
+- evidence/source requirement for material moves;
+- large-distance change warning/review;
+- append-only correction history;
+- optional dual review for high-risk public changes;
+- anomaly detection for bulk coordinate changes;
+- provider notification where applicable;
+- dispute/revert workflow;
+- rate limits;
+- no map-vendor feed may silently overwrite a higher-authority verified assertion.
+
 ## 27. Accessibility and localization
 
 Map is never the only interface.
@@ -932,6 +983,26 @@ Requirements:
 - support facility density without hiding lower-ranked eligible results.
 
 Styles are versioned artifacts with rollback.
+
+## 30A. Static snapshots, print and exported maps
+
+Static map images may later support:
+
+- provider profile share cards;
+- appointment arrival instructions;
+- PDFs;
+- clinic reports.
+
+They are not supplied by OpenFreeMap itself and require a separate renderer/export path.
+
+Rules:
+
+- preserve required attribution in exported media;
+- never render precise patient location into a public/shareable artifact by default;
+- signed/authenticated documents may contain private spatial context only when explicitly authorized;
+- exported route imagery must respect tile/route provider terms;
+- output metadata must not retain hidden private coordinates unintentionally;
+- static rendering service must use allowlisted styles/sources and bounded resource limits.
 
 ## 31. Data freshness
 
