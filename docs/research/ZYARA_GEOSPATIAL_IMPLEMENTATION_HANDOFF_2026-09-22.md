@@ -461,7 +461,9 @@ Qualify:
 - observability;
 - kill switches;
 - rollback;
-- backup/schema compatibility.
+- backup/schema compatibility;
+- web/mobile renderer contract portability;
+- native renderer qualification only when the mobile phase starts.
 
 Exit:
 
