@@ -111,6 +111,8 @@ A5_HUMAN_ONLY
 ### Requirements
 
 - immutable definition version;
+- trusted registration authority; agents cannot self-register capabilities;
+- content digest over the admitted definition/schema;
 - exact JSON-compatible input/output schema reference;
 - tenant/branch scope;
 - read/write declaration;
@@ -246,6 +248,7 @@ The gateway sees metadata; the adapter receives a short-lived resolved secret th
 
 - tenant ownership;
 - branch/provider scope;
+- credential subject binding (tenant, branch, human delegate, service account, or external integration);
 - rotation;
 - expiry;
 - least-privilege metadata;
@@ -337,6 +340,7 @@ At least deterministic provider qualified. Model providers remain optional until
 ### Runtime contract
 
 - create run;
+- mint an ephemeral workload identity narrower than the sponsoring AgentIdentity;
 - start;
 - observe;
 - cancel;
@@ -407,6 +411,7 @@ Do not introduce Kubernetes just to imitate AX.
 - ambiguous confirmation;
 - DOM changed after approval;
 - session expired;
+- MFA/human-takeover required without credential capture;
 - provider returns success page without business receipt;
 - screenshot/HTML contains PHI beyond retention policy.
 
@@ -425,6 +430,10 @@ Real portal qualification remains separate.
 ### Candidate package/service
 
 `packages/local-bridge-contracts` plus a separately isolated runtime if implementation requires OS access.
+
+### Device trust
+
+The bridge instance is a paired device/service identity with revocation, key/certificate rotation, explicit tenant/branch ownership and health state.
 
 ### First capabilities
 
