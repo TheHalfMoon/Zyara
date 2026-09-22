@@ -38,7 +38,7 @@ ENGINEERING_ONLY
 
 All `*_CANDIDATE` modes require Astro's exact-source qualification before implementation.
 
-## A. Founder-supplied real-time / meeting sources
+## A. Founder-supplied real-time / geospatial / meeting sources
 
 | Source | Best Zyara use | Initial mode |
 |---|---|---|
