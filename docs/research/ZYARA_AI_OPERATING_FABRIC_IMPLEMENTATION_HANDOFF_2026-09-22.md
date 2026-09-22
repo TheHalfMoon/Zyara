@@ -48,7 +48,9 @@ AIF-01A Capability contract
   -> AIF-01B registry/resolver
       -> AIF-02A data/egress policy
       -> AIF-02B credential mediation
-          -> AIF-03 decision plane
+          -> AIF-03A model/prompt registry
+              -> AIF-03B decision provider qualification
+              -> AIF-03C retrieval/RAG context plane
           -> AIF-04 agent runtime
           -> AIF-05 browser bridge
           -> AIF-06 local bridge
@@ -270,11 +272,34 @@ The gateway sees metadata; the adapter receives a short-lived resolved secret th
 
 `CREDENTIAL_MEDIATION_QUALIFIED = TRUE`
 
-## 8. AIF-03 — Decision plane
+## 8. AIF-03 — Model / prompt / decision / retrieval plane
+
+### AIF-03A — Model and prompt registry
+
+Before admitting model-backed decisions, implement provider-neutral model and prompt profiles.
+
+Must bind exact model identity/revision where observable, deployment location, data-class ceiling, task-class admission, license/terms reference, runtime/provider health, prompt/template version, structured-output schema, safety policy version, rollout state and evaluation bundle digest.
+
+Tests must prove:
+
+- remote provider alias alone is insufficient for production identity;
+- fallback cannot silently widen residency/data-use boundaries;
+- patient-agent and clinic-agent profiles cannot exchange capabilities;
+- revoked/suspended model profiles cannot execute new work;
+- prompt version changes do not mutate historical receipts;
+- kill switch works without invoking the affected provider.
+
+Exit:
+
+`MODEL_PROMPT_REGISTRY_QUALIFIED = TRUE`
+
+### AIF-03B — Decision provider qualification
 
 ### Goal
 
 Select bounded operational options with explicit uncertainty, never authority.
+
+Every model candidate is admitted per task class only after a versioned evaluation bundle and staged rollout (offline -> shadow -> canary -> admitted).
 
 ### Candidate package
 
@@ -329,7 +354,36 @@ A provider is admitted **per decision class**, not globally.
 
 At least deterministic provider qualified. Model providers remain optional until benchmarked.
 
-`DECISION_PLANE_FOUNDATION_QUALIFIED = TRUE`
+DECISION_PLANE_FOUNDATION_QUALIFIED = TRUE`
+
+### AIF-03C — Retrieval / RAG context plane
+
+Implement permission-first retrieval contracts only after AIF-02 privacy/egress rules are canonical.
+
+Required concepts:
+
+- `RetrievalPlan`;
+- `RetrievalSource`;
+- `RetrievalReceipt`;
+- source/evidence refs;
+- freshness;
+- tenant/branch/patient/project scope;
+- index/embedding projection identity;
+- deletion/revocation propagation;
+- prompt-injection handling for retrieved content.
+
+Rules:
+
+- authorize before retrieval;
+- canonical truth stays in domain stores;
+- indexes/embeddings/summaries/caches remain rebuildable projections;
+- no cross-tenant retrieval leakage;
+- stale/contradictory evidence remains visible;
+- retrieved text cannot grant capabilities.
+
+Exit:
+
+`RETRIEVAL_CONTEXT_PLANE_QUALIFIED = TRUE`
 
 ## 9. AIF-04 — Agent runtime
 
@@ -554,6 +608,23 @@ Only through an adapter to approved views. No direct raw transactional DB creden
 ### Exit
 
 `AI_OPERATIONS_ANALYTICS_QUALIFIED = TRUE`
+
+## 13A. Cross-cutting lifecycle gates
+
+Before AIF-09, qualify:
+
+- tenant/branch/model/capability kill switches;
+- feature-flag and staged-rollout semantics;
+- model/prompt rollback;
+- credential rotation/revocation;
+- retention/deletion propagation to browser evidence, model traces, analytics, retrieval indexes and backups;
+- schema/version compatibility and historical receipt interpretability;
+- PHI-light observability;
+- execution-class SLIs/SLOs;
+- model/provider drift monitoring;
+- provider/model degradation without authority widening.
+
+No rollout controller may autonomously weaken policy because a provider is degraded.
 
 ## 14. AIF-09 — End-to-end qualification
 
