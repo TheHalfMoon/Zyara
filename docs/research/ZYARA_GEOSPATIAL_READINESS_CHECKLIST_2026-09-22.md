@@ -136,6 +136,15 @@ Legend:
 | 123 | Native background-location policy | COVERED | §7A |
 | 124 | Native offline/cache/app-store privacy/accessibility gates | COVERED | §7A/source adoption |
 
+| 125 | External POI != canonical provider identity | COVERED | canonical plan §13A |
+| 126 | Distance/name-only auto-merge prohibited | COVERED | §13A |
+| 127 | Coordinate conflict/reconciliation state | COVERED | §13A/GEO-01C |
+| 128 | External POI disappearance cannot delete provider truth | COVERED | §13A |
+| 129 | Campus/indoor maps separated from public basemap | COVERED | §17A |
+| 130 | Indoor restricted areas protected | COVERED | §17A |
+| 131 | Indoor accessibility uses verified edges | COVERED | §17A |
+| 132 | Emergency evacuation routing excluded absent separate authority | COVERED | §17A |
+
 ## Readiness verdict
 
 Known architectural boundaries are covered.
