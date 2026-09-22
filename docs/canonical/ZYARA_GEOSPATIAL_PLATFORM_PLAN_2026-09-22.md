@@ -293,6 +293,30 @@ Adoption rules:
 
 MapLibre is a renderer, not a tile provider or healthcare-data authority.
 
+## 7A. Native mobile renderer strategy
+
+MapLibre GL JS is the web renderer. It must not be treated as the automatic mobile architecture.
+
+For future native iOS/Android clients, evaluate the MapLibre Native ecosystem separately.
+
+Current research pin:
+
+`maplibre/maplibre-native@72ec5f5fff701d3db657d4727d8c38c30843e0b6`
+
+Observed upstream license at that pin: BSD-2-Clause.
+
+Rules:
+
+- no mobile renderer is admitted by this planning packet;
+- preserve the same Zyara Geo domain contracts across web and mobile;
+- do not put healthcare truth into platform-specific map SDK state;
+- compare native SDK vs React Native binding options when the mobile implementation phase begins;
+- qualify offline/cache behavior, background location, battery use, app-store privacy declarations, attribution and native accessibility separately;
+- do not use a WebView map merely to avoid native qualification if it degrades accessibility/performance;
+- do not enable background location unless a separately authorized product requirement exists.
+
+The web implementation may proceed without deciding the final native mobile renderer.
+
 ## 8. OpenFreeMap basemap decision
 
 Verified pin:
