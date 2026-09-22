@@ -71,6 +71,32 @@ MapLibre does not grant:
 
 Do not pull code from incompatible proprietary Mapbox GL JS versions.
 
+## 2A. maplibre/maplibre-native
+
+**Research pin:** `72ec5f5fff701d3db657d4727d8c38c30843e0b6`  
+**Observed license:** BSD-2-Clause  
+**Recommended mode:** `REFERENCE / LATER DEPENDENCY QUALIFICATION`
+
+Purpose:
+
+- future native iOS/Android renderer family;
+- avoid coupling mobile healthcare contracts to the web renderer;
+- reuse common style/tile concepts where compatible.
+
+Not admitted yet.
+
+Mobile qualification must cover:
+
+- native SDK/binding choice;
+- app-store privacy disclosures;
+- background-location policy;
+- battery/network;
+- offline/cache;
+- accessibility;
+- attribution;
+- release/update cadence;
+- React Native compatibility if selected.
+
 ## 3. hyperknot/openfreemap
 
 **Pin:** `3fff2d80673c0481c4bb2da34df0293f4462a55a`  
@@ -329,7 +355,8 @@ No founder-owned donor replaces Zyara's Provider Graph or Geo authority.
 
 | Source | Pin | Mode | Target | Main gate |
 |---|---|---|---|---|
-| MapLibre GL JS | `a2c78ece...` | DEPENDENCY | 2D renderer | package/license/perf/accessibility |
+| MapLibre GL JS | `a2c78ece...` | DEPENDENCY | web 2D renderer | package/license/perf/accessibility |
+| MapLibre Native | `72ec5f5f...` | LATER QUALIFY | native mobile renderer | mobile privacy/offline/accessibility/binding qualification |
 | OpenFreeMap | `3fff2d80...` | DEPENDENCY/ADAPT | basemap/tiles | data rights + SLA/privacy + ops |
 | God's Eye View | `f01b6a5d...` | REFERENCE/SELECTIVE_ADAPT | scene/layer/share/3D UX | exact-path provenance + no third-party contamination |
 | PostGIS | existing Zyara pin | DEPENDENCY | geometry truth | DB/RLS/spatial tests |
