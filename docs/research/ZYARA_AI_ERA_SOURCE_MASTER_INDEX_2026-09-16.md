@@ -197,3 +197,36 @@ proof required before admission
 ```
 
 A source list is not an architecture. Astro must converge on a small maintainable dependency set and reject overlapping platforms when one clear boundary is enough.
+
+## L. 2026-09-22 AI Operating Fabric additions
+
+The founder supplied additional sources specifically to strengthen Zyara's agent/tool/browser execution architecture. Detailed decisions live in `ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`.
+
+| Source | Verified reference | Zyara use | Initial mode |
+|---|---|---|---|
+| [google/ax](https://github.com/google/ax) | `d8ed0fe38bceb7842d3c47817d53d16ccdfcb601` | task/workspace/gateway/model workload separation, isolation, budgets, lifecycle | REFERENCE / ADAPT |
+| [superdesigndev/treg](https://github.com/superdesigndev/treg) | `6e667a4c6f7c70c448ea6574c5a038ba8f14bc5f` | capability/tool registry, server-side credential mediation, tool health/audit | ADAPT / COPY_SELECTIVE after permission evidence + exact path audit |
+| [TheoLeeCJ/SemIf](https://github.com/TheoLeeCJ/SemIf) | `1f2dea3e25379f9dfc98cb83c324f00ab5deda37` | bounded semantic decisions | QUALIFY |
+| [Mapika/decider](https://github.com/Mapika/decider) | `104b844b4b8b5d6993523af8cba1e62ef0c9c2e1` | typed probability/routing decisions | QUALIFY / REFERENCE |
+| [tinyfish-io/agentql](https://github.com/tinyfish-io/agentql) | `418ba8ad1c69dfac134a6833369a01dfba5a24a7` | structured browser extraction/interaction | QUALIFY / DEPENDENCY candidate |
+| [tinyfish-io/tinyfish-cookbook](https://github.com/tinyfish-io/tinyfish-cookbook) | `8615317f6db58ae776dd53817ac30668c1db5ef8` | browser workflow/reference corpus | REFERENCE |
+| [tinyfish-io/bigset-oss](https://github.com/tinyfish-io/bigset-oss) | `73b5fd0289d17bf99f14e770eabc6b7ec7406bc5` | large-scale web/data patterns | REFERENCE / REJECT_DEFAULT runtime |
+| [laya.aay.sh](https://laya.aay.sh/) | exact canonical source repo not pinned in this pass | Action Center / approval-centric operations UX | REFERENCE_PENDING_SOURCE_PIN |
+| [desktopcommander.app](https://desktopcommander.app/) | exact canonical source repo not pinned in this pass | bounded local-machine bridge UX/operations reference | REFERENCE_PENDING_SOURCE_PIN |
+| [bespokelabs/Bespoke-Nimble-9B](https://huggingface.co/bespokelabs/Bespoke-Nimble-9B) | HF metadata observed 2026-09-22 | structured evidence-grounding candidate | QUALIFY only |
+
+### Relevant founder-owned source clusters
+
+For the operating fabric, prioritize:
+
+- `Sentrdel` — deny-by-default security/evidence/policy;
+- `Ecra` — intent/tool/receipt patterns;
+- `Kodac`, `Golam`, `MESC`, `MedScale` — sandbox, execution, model/process and privacy boundaries;
+- `Qdrat` — clinic operations/tasks/reporting;
+- `Winds`, `Delethos`, `kernux` — delegation/run/context/compare patterns;
+- `commandF`, `commandMed` — healthcare interoperability/model safety;
+- `Himsat`, `Wispral` — future local audio/voice control;
+- `Signthos` — forms/consent/documents.
+
+The detailed AIF plan owns admission order. No donor becomes runtime authority merely by appearing in this index.
+
