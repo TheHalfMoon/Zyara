@@ -2,22 +2,25 @@
 
 This directory contains Zyara's repository-native product and architecture planning.
 
-## Current founder-directed planning authority — 2026-09-16
+## Current founder-directed planning authority — updated 2026-09-22
 
 Start the next Astro pass with:
 
 1. [`../../ASTRO.md`](../../ASTRO.md)
 2. [`ZYARA_NETWORK_MASTER_VISION_2026-09-16.md`](ZYARA_NETWORK_MASTER_VISION_2026-09-16.md)
 3. [`ZYARA_AI_ERA_AUTOMATION_PRINCIPLES_2026-09-16.md`](ZYARA_AI_ERA_AUTOMATION_PRINCIPLES_2026-09-16.md)
-4. [`ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`](ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md)
-5. [`../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`](../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md)
-6. [`../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md)
-7. [`../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md)
-8. [`../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md)
-9. [`../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md)
-10. [`../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`](../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md)
-11. [`../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md)
-12. [`../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`](../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md)
+4. [`ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md`](ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md)
+5. [`../research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md`](../research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md)
+6. [`../research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`](../research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md)
+7. [`ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`](ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md)
+8. [`../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`](../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md)
+9. [`../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md)
+10. [`../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md)
+11. [`../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md)
+12. [`../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md)
+13. [`../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`](../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md)
+14. [`../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md)
+15. [`../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`](../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md)
 
 The umbrella product is now planned as **Zyara Network**: a whole patient + clinic + clinician health network. The 2026-09-16 AI-era direction additionally makes governed clinic automation a first-class architectural concern: repetitive work should be eliminated, automated, assisted or explicitly kept human under auditable authority boundaries rather than wrapped in generic chat. The discovery-first V1 work remains a preserved market-entry foundation, but it is no longer the planning ceiling. The complete master plan must cover patient discovery and My Health, clinic operations, doctor workflows, Zyara Connect/telehealth, communications, outpatient clinical workflows, prescriptions/orders, labs/imaging/referrals, Saudi insurance/NPHIES workflows, financial operations, analytics and AI/voice under explicit authority and evidence boundaries.
 
