@@ -131,6 +131,11 @@ Legend:
 | 119 | Private route-origin cache isolation | COVERED | §6/§13 |
 | 120 | Search viewport does not bypass ranking policy | COVERED | §14/§33 |
 
+| 121 | Web renderer separated from native mobile renderer | COVERED | canonical plan §7A |
+| 122 | MapLibre Native treated as later qualification, not automatic dependency | COVERED | §7A/source adoption |
+| 123 | Native background-location policy | COVERED | §7A |
+| 124 | Native offline/cache/app-store privacy/accessibility gates | COVERED | §7A/source adoption |
+
 ## Readiness verdict
 
 Known architectural boundaries are covered.
