@@ -72,7 +72,11 @@ Before planning:
 1. Reverify exact `main` SHA.
 2. Reverify all open PRs and relevant branches.
 3. Reverify the state of PR #94 (`feat(web): complete Zyara V1 discovery UI`) or its successor; do not plan as if concurrent UI work does not exist.
-4. Reverify canonical authority, task/evidence state, migrations, implementation, tests and CI.\n8. Treat live repository/GitHub truth as authoritative over stale handoff language.\n9. Preserve proven completed work; do not rebuild correct systems merely because the product scope expanded.\n10. Never fabricate tests, CI, provider data, patient data, insurance evidence, regulatory authority, pilots, contracts, clinical validation, commercial validation or production readiness.\n11. Never force-push, rebase, rewrite shared history, bypass governance or weaken gates.
+4. Reverify canonical authority, task/evidence state, migrations, implementation, tests and CI.
+5. Treat live repository/GitHub truth as authoritative over stale handoff language.
+6. Preserve proven completed work; do not rebuild correct systems merely because the product scope expanded.
+7. Never fabricate tests, CI, provider data, patient data, insurance evidence, regulatory authority, pilots, contracts, clinical validation, commercial validation or production readiness.
+8. Never force-push, rebase, rewrite shared history, bypass governance or weaken gates.
 
 ## Required reading order
 
@@ -85,10 +89,29 @@ Read these first:
 5. `docs/research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md`
 6. `docs/research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`
 7. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
-5. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
-6. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
-7. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
-8. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`\n12. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`\n13. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`\n14. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`\n15. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`\n16. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`\n17. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`\n18. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`\n19. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`\n20. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`\n21. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`\n22. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`\n23. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`\n24. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`\n25. `docs/canonical/ZYARA_ROADMAP.md`\n26. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`\n27. current V1 founder/scope/canonicalization documents;\n28. `docs/VOICE_AGENT_RUNTIME.md`\n29. `docs/COMPETITORS.md`\n30. `docs/SOURCES.md`
+8. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
+9. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
+10. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
+11. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
+12. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
+13. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+14. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+15. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+16. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+17. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+18. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+19. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+20. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+21. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+22. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+23. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+24. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+25. `docs/canonical/ZYARA_ROADMAP.md`
+26. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+27. current V1 founder/scope/canonicalization documents;
+28. `docs/VOICE_AGENT_RUNTIME.md`
+29. `docs/COMPETITORS.md`
+30. `docs/SOURCES.md`
 
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
 
