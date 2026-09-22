@@ -169,6 +169,52 @@ For Zyara:
 
 Any direct admission of delegate-skills requires a fresh exact pin/license/path audit.
 
+## Additional model / retrieval / lifecycle donor mapping
+
+### Model fleet, evaluation, and prompt governance
+
+Prefer adapting:
+
+- `TheHalfMoon/MedScale` — model fleet, compare/evaluation, privacy manifests, local model packaging, evidence-bearing run records;
+- `TheHalfMoon/MESC` — model/process isolation, evaluation evidence and medical-model authority boundaries;
+- `TheHalfMoon/commandMed` — medical-model safety/evaluation patterns;
+- `TheHalfMoon/Sentrdel` — lower-authority model output, coverage, deterministic policy ceiling.
+
+External model candidates such as Bespoke Nimble are evaluation subjects, not platform authorities.
+
+Do not adopt a model runtime merely because it performs well on one benchmark. Admission is per task class, data class, locale, deployment profile and authority ceiling.
+
+### Retrieval / RAG
+
+Prefer adapting:
+
+- `TheHalfMoon/Morize` — authorize-before-disclosure, provenance, rebuildable indexes, local-first retrieval;
+- `TheHalfMoon/MedScale` — governed retrieval/evidence objects, Research OS retrieval contracts;
+- `TheHalfMoon/Pluma` — durable knowledge/event-journal/graph separation where useful.
+
+External OpenRAG/Onyx/AnythingLLM-class systems remain optional workers/references rather than canonical data stores.
+
+### Rollout, kill-switch, and runtime admission
+
+Prefer adapting:
+
+- `TheHalfMoon/Kodac` — approval binding and runtime admission;
+- `TheHalfMoon/Golam` — execution descriptors/receipts and bounded enforcement;
+- `TheHalfMoon/Sentrdel` — monotonic deny/ask policy;
+- `TheHalfMoon/SpecGrain` + `Diffcipline` — bounded rollout and exact evidence discipline.
+
+### Observability and analytics
+
+Zyara metric definitions remain native.
+
+Use:
+- existing Zyara analytics/event packages;
+- MedScale native-analytics-first patterns;
+- Qdrat operational reporting patterns;
+- Superset/PostHog only over approved privacy-preserving views.
+
+No donor may introduce raw-PHI session replay or unrestricted analytics credentials.
+
 ## Source conflicts and preferred resolution
 
 ### Overlapping agent runtimes
