@@ -78,6 +78,21 @@ A checked planning item means the contract is defined in the planning packet. It
 | 67 | Provider rate limits/backpressure/circuit breakers | COVERED | reliability + frozen decisions |
 | 68 | External portal automation-rights qualification | COVERED | source/admission + frozen decisions |
 
+| 69 | Model fleet/provider-neutral registry | COVERED | canonical plan §12A.1 + AIF-03A |
+| 70 | Exact model revision/digest + license/terms provenance | COVERED | §12A.1 + source admission |
+| 71 | Prompt/template registry and immutable versioning | COVERED | §12A.2 + AIF-03A |
+| 72 | Retrieval/RAG permission-before-ranking | COVERED | §12A.3 + AIF-03C |
+| 73 | Index/embedding deletion + revocation propagation | COVERED | §12A.3/12A.7 |
+| 74 | Retrieval prompt-injection + stale-evidence handling | COVERED | §12A.3 + AIF-03C |
+| 75 | Evaluation bundle / shadow / canary rollout | COVERED | §12A.4 + AIF-03B |
+| 76 | Model/provider drift monitoring | COVERED | §12A.4 + AIF-08/AIF-09 |
+| 77 | Patient vs clinician vs operations agent separation | COVERED | §12A.5 |
+| 78 | Feature flags / emergency kill switches | COVERED | §12A.6 + lifecycle gates |
+| 79 | AI/browser/retrieval retention + deletion | COVERED | §12A.7 |
+| 80 | AI execution SLIs/SLOs + PHI-light observability | COVERED | §12A.8 |
+| 81 | Capability/workflow/event schema evolution | COVERED | §12A.9 |
+| 82 | Model fallback cannot widen privacy/data residency | COVERED | §12A.1/AIF-03A |
+
 ## Explicit unresolved items that are intentionally not design gaps
 
 These remain evidence/admission gates rather than missing architecture:
