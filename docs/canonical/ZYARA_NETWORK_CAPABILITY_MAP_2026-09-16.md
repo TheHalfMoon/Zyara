@@ -588,3 +588,27 @@ Patient discovers care
 ```
 
 If Astro cannot trace a capability into this lifecycle or a justified clinic/network job, it should challenge whether Zyara needs to own it.
+
+
+## H. Geospatial platform amendment — 2026-09-22
+
+The canonical implementation detail for healthcare mapping is now `ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`.
+
+Minimum capability family:
+
+- canonical branch/location geometry with precision/provenance;
+- verified entrances and local-access facts;
+- MapLibre-based 2D rendering;
+- OpenFreeMap basemap adapter;
+- synchronized map/list discovery;
+- provider-neutral geocoding;
+- provider-neutral routing/ETA;
+- privacy-safe location permission;
+- privacy-safe share state;
+- healthcare-native layers;
+- optional 3D context;
+- aggregated spatial analytics;
+- typed AI/voice geo capabilities;
+- independent kill switches and degraded-mode fallbacks.
+
+Renderer/basemap/geocoder/router/3D are separate contracts. Provider Graph + PostGIS remain authoritative.
