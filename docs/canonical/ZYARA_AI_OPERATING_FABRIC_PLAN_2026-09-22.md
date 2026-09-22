@@ -810,4 +810,24 @@ This plan is implementation-ready when:
 - roadmap dependencies do not unnecessarily block N6/N7;
 - every slice has an evidence-based exit gate.
 
+## 15. Frozen architecture decisions
+
+These decisions close ambiguity before implementation:
+
+1. **Zyara owns the capability contract.** Donor registries/runtimes may implement adapters; they do not own Zyara authorization.
+2. **Capability definitions are deployment/admin authority, never agent-authored runtime state.** Registration/change requires explicit trusted authority, versioning and a content digest.
+3. **N5 remains the approval/audit authority plane.** AIF does not invent another approval or exception system.
+4. **Existing outbox + durable-operation semantics are the default workflow substrate.** Qualify a larger engine such as Temporal only when a measured workflow need exceeds the current substrate.
+5. **Every runtime run receives an ephemeral workload identity.** It must be narrower than the sponsoring AgentIdentity and expire with the run.
+6. **Credentials are subject-scoped.** A credential binding must identify whether it belongs to the tenant, branch, human delegate, service account, or external integration and may not be reused across subjects by convenience.
+7. **Browser automation is API-last.** Human takeover/MFA is an explicit state, not a reason to capture a human password or second factor.
+8. **The Local Bridge is a paired device/service identity.** Pairing, certificate/key rotation, revocation and device health are part of its trust contract.
+9. **Models are untrusted decision-support components.** Model/package/provider identity, exact version and data-boundary manifest are part of every admitted ModelProfile.
+10. **No agent may register a new tool, widen a schema, change policy, alter its evaluator, or raise its own budget/capabilities during a run.**
+11. **Backpressure is explicit.** Per-tenant/provider concurrency, rate limits and circuit breakers must prevent one workflow from exhausting a clinic or provider.
+12. **Analytics is downstream.** Operational metrics never become healthcare authority and must tolerate delayed/missing events honestly.
+13. **External provider terms and automation rights are qualification inputs.** Technical browser success does not authorize use of a portal.
+14. **Local/private modes fail closed on unavailable local capability.** They do not silently route PHI to cloud services.
+15. **Donor code is replaceable.** Public Zyara contracts and evidence remain stable even when a donor library/runtime changes.
+
 `ZYARA_AI_OPERATING_FABRIC_PLAN_READY = YES`
