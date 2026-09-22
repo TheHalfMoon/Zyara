@@ -774,6 +774,228 @@ Exit:
 - unsupported areas remain explicit;
 - no production-readiness claim without external evidence.
 
+## 12A. Model, prompt, retrieval, and lifecycle closure
+
+The initial execution-fabric design is not implementation-ready unless the model lifecycle, retrieval context, rollout controls, retention, and schema evolution are explicit.
+
+### 12A.1 Model Fleet Registry
+
+Zyara must own a provider-neutral registry for every model runtime that may influence an operational workflow.
+
+A `ModelProfile` must bind:
+
+```text
+model_profile_id
+provider
+model_id
+model_revision_or_digest
+runtime_class
+deployment_location
+license_or_terms_ref
+data_residency
+allowed_data_classes
+allowed_task_classes
+context_limit
+tool_use_allowed
+structured_output_contract
+cost_policy
+latency_class
+health_state
+admission_state
+evaluation_bundle_digest
+```
+
+Rules:
+
+- no model is admitted globally; admission is per task class and data class;
+- local and remote models use the same contract;
+- exact weights/revision/digest are recorded for local models where possible;
+- remote provider aliases such as `latest` cannot be the only production identity;
+- fallback must never silently widen data residency, provider data-use, retention, or PHI policy;
+- model health may choose only among already-authorized alternatives;
+- model license/terms and update strategy are recorded before production admission.
+
+### 12A.2 Prompt / policy / schema registry
+
+Prompts are executable policy-adjacent artifacts and must be versioned.
+
+Every production prompt/template records:
+
+- immutable prompt/template id + version;
+- owning task class;
+- expected structured-output schema;
+- allowed tools/capabilities;
+- instruction digest;
+- localization variant;
+- model compatibility;
+- safety policy version;
+- evaluation bundle;
+- rollout state;
+- rollback target.
+
+Prompt edits must not silently change action authority.
+
+### 12A.3 Retrieval / RAG context plane
+
+RAG is context, not authority.
+
+Every retrieval plan binds:
+
+- tenant;
+- branch/project/patient scope;
+- requester/agent identity;
+- purpose;
+- source collections;
+- source authorization;
+- source freshness;
+- retrieval method;
+- reranker/model version;
+- maximum context budget;
+- evidence refs;
+- data class;
+- retention.
+
+Rules:
+
+- authorize before retrieval, not after ranking;
+- vector indexes, graph projections, embeddings, summaries and caches are rebuildable projections;
+- canonical healthcare truth remains in Zyara domain stores;
+- deletion/revocation propagates to indexes/caches;
+- cross-tenant index leakage is prohibited;
+- retrieved documents/web pages are untrusted input and may contain prompt injection;
+- consequential outputs link to evidence or explicitly state evidence insufficiency;
+- stale/contradictory evidence remains visible.
+
+Prefer Morize/MedScale patterns for local-first retrieval and provenance.
+
+### 12A.4 Evaluation, regression, and drift
+
+Every admitted model/prompt/decision class requires a versioned evaluation bundle.
+
+Minimum categories:
+
+- structured-output validity;
+- task accuracy;
+- abstention quality;
+- false-confident unsafe outcomes;
+- Arabic;
+- Saudi Arabic;
+- Arabic/English code switching where relevant;
+- PHI leakage;
+- prompt injection;
+- capability escalation attempts;
+- long-context degradation;
+- stale-context handling;
+- latency;
+- resource use;
+- cost;
+- deterministic regression fixtures;
+- red-team cases.
+
+Lifecycle:
+
+```text
+candidate
+-> offline qualification
+-> shadow
+-> limited canary
+-> monitored rollout
+-> admitted
+-> degraded / suspended / revoked
+```
+
+A new provider/model revision is a new candidate until qualified.
+
+Track drift signals such as structured-output failures, abstention, human override/correction, unsafe proposals, latency/cost shifts, and provider/model-version changes.
+
+Drift may trigger review but must not autonomously rewrite thresholds or policy.
+
+### 12A.5 Agent-class separation
+
+Do not use one generic `Zyara AI` authority profile.
+
+At minimum distinguish:
+
+- patient-navigation agent;
+- clinic-operations agent;
+- clinician-assist agent;
+- analytics/research agent;
+- integration/browser agent.
+
+Each has its own data ceiling, capability ceiling, retention, approval policy and UI disclosure.
+
+A patient-facing agent cannot inherit clinic-operations capabilities merely because the same model backend is used.
+
+A clinician-assist agent may prepare clinical material but cannot sign, prescribe, or mint clinical truth.
+
+### 12A.6 Feature flags, kill switches, and rollback
+
+Every executable AI/tool/browser capability supports:
+
+- staged activation;
+- tenant/branch feature flag;
+- emergency global disable;
+- provider-specific disable;
+- model-specific disable;
+- capability-specific disable;
+- rollback to last-known-qualified version;
+- defined in-flight behavior when disabled;
+- auditable activation changes.
+
+Emergency disable must not depend on the failing provider/model/tool.
+
+### 12A.7 Retention, deletion, and backup propagation
+
+Define retention/deletion for:
+
+- prompts/responses;
+- decision receipts;
+- browser evidence/screenshots;
+- downloads/uploads;
+- tool payloads;
+- workflow state;
+- activity/audit projections;
+- analytics views;
+- retrieval indexes/embeddings;
+- backups.
+
+Each class defines purpose, min/max retention, legal hold, deletion authority, deletion propagation, and backup/restore implications.
+
+Raw PHI-bearing model prompts/responses are not retained by default merely for observability.
+
+### 12A.8 Service levels and observability
+
+Each execution class defines SLIs/SLOs, such as:
+
+- capability resolution latency;
+- success rate;
+- UNKNOWN external outcome rate;
+- provider timeout rate;
+- approval latency;
+- exception age;
+- browser reconciliation latency;
+- structured-output failure rate;
+- secret-resolution failure rate;
+- cost per successful workflow.
+
+OpenTelemetry-compatible traces may be used only with PHI-light attributes and policy-controlled payload capture.
+
+### 12A.9 Schema evolution and compatibility
+
+Capability, workflow, receipt, decision, and event schemas need explicit compatibility rules.
+
+Every breaking change defines:
+
+- reader/writer compatibility;
+- migration path;
+- old-version support window;
+- replay behavior;
+- rollback behavior;
+- historical receipt interpretation;
+- adapter compatibility.
+
+Historical receipts must remain interpretable after schema evolution.
+
 ## 13. First implementation leaf
 
 The first implementation leaf after this plan is accepted is:
