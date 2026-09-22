@@ -594,9 +594,12 @@ Default:
 - keep client-side/ephemeral when possible;
 - no raw lat/lon in ordinary analytics;
 - no precise location in share URLs;
+- no precise patient location in browser history or persistent local storage by default;
 - no inferred home address from repeated activity;
 - short retention;
-- coarse geographic cells for analytics.
+- coarse geographic cells for analytics;
+- map pages use a privacy-preserving Referrer-Policy so third-party tile/geocoder/router origins cannot learn sensitive search URLs;
+- sensitive search/clinical context must not be placed in URL query parameters solely for map state.
 
 Location telemetry must have its own allowlist.
 
