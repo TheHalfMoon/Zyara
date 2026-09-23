@@ -3,7 +3,8 @@
 **Status:** canonical planning amendment candidate  
 **Amended:** 2026-09-23 — decision/runtime donor hardening  
 **Mode:** planning only; no production-code authority by this document alone  
-**Base main:** `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+**Initial planning base:** `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+**2026-09-23 hardening base:** `c17b654f6836997751967157728c664227b3e7e2`  
 **Depends on:** canonical N5 closure, Zyara AI-era automation principles, Zyara Network master plan  
 **Purpose:** make Zyara's AI-era operating model implementable without turning models, browsers, tools, or agents into healthcare authority.
 
