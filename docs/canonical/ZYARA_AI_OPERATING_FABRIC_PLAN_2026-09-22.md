@@ -1,6 +1,7 @@
 # Zyara AI Operating Fabric Plan — 2026-09-22
 
 **Status:** canonical planning amendment candidate  
+**Amended:** 2026-09-23 — decision/runtime donor hardening  
 **Mode:** planning only; no production-code authority by this document alone  
 **Base main:** `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
 **Depends on:** canonical N5 closure, Zyara AI-era automation principles, Zyara Network master plan  
@@ -1187,6 +1188,237 @@ Fork rules:
 - use new operation idempotency keys where writes are allowed;
 - never reuse stale approvals;
 - result comparison is evidence, not authority.
+
+## 12C. Distributed-runtime, label-set, and supply-chain closure
+
+The implementation is not ready until concurrency, failover, label-set semantics, and local model artifact admission are explicit.
+
+### 12C.1 Decision class and label-set registry
+
+A typed classifier must not receive an unversioned ad-hoc label list for consequential workflows.
+
+Define a `DecisionClassSpec`:
+
+```text
+decision_class_id
+version
+purpose
+allowed_data_classes
+labels/options
+label_descriptions
+none_or_unknown_semantics
+multi_label_policy
+threshold_policy
+locale_policy
+escalation_policy
+provider_admission_refs
+evaluation_bundle
+owner
+rollout_state
+```
+
+Rules:
+
+- label-set changes create a new version;
+- historical receipts retain the exact decision-class version;
+- if "none of the above" is a real outcome, the class must model it explicitly;
+- providers that force a choice cannot be used when the class requires abstention/unknown;
+- thresholds are per decision class/provider/locale, not global;
+- label order must not become hidden policy;
+- class definitions may not encode protected or clinically inappropriate routing.
+
+### 12C.2 Fairness and operational harm evaluation
+
+Even administrative routing can create access harm.
+
+For decision classes that affect queue priority, access, outreach, scheduling, financial workflows, or human-review burden, evaluation must inspect:
+
+- language/locale performance;
+- Saudi Arabic and code-switching;
+- demographic proxy leakage;
+- disparate false-positive/false-negative patterns where lawful data is available;
+- systematic escalation burden;
+- denial/deprioritization risk;
+- missing-data behavior.
+
+A fairness metric never overrides a clinical/legal policy rule, but material disparities block admission until understood and mitigated.
+
+### 12C.3 Local model artifact supply chain
+
+A local model/runtime bundle is executable supply-chain material.
+
+Admission records:
+
+- source;
+- exact revision;
+- model artifact digest;
+- tokenizer/config digest;
+- conversion toolchain;
+- conversion source revision;
+- license/NOTICE/model-card obligations;
+- expected architecture;
+- supported device/runtime;
+- signature/checksum verification;
+- quarantine/rollback state.
+
+Rules:
+
+- artifact hash mismatch fails closed;
+- model update is a new candidate, not an in-place silent replacement;
+- rollback target remains available where operationally required;
+- local model download/update must honor the same egress and provenance controls as remote providers;
+- Apple-specific providers remain optional; Zyara contracts must support non-Apple local providers later.
+
+### 12C.4 Session ordering and causal identity
+
+Each durable session uses explicit monotonically increasing event sequence numbers or an equivalent canonical ordering.
+
+Every accepted input, model response, tool translation, operation, result, approval, cancellation, and terminal transition records:
+
+- session id;
+- event id;
+- causal parent/ref;
+- sequence/version;
+- correlation id;
+- actor;
+- observed time.
+
+Concurrent inputs must either:
+
+- serialize through one session coordinator; or
+- declare an explicit causal/merge model.
+
+Last-write-wins on consequential agent state is prohibited.
+
+### 12C.5 Operation dependencies
+
+A tool translation may emit more than one operation.
+
+`OperationSpec` therefore supports explicit dependencies:
+
+```text
+operation_id
+depends_on[]
+parallel_group?
+join_policy
+failure_policy
+```
+
+Rules:
+
+- no operation runs before required predecessors are durably successful;
+- parallel execution must not violate capability/credential/budget ceilings;
+- joins preserve partial/failed/unknown outcomes;
+- downstream operations do not run when an upstream outcome is UNKNOWN unless policy explicitly permits it.
+
+### 12C.6 Leases and fencing
+
+Crash recovery must prevent two workers from executing the same durable operation concurrently.
+
+The operation manager requires:
+
+- claim/lease state;
+- lease expiry;
+- worker identity;
+- monotonically increasing fencing token or equivalent compare-and-set generation;
+- heartbeat where appropriate;
+- bounded takeover;
+- terminal-state immutability.
+
+A stale worker with an old fence cannot commit a newer result.
+
+External APIs still require their own idempotency/reconciliation because internal fencing cannot make a third-party side effect exactly-once.
+
+### 12C.7 Transactional dispatch
+
+Use transactional outbox/equivalent durable intent so that:
+
+```text
+persist tool-call status
++ persist operation specs
++ persist dispatch intent
+= one durable transaction boundary
+```
+
+Dispatch happens only from committed intent.
+
+Do not claim exactly-once execution. The target is:
+
+- durable at-least-once dispatch;
+- idempotent/reconcilable side effects;
+- explicit UNKNOWN when proof is insufficient.
+
+### 12C.8 Receipt integrity and result provenance
+
+An `ExecutionReceipt` binds:
+
+- operation spec digest;
+- capability definition/version digest;
+- approval binding;
+- credential binding refs (opaque);
+- adapter/version;
+- worker/runtime identity;
+- external reference ids;
+- start/end times;
+- result/status;
+- verification result;
+- evidence refs;
+- previous receipt if correcting/reconciling.
+
+High-consequence receipts should be tamper-evident through append-only storage plus digest chaining or equivalent integrity controls.
+
+### 12C.9 Human-intent binding
+
+For user-initiated consequential actions, approval/confirmation must bind to what the person actually saw.
+
+The confirmation record includes:
+
+- human actor;
+- human-readable action summary;
+- normalized parameters digest;
+- data/recipient scope;
+- expiry;
+- one-time/reusable semantics;
+- capability/version;
+- UI/prompt version where material.
+
+Material parameter changes invalidate the confirmation.
+
+### 12C.10 Session retention, compaction, and legal hold
+
+Session history may contain PHI/PII even when tool receipts are minimized.
+
+Define separately:
+
+- canonical audit events;
+- model context snapshots;
+- raw prompts/responses;
+- compacted summaries;
+- operation payload refs;
+- attachments.
+
+Compaction can reduce model context but cannot rewrite canonical audit history.
+
+Deletion/legal-hold propagation follows the retention policy while preserving the minimum immutable evidence required by law/policy.
+
+### 12C.11 Hard parser and amplification limits
+
+Untrusted model/provider outputs need structural limits before they become runtime objects.
+
+Enforce:
+
+- maximum tool calls per turn;
+- maximum operations per tool call;
+- maximum nesting/depth;
+- maximum argument bytes;
+- maximum batch items;
+- maximum label/options count;
+- maximum context refs;
+- maximum fan-out/delegation;
+- schema additional-property policy;
+- numeric/string length bounds.
+
+Oversized/invalid output fails safely before persistence or dispatch.
 
 ## 13. First implementation leaf
 
