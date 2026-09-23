@@ -566,7 +566,15 @@ High-level roles:
 - Laya: Action Center / human-approval / daily-operations UX reference pending exact source pin;
 - Desktop Commander: Local Bridge product/reference pattern pending exact source pin;
 - Bespoke Nimble: structured evidence-grounding candidate only after healthcare/privacy benchmarks;
+- Laya-CoreML: local typed-decision provider candidate for Apple-Silicon deployments after task/locale calibration;
+- classifier.dev: batch-classification/versioning/evaluation pattern; hosted public endpoint is not a PHI production path;
+- Jev Search: search-shaping/prefilter pattern only, never authorization;
+- Unreal Agent: high-priority durable session, pure tool-translation and serializable-operation runtime donor;
 - founder-owned repositories: preferred sources for authority, privacy, sandbox, workflow, analytics, voice, evidence and verification patterns.
+
+Detailed 2026-09-23 donor deep dive:
+
+`docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
 
 ## 11. Dependency insertion into the Zyara roadmap
 
@@ -995,6 +1003,190 @@ Every breaking change defines:
 - adapter compatibility.
 
 Historical receipts must remain interpretable after schema evolution.
+
+## 12B. Fast decision throughput and durable agent-runtime closure
+
+The 2026-09-23 donor review adds explicit architecture for high-throughput typed decisions and crash-safe agent execution.
+
+### 12B.1 Typed local decision providers
+
+A local typed-decision provider may optimize latency/cost/privacy, but it does not own policy.
+
+Laya-CoreML is a candidate provider for Apple-Silicon deployments.
+
+Provider admission must bind:
+
+```text
+provider_profile_id
+runtime_revision
+model_bundle_revision_or_digest
+tokenizer_config_digest
+compute_profile
+context_limit
+calibration_profile
+allowed_task_classes
+allowed_locales
+device_requirements
+offline_required
+fallback_policy
+evaluation_bundle
+```
+
+Rules:
+
+- admission is per task class;
+- local-only tasks never silently fall back to remote;
+- conversion fidelity is not task accuracy;
+- model probability is never healthcare authority;
+- calibration transforms/clamps must be represented in provider/evaluation identity;
+- current Laya-CoreML Python/macOS support does not prove iOS readiness.
+
+### 12B.2 Decision batch gateway
+
+High-volume low-authority classification should not require one large-model turn per item.
+
+Zyara owns a provider-neutral batch contract inspired by classifier.dev patterns.
+
+A batch must preserve:
+
+- stable item id;
+- original ordering;
+- per-item result/error;
+- confidence availability;
+- uncertainty/abstention;
+- escalation state;
+- provider/model/revision;
+- usage/cost;
+- cancellation/timeout;
+- partial failure.
+
+An uncertainty escalation may call another already-authorized provider or route to a human.
+
+A "smart" or second-pass provider never expands authority.
+
+The public classifier.dev hosted endpoint is not approved for PHI by this plan because request content can be forwarded to upstream model providers. Production PHI use requires a separately qualified private/self-hosted path plus an admitted backend.
+
+### 12B.3 Retrieval semantic prefilter
+
+A cheap semantic filter may reduce retrieval/context cost only after authorization.
+
+Preferred shape:
+
+```text
+authorize source set
+-> deterministic/metadata narrowing
+-> stable chunking
+-> cheap typed semantic filtering
+-> evidence-preserving survivors
+-> rerank/retrieve/reason
+```
+
+Jev Search supplies useful search-shaping patterns but is not admitted as a runtime dependency.
+
+Requirements:
+
+- no arbitrary filesystem crawl;
+- no symlink/path escape;
+- no raw PHI result-file logging;
+- deterministic chunk ids;
+- source refs retained;
+- cancellation/budgets;
+- remote decision calls only after egress approval;
+- revoked/deleted sources disappear from subsequent retrieval.
+
+### 12B.4 Durable agent session substrate
+
+An `AgentRun` must have a durable session/event substrate, not only a process lifecycle.
+
+Required concepts:
+
+```text
+AgentSession
+AgentInput
+ContextBuildReceipt
+ToolTranslation
+OperationSpec
+OperationState
+```
+
+Each externally submitted input has a caller-supplied stable `input_id` for redelivery deduplication.
+
+This is distinct from an operation idempotency key.
+
+### 12B.5 Pure tool translation
+
+A model-facing tool call must never perform external I/O directly.
+
+Preferred boundary:
+
+```text
+model tool call
+-> pure validation/translation
+-> serializable OperationSpec[]
+-> atomically persist call status + operations
+-> dispatch
+-> execute
+-> persist result
+-> translate result for model
+```
+
+The translator:
+
+- performs no external I/O;
+- cannot resolve raw credentials;
+- cannot bypass approval;
+- cannot expand capability scope;
+- emits stable reason codes;
+- emits versioned serializable operations.
+
+### 12B.6 Recovery ordering
+
+Before dispatching an operation, Zyara must durably persist enough state to recover without guessing.
+
+Crash points to qualify:
+
+- accepted input;
+- model response;
+- tool translation;
+- operation persisted before dispatch;
+- external side effect before receipt;
+- receipt before model-facing result.
+
+A crash after an external side effect but before receipt must reconcile instead of blindly retrying.
+
+### 12B.7 Context omission receipt
+
+The context builder must report what the model did **not** see.
+
+`ContextBuildReceipt` records:
+
+- included refs;
+- omitted refs;
+- truncated refs;
+- compacted/summarized refs;
+- budget reason;
+- builder version;
+- authorization scope.
+
+A model may not be presented as having reviewed evidence omitted from context.
+
+### 12B.8 Session forks and compare
+
+Forks may support:
+
+- compare plans;
+- simulation;
+- alternative agent strategies;
+- replay against synthetic fixtures.
+
+Fork rules:
+
+- preserve parent lineage;
+- re-evaluate current authorization;
+- do not replay completed external side effects;
+- use new operation idempotency keys where writes are allowed;
+- never reuse stale approvals;
+- result comparison is evidence, not authority.
 
 ## 13. First implementation leaf
 
