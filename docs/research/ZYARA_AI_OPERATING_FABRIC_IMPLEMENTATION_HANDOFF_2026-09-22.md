@@ -359,9 +359,11 @@ A provider is admitted **per decision class**, not globally.
 
 At least deterministic provider qualified. Model providers remain optional until benchmarked.
 
-DECISION_PLANE_FOUNDATION_QUALIFIED = TRUE`
+`DECISION_PLANE_FOUNDATION_QUALIFIED = TRUE`
 
-### AIF-03C — Decision batch gateway
+### AIF-03C — Decision class registry + batch gateway
+
+Before batch execution, implement versioned `DecisionClassSpec` definitions with explicit labels/options, unknown/none semantics, thresholds, locale policy, escalation policy and evaluation bundle.
 
 Build a provider-neutral batching layer after at least one decision provider is qualified.
 
@@ -394,6 +396,10 @@ Rules:
 
 Tests:
 
+- decision-class version retained in historical receipts;
+- label-set change requires new version;
+- required UNKNOWN/none path cannot be forced into a label;
+- thresholds are class/provider/locale scoped;
 - 1/10/100/1000 synthetic item batches;
 - order preserved;
 - duplicate input id rejected or deterministically deduplicated by contract;
@@ -407,7 +413,7 @@ Tests:
 
 Exit:
 
-`DECISION_BATCH_GATEWAY_QUALIFIED = TRUE`
+`DECISION_CLASS_AND_BATCH_GATEWAY_QUALIFIED = TRUE`
 
 ### AIF-03D — Retrieval / RAG context plane
 
@@ -524,7 +530,11 @@ Runtime contract:
 - terminate;
 - cleanup;
 - retrieve receipts;
-- reconcile unknown external outcomes.
+- reconcile unknown external outcomes;
+- claim work with leases/fencing;
+- respect explicit operation dependencies;
+- dispatch only committed outbox/durable intent;
+- emit integrity-bound execution receipts.
 
 Mandatory limits:
 
@@ -544,6 +554,9 @@ Do not introduce Kubernetes just to imitate AX.
 
 Recovery campaign:
 
+- concurrent claim attempts prove one current fence;
+- stale worker result commit rejected;
+- dependency predecessor failure/UNKNOWN blocks unsafe successor;
 - crash after model response;
 - crash after operation persistence before dispatch;
 - crash after external side effect before receipt;
@@ -561,7 +574,9 @@ Required negative tests:
 - orphan process;
 - runaway loop/cost;
 - replay of completed write;
-- unpersisted operation dispatch.
+- unpersisted operation dispatch;
+- outbox commit without dispatch then recovery;
+- duplicate at-least-once dispatch reconciles safely.
 
 Exit:
 
@@ -770,6 +785,24 @@ Only through an adapter to approved views. No direct raw transactional DB creden
 ### Exit
 
 `AI_OPERATIONS_ANALYTICS_QUALIFIED = TRUE`
+
+## 12A. Additional runtime admission gates
+
+Before AIF-09, qualify:
+
+- model artifact checksum/signature and rollback;
+- exact local model/runtime/toolchain provenance;
+- decision-class/label-set versioning;
+- locale-specific thresholds;
+- fairness/operational-harm review where a decision can affect access/priority/review burden;
+- session event ordering and causal lineage;
+- operation dependency graphs;
+- leases/fencing under concurrent workers;
+- transactional outbox/durable dispatch intent;
+- receipt integrity/digest chaining or equivalent;
+- human-intent binding for consequential actions;
+- hard parser/fan-out/amplification limits;
+- session retention/compaction/legal-hold semantics.
 
 ## 13A. Cross-cutting lifecycle gates
 
