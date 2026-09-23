@@ -142,6 +142,12 @@ A checked planning item means the contract is defined in the planning packet. It
 | 126 | Session retention/compaction/legal hold | COVERED | §12C.10 |
 | 127 | Hard parser/fan-out/amplification limits | COVERED | §12C.11 |
 
+| 128 | Persistent agent memory is governed/non-authoritative | COVERED | canonical §12C.12 |
+| 129 | Memory authorization/provenance/expiry/deletion propagation | COVERED | §12C.12 |
+| 130 | Trusted server time + clock-skew semantics | COVERED | §12C.13 |
+| 131 | Client/model timestamps cannot grant time authority | COVERED | §12C.13 |
+| 132 | Model/provider/runtime incident quarantine + re-admission | COVERED | §12C.14 |
+
 ## Explicit unresolved items that are intentionally not design gaps
 
 These remain evidence/admission gates rather than missing architecture:
