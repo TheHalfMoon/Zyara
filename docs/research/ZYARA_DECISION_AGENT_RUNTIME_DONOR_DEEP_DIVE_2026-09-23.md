@@ -711,7 +711,10 @@ The final gap pass adds constraints that are not donor-specific but are required
 - integrity-bound execution receipts;
 - human-intent + normalized parameter digest binding;
 - session retention/compaction/legal-hold rules;
-- hard tool-call/operation/fan-out parser limits.
+- hard tool-call/operation/fan-out parser limits;
+- governed non-authoritative long-term memory;
+- trusted server-time/clock-skew semantics;
+- runtime/model/provider quarantine, forensic response and explicit re-admission.
 
 These constraints are now incorporated into the canonical AIF plan and implementation handoff rather than left as future runtime design work.
 
