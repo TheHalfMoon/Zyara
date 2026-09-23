@@ -50,8 +50,12 @@ AIF-01A Capability contract
       -> AIF-02B credential mediation
           -> AIF-03A model/prompt registry
               -> AIF-03B decision provider qualification
-              -> AIF-03C retrieval/RAG context plane
-          -> AIF-04 agent runtime
+              -> AIF-03C decision batch gateway
+              -> AIF-03D retrieval/RAG context plane
+          -> AIF-04A durable session/input substrate
+              -> AIF-04B context builder + pure tool translation
+                  -> AIF-04C operation manager + recovery
+                      -> AIF-04D fork/compare
           -> AIF-05 browser bridge
           -> AIF-06 local bridge
               -> AIF-07 action center execution controls
@@ -313,6 +317,7 @@ Benchmark candidates separately:
 
 - SemIf;
 - Decider;
+- Laya-CoreML local typed-decision profiles;
 - structured-prediction local models;
 - existing approved remote/local model providers.
 
@@ -356,7 +361,55 @@ At least deterministic provider qualified. Model providers remain optional until
 
 DECISION_PLANE_FOUNDATION_QUALIFIED = TRUE`
 
-### AIF-03C — Retrieval / RAG context plane
+### AIF-03C — Decision batch gateway
+
+Build a provider-neutral batching layer after at least one decision provider is qualified.
+
+Required contracts:
+
+- `DecisionBatchRequest`;
+- stable per-item `input_id`;
+- ordered `DecisionBatchItemResult`;
+- confidence-availability flag;
+- abstention/uncertain state;
+- optional escalation marker;
+- per-item error;
+- provider/model/revision;
+- usage/cost;
+- timeout/cancellation;
+- partial-failure semantics.
+
+Source pattern:
+
+- classifier.dev at the pinned source revision for batch/version/eval/escalation ideas.
+
+Rules:
+
+- hosted classifier.dev is not a PHI production path;
+- local-only work cannot fall back to hosted/remote classification;
+- uncertain results may escalate only to an already-authorized provider or human;
+- a null/unavailable confidence cannot be treated as above threshold;
+- batch order/result count must be stable;
+- one failed item cannot silently truncate the batch.
+
+Tests:
+
+- 1/10/100/1000 synthetic item batches;
+- order preserved;
+- duplicate input id rejected or deterministically deduplicated by contract;
+- null confidence routes to review;
+- provider outage;
+- partial failure;
+- cancellation;
+- backpressure;
+- cost/usage accounting;
+- PHI-to-unapproved-provider denied.
+
+Exit:
+
+`DECISION_BATCH_GATEWAY_QUALIFIED = TRUE`
+
+### AIF-03D — Retrieval / RAG context plane
 
 Implement permission-first retrieval contracts only after AIF-02 privacy/egress rules are canonical.
 
@@ -391,19 +444,89 @@ Exit:
 
 `packages/agent-runtime`
 
-### Runtime contract
+Unreal Agent at `df8b0ba560da17fd705d941cbeb75eff86c74a1e` is a high-priority runtime-semantics donor. Zyara owns the contracts and adds healthcare authority/privacy boundaries.
+
+### AIF-04A — Durable session + input substrate
+
+Implement:
+
+- `AgentSession`;
+- versioned append-only session history;
+- stable caller-supplied `input_id`;
+- input redelivery deduplication;
+- terminal state;
+- parent/fork lineage;
+- session version compatibility;
+- recovery metadata.
+
+Rules:
+
+- input deduplication is not external action idempotency;
+- unsupported session versions fail explicitly;
+- cross-tenant/branch session resume is denied;
+- session persistence contains no raw secrets.
+
+Tests:
+
+- duplicate redelivery;
+- crash after accepted input;
+- restart/resume;
+- unsupported session version;
+- revoked agent on resume;
+- cross-tenant resume denial.
+
+Exit:
+
+`AGENT_SESSION_SUBSTRATE_QUALIFIED = TRUE`
+
+### AIF-04B — Context builder + pure tool translation
+
+Implement an I/O-pure context builder and tool translator.
+
+`ContextBuildReceipt` records included/omitted/truncated/compacted refs and the budget/version that caused the decision.
+
+A tool translator:
+
+- validates a model-produced call;
+- resolves only named capability metadata, never raw secret values;
+- performs no external I/O;
+- emits a validation error or versioned serializable `OperationSpec[]`;
+- cannot self-approve;
+- cannot widen capability/tenant/branch/data scope.
+
+Persist model response + tool-call status + operation specs before dispatch.
+
+Tests:
+
+- malformed tool call;
+- unavailable capability;
+- omitted context is visible;
+- translator attempts I/O are structurally impossible/by-contract rejected;
+- operation serialization round-trip;
+- parameter digest stable;
+- stale approval rejected before dispatch.
+
+Exit:
+
+`AGENT_TRANSLATION_SUBSTRATE_QUALIFIED = TRUE`
+
+### AIF-04C — Operation manager + recovery
+
+Runtime contract:
 
 - create run;
 - mint an ephemeral workload identity narrower than the sponsoring AgentIdentity;
 - start;
 - observe;
+- dispatch persisted operations;
 - cancel;
 - suspend/resume only if backend supports safe checkpointing;
 - terminate;
 - cleanup;
-- retrieve receipts.
+- retrieve receipts;
+- reconcile unknown external outcomes.
 
-### Mandatory limits
+Mandatory limits:
 
 - time;
 - model/token/cost;
@@ -413,13 +536,22 @@ Exit:
 - capability count;
 - egress hosts.
 
-### Backend 1
+Backend 1:
 
 Use the smallest bounded local/container backend that can be proven in the current CI environment.
 
 Do not introduce Kubernetes just to imitate AX.
 
-### Required negative tests
+Recovery campaign:
+
+- crash after model response;
+- crash after operation persistence before dispatch;
+- crash after external side effect before receipt;
+- crash after receipt before model-facing result;
+- resume without duplicate side effect;
+- UNKNOWN external outcome requires reconciliation.
+
+Required negative tests:
 
 - child capability > parent capability;
 - host secret inheritance;
@@ -428,6 +560,36 @@ Do not introduce Kubernetes just to imitate AX.
 - cancellation race;
 - orphan process;
 - runaway loop/cost;
+- replay of completed write;
+- unpersisted operation dispatch.
+
+Exit:
+
+`AGENT_OPERATION_MANAGER_QUALIFIED = TRUE`
+
+### AIF-04D — Fork / compare
+
+Add bounded session forks only after AIF-04C.
+
+Use cases:
+
+- compare plans;
+- simulation;
+- synthetic replay;
+- alternative model/provider strategy.
+
+Rules:
+
+- parent lineage preserved;
+- current authorization re-evaluated;
+- completed external side effects are not replayed;
+- stale approvals are not inherited;
+- child capability ceiling <= current parent/sponsor ceiling;
+- comparison output is evidence, never authority.
+
+Exit:
+
+`AGENT_FORK_COMPARE_QUALIFIED = TRUE`
 - workspace escape;
 - stale approval;
 - agent attempts to modify its own policy.
