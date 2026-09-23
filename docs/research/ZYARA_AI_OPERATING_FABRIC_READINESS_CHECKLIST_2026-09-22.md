@@ -93,11 +93,38 @@ A checked planning item means the contract is defined in the planning packet. It
 | 81 | Capability/workflow/event schema evolution | COVERED | §12A.9 |
 | 82 | Model fallback cannot widen privacy/data residency | COVERED | §12A.1/AIF-03A |
 
+| 83 | Local typed-decision provider profile | COVERED | canonical §12B.1 + AIF-03B |
+| 84 | Local-only decision no-silent-remote-fallback | COVERED | §12B.1 + AIF-02 |
+| 85 | Calibration artifact/version in decision identity | COVERED | §12B.1 |
+| 86 | Conversion fidelity separated from task accuracy | COVERED | §12B.1/source deep dive |
+| 87 | Batch decision stable item ids/order | COVERED | §12B.2 + AIF-03C |
+| 88 | Batch partial-failure semantics | COVERED | §12B.2 + AIF-03C |
+| 89 | Null/unavailable confidence handling | COVERED | §12B.2 + AIF-03C |
+| 90 | Uncertain-item escalation without authority widening | COVERED | §12B.2 |
+| 91 | Hosted classifier endpoint prohibited for PHI by default | COVERED | §12B.2/source deep dive |
+| 92 | Retrieval semantic prefilter after authorization | COVERED | §12B.3 + AIF-03D |
+| 93 | Retrieval candidate filter cannot grant authorization | COVERED | §12B.3 |
+| 94 | Search prefilter path/symlink boundary | COVERED | §12B.3 |
+| 95 | Stable caller input id / redelivery dedup | COVERED | §12B.4 + AIF-04A |
+| 96 | Input dedup distinct from external action idempotency | COVERED | §12B.4 |
+| 97 | Versioned append-only agent session history | COVERED | §12B.4/AIF-04A |
+| 98 | I/O-pure context builder | COVERED | §12B.7/AIF-04B |
+| 99 | Context omission/truncation receipt | COVERED | §12B.7 |
+| 100 | Pure tool-call translation before execution | COVERED | §12B.5/AIF-04B |
+| 101 | Versioned serializable operation specs | COVERED | §12B.5/AIF-04B |
+| 102 | Persist status + operations before dispatch | COVERED | §12B.5/12B.6 |
+| 103 | Crash after external side effect requires reconciliation | COVERED | §12B.6/AIF-04C |
+| 104 | Unsupported session version explicit failure | COVERED | AIF-04A |
+| 105 | Fork lineage + authorization re-evaluation | COVERED | §12B.8/AIF-04D |
+| 106 | Fork cannot replay completed side effects | COVERED | §12B.8 |
+| 107 | New donor exact pins + permissions recorded | COVERED | donor deep dive/source adoption |
+| 108 | Jev Search public-license ambiguity isolated from runtime admission | COVERED | donor deep dive/source adoption |
+
 ## Explicit unresolved items that are intentionally not design gaps
 
 These remain evidence/admission gates rather than missing architecture:
 
-1. exact canonical source repository/revision for Laya before code copy;
+1. exact canonical source repository/revision for the Laya Action Center product before any Action Center code copy (this is distinct from the now-pinned `mizorewww/laya-coreml` runtime donor);
 2. exact source repository/revision/license for Desktop Commander before code copy;
 3. provider-specific browser portal rights and terms;
 4. real clinic local-device validation;
