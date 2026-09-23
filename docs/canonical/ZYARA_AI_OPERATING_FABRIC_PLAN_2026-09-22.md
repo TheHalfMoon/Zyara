@@ -1550,6 +1550,84 @@ Enforce:
 
 Oversized/invalid output fails safely before persistence or dispatch.
 
+### 12C.12 Governed long-term memory
+
+Zyara must not accumulate opaque agent memory outside the data model.
+
+Persistent memory is either:
+
+1. an authoritative Zyara domain record; or
+2. a governed `MemoryObject` that is explicitly non-authoritative.
+
+A non-authoritative memory object records:
+
+```text
+memory_id
+tenant_id
+subject_scope
+purpose
+source_refs
+derived_by
+created_at
+expires_at
+data_class
+consent_or_policy_ref
+supersession_state
+deletion_state
+```
+
+Rules:
+
+- model conversation memory cannot mint clinical, insurance, appointment, identity, or payment truth;
+- memory retrieval is authorized before disclosure;
+- memory has explicit subject/purpose scope;
+- cross-patient or cross-tenant memory is prohibited;
+- summaries remain linked to sources and can become stale;
+- correction/supersession does not rewrite authoritative history;
+- revocation/deletion propagates to memory indexes/caches;
+- hidden provider-side memory is not treated as Zyara state;
+- user-visible memory controls and provenance are required before broad patient-facing persistent memory is enabled.
+
+### 12C.13 Trusted time semantics
+
+Leases, approvals, expiries, retries, and receipts depend on time and must not trust arbitrary client/model timestamps.
+
+Rules:
+
+- authoritative expiry/lease decisions use a trusted server/database clock;
+- persisted timestamps are normalized to UTC with timezone context retained where clinically/operationally necessary;
+- client-supplied timestamps are observations, not authority;
+- durations/timeouts use monotonic clocks inside a process where available;
+- clock skew is measured/alerted for distributed workers;
+- a worker whose clock/trust state is outside tolerance cannot claim time-sensitive authority;
+- daylight-saving/timezone changes cannot silently alter expiry or appointment semantics.
+
+### 12C.14 AI/runtime incident response
+
+Every admitted model/provider/runtime/tool adapter has an incident state:
+
+```text
+HEALTHY
+DEGRADED
+QUARANTINED
+SUSPENDED
+REVOKED
+```
+
+Incident response must support:
+
+- global/tenant/provider/model/capability kill switch;
+- credential rotation/revocation;
+- model/artifact quarantine;
+- stop-new-work while allowing safe evidence preservation;
+- bounded cancellation of in-flight runs;
+- forensic export of receipts/config/version/evidence without raw-secret leakage;
+- identification of affected runs/receipts;
+- replay/reconciliation after repair;
+- explicit re-admission gate.
+
+A provider security incident cannot trigger an automatic fallback that widens privacy, data residency, authority, or retention.
+
 ## 13. First implementation leaf
 
 The first implementation leaf after this plan is accepted is:
