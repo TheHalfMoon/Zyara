@@ -1578,6 +1578,9 @@ This plan is implementation-ready when:
 - secret handling is explicit;
 - privacy/egress is explicit;
 - retries/idempotency/outcome verification are explicit;
+- durable session ordering, operation dependencies, leases/fencing and transactional dispatch are explicit;
+- decision classes/label sets/UNKNOWN semantics are versioned;
+- model artifact provenance and rollback are explicit;
 - browser/local execution is bounded;
 - model decisions cannot grant authority;
 - human approval/exception integration is explicit;
@@ -1605,5 +1608,10 @@ These decisions close ambiguity before implementation:
 13. **External provider terms and automation rights are qualification inputs.** Technical browser success does not authorize use of a portal.
 14. **Local/private modes fail closed on unavailable local capability.** They do not silently route PHI to cloud services.
 15. **Donor code is replaceable.** Public Zyara contracts and evidence remain stable even when a donor library/runtime changes.
+16. **Model-facing tool translation is pure.** It validates and emits serializable operations; it does not perform external I/O.
+17. **Dispatch is durable, not exactly-once magic.** Persisted intent + leases/fencing + idempotency/reconciliation provide safe at-least-once execution semantics.
+18. **Decision classes are versioned artifacts.** Labels/options, UNKNOWN semantics, thresholds, locale policy and evaluation bundles are not ad-hoc prompt text.
+19. **Forks are analytical/runtime lineage, not side-effect replay.** Completed writes are never replayed merely because a session is forked.
+20. **Human confirmation binds to normalized action parameters.** Material changes invalidate stale approval/confirmation.
 
 `ZYARA_AI_OPERATING_FABRIC_PLAN_READY = YES`
