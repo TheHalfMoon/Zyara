@@ -1,7 +1,9 @@
 # Zyara AI Operating Fabric — Readiness / Gap Closure Checklist
 
-Date: 2026-09-22  
-Planning base: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`
+Initial date: 2026-09-22  
+Amended: 2026-09-23  
+Initial planning base: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+2026-09-23 hardening base: `c17b654f6836997751967157728c664227b3e7e2`
 
 Purpose: prevent the AI Operating Fabric from being called implementation-ready while a major architectural concern is absent.
 
