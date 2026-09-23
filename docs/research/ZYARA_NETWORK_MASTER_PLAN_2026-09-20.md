@@ -149,6 +149,11 @@ model tool call != side effect
 persist operation before dispatch
 local-only != silent cloud fallback
 fork != replay completed side effects
+worker lease != external exactly-once guarantee
+persisted operation != authorized operation unless approval/policy still valid
+decision label set != unversioned prompt text
 ```
+
+The final hardening pass also requires versioned decision classes, model-artifact provenance, causal session ordering, operation dependency graphs, leases/fencing, transactional dispatch intent, receipt integrity, human-intent binding, retention semantics and parser/fan-out limits.
 
 This does not change the first AIF implementation leaf: `AIF-01A Capability contract`.
