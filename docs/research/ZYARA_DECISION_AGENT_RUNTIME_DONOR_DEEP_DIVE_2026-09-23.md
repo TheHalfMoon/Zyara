@@ -694,6 +694,27 @@ AIF-01 Capability contract + resolver
 
 AIF-05 onward remains unchanged.
 
+## 11A. Final implementation-readiness hardening
+
+The final gap pass adds constraints that are not donor-specific but are required before implementation should be called architecture-complete:
+
+- versioned `DecisionClassSpec` / label-set contracts;
+- explicit UNKNOWN/none semantics;
+- per-class/provider/locale thresholds;
+- operational-harm/fairness evaluation for routing that can affect access or review burden;
+- local model artifact digests, conversion-toolchain provenance, quarantine and rollback;
+- canonical session sequence/causal lineage;
+- explicit operation dependency DAGs;
+- worker leases/fencing;
+- transactional outbox/durable dispatch intent;
+- no exactly-once execution claim;
+- integrity-bound execution receipts;
+- human-intent + normalized parameter digest binding;
+- session retention/compaction/legal-hold rules;
+- hard tool-call/operation/fan-out parser limits.
+
+These constraints are now incorporated into the canonical AIF plan and implementation handoff rather than left as future runtime design work.
+
 ## 12. Admission status
 
 `ZYARA_DECISION_AGENT_DONOR_DEEP_DIVE_READY = YES`
