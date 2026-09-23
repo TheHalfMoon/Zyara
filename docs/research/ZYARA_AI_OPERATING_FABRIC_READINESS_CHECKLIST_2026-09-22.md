@@ -120,6 +120,26 @@ A checked planning item means the contract is defined in the planning packet. It
 | 107 | New donor exact pins + permissions recorded | COVERED | donor deep dive/source adoption |
 | 108 | Jev Search public-license ambiguity isolated from runtime admission | COVERED | donor deep dive/source adoption |
 
+| 109 | Decision-class/label-set registry versioning | COVERED | canonical §12C.1 + AIF-03C |
+| 110 | Explicit none/unknown outcome where required | COVERED | §12C.1 |
+| 111 | Thresholds scoped by class/provider/locale | COVERED | §12C.1 |
+| 112 | Administrative fairness/operational-harm evaluation | COVERED | §12C.2 |
+| 113 | Local model artifact digest/toolchain provenance | COVERED | §12C.3 |
+| 114 | Local model artifact rollback/quarantine | COVERED | §12C.3 |
+| 115 | Apple-specific local provider remains optional | COVERED | §12C.3 |
+| 116 | Canonical session event ordering/causal lineage | COVERED | §12C.4 |
+| 117 | Consequential agent state rejects blind last-write-wins | COVERED | §12C.4 |
+| 118 | Explicit multi-operation dependency graph | COVERED | §12C.5 |
+| 119 | UNKNOWN predecessor blocks unsafe successor | COVERED | §12C.5 |
+| 120 | Worker lease/fencing against concurrent execution | COVERED | §12C.6 + AIF-04C |
+| 121 | Stale worker cannot commit newer result | COVERED | §12C.6 |
+| 122 | Transactional outbox / committed dispatch intent | COVERED | §12C.7 + AIF-04C |
+| 123 | No exactly-once overclaim | COVERED | §12C.7 |
+| 124 | Execution receipt integrity/provenance binding | COVERED | §12C.8 |
+| 125 | Human-intent/parameter-digest confirmation binding | COVERED | §12C.9 |
+| 126 | Session retention/compaction/legal hold | COVERED | §12C.10 |
+| 127 | Hard parser/fan-out/amplification limits | COVERED | §12C.11 |
+
 ## Explicit unresolved items that are intentionally not design gaps
 
 These remain evidence/admission gates rather than missing architecture:
@@ -140,7 +160,7 @@ The plan must not fabricate closure of these items.
 
 ## Plan readiness decision
 
-All architecture categories required to begin the first bounded implementation leaf are covered.
+All architecture categories currently known to be required for bounded implementation are covered, including the 2026-09-23 decision/runtime hardening pass. External evidence gates below remain intentionally unresolved and must not be misreported as repository completion.
 
 The first executable leaf remains:
 
