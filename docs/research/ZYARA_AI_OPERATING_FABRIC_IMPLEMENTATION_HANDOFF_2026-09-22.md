@@ -804,7 +804,10 @@ Before AIF-09, qualify:
 - receipt integrity/digest chaining or equivalent;
 - human-intent binding for consequential actions;
 - hard parser/fan-out/amplification limits;
-- session retention/compaction/legal-hold semantics.
+- session retention/compaction/legal-hold semantics;
+- governed non-authoritative long-term memory and deletion propagation;
+- trusted server-time/clock-skew semantics for leases, approvals and expiry;
+- model/provider/runtime incident quarantine, kill switch, forensics and re-admission.
 
 ## 13A. Cross-cutting lifecycle gates
 
