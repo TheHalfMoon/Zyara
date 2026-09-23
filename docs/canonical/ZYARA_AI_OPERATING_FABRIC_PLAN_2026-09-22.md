@@ -1,8 +1,10 @@
 # Zyara AI Operating Fabric Plan — 2026-09-22
 
 **Status:** canonical planning amendment candidate  
+**Amended:** 2026-09-23 — decision/runtime donor hardening  
 **Mode:** planning only; no production-code authority by this document alone  
-**Base main:** `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+**Initial planning base:** `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+**2026-09-23 hardening base:** `c17b654f6836997751967157728c664227b3e7e2`  
 **Depends on:** canonical N5 closure, Zyara AI-era automation principles, Zyara Network master plan  
 **Purpose:** make Zyara's AI-era operating model implementable without turning models, browsers, tools, or agents into healthcare authority.
 
@@ -566,7 +568,15 @@ High-level roles:
 - Laya: Action Center / human-approval / daily-operations UX reference pending exact source pin;
 - Desktop Commander: Local Bridge product/reference pattern pending exact source pin;
 - Bespoke Nimble: structured evidence-grounding candidate only after healthcare/privacy benchmarks;
+- Laya-CoreML: local typed-decision provider candidate for Apple-Silicon deployments after task/locale calibration;
+- classifier.dev: batch-classification/versioning/evaluation pattern; hosted public endpoint is not a PHI production path;
+- Jev Search: search-shaping/prefilter pattern only, never authorization;
+- Unreal Agent: high-priority durable session, pure tool-translation and serializable-operation runtime donor;
 - founder-owned repositories: preferred sources for authority, privacy, sandbox, workflow, analytics, voice, evidence and verification patterns.
+
+Detailed 2026-09-23 donor deep dive:
+
+`docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
 
 ## 11. Dependency insertion into the Zyara roadmap
 
@@ -577,17 +587,23 @@ Use a cross-cutting `AIF` program:
 ```text
 N5 complete
   |
-  +--> N6 Connect ------------------------------+
-  |                                             |
-  +--> AIF-01 Capability Gateway Contracts      |
-        -> AIF-02 Privacy/Egress + Secrets      |
-        -> AIF-03 Decision Plane Qualification  |
-        -> AIF-04 Agent Runtime                  |
-        -> AIF-05 Governed Browser Bridge -------+--> N8 external portal fallbacks
-        -> AIF-06 Local Bridge                   |
-        -> AIF-07 Action Center                  |
-        -> AIF-08 Operations Insights            |
-        -> AIF-09 End-to-end qualification ------+--> N9 automation-scale
+  +--> N6 Connect ---------------------------------------------+
+  |                                                            |
+  +--> AIF-01 Capability Gateway Contracts                     |
+        -> AIF-02 Privacy/Egress + Secrets                     |
+        -> AIF-03A Model/Prompt Registry                       |
+        -> AIF-03B Decision Provider Qualification             |
+        -> AIF-03C Decision Class + Batch Gateway              |
+        -> AIF-03D Permission-first Retrieval/RAG              |
+        -> AIF-04A Durable Session/Input Substrate             |
+        -> AIF-04B Context Builder + Pure Tool Translation     |
+        -> AIF-04C Operation Manager + Recovery                |
+        -> AIF-04D Fork/Compare                                |
+        -> AIF-05 Governed Browser Bridge ----------------------+--> N8 external portal fallbacks
+        -> AIF-06 Local Bridge                                 |
+        -> AIF-07 Action Center                                |
+        -> AIF-08 Operations Insights                          |
+        -> AIF-09 End-to-end qualification ---------------------+--> N9 automation-scale
 ```
 
 Dependency rules:
@@ -641,45 +657,168 @@ Exit:
 - secrets cannot enter model/tool payloads;
 - no-silent-cloud-fallback tests pass.
 
-### AIF-03 — Decision Plane Qualification
+### AIF-03 — Decision / Model / Retrieval Plane
+
+#### AIF-03A — Model + Prompt Registry
 
 Deliver:
 
-- deterministic rules;
-- model adapter contract;
-- typed option/result schema;
-- abstention;
-- thresholds;
+- provider-neutral `ModelProfile`;
+- exact model/runtime revision identity where observable;
+- data/task-class admission;
+- local/remote deployment profile;
+- prompt/template versioning;
+- structured-output schema binding;
+- rollout/rollback state;
+- evaluation-bundle digest;
+- kill-switch binding.
+
+Exit:
+
+- no model is globally admitted;
+- remote aliases such as `latest` are insufficient identity;
+- prompt edits cannot mutate historical receipts;
+- model/prompt revocation blocks new work.
+
+#### AIF-03B — Decision Provider Qualification
+
+Deliver:
+
+- deterministic provider zero;
+- typed provider SPI;
+- abstention/unknown semantics;
 - calibration/evaluation harness;
-- Arabic/Saudi Arabic/code-switch fixtures where the use case involves patient/staff language;
+- Arabic/Saudi Arabic/code-switch fixtures where relevant;
+- local provider qualification including Laya-CoreML candidates;
 - decision receipt.
 
 Exit:
 
 - model output cannot grant authority;
-- uncertainty is explicit;
-- benchmark determines whether SemIf, Decider, another local model, or no model is admitted per task class.
+- conversion fidelity is not confused with task accuracy;
+- no silent local-to-remote fallback;
+- provider admission is per decision class.
 
-### AIF-04 — Agent Runtime
+#### AIF-03C — Decision Class + Batch Gateway
 
 Deliver:
 
-- AgentRun lifecycle;
-- workspace profile;
-- network policy;
-- model profile;
-- capability grants;
-- time/cost/parallelism budgets;
-- cancellation;
-- checkpoint/suspend only where safe;
-- cleanup receipt;
-- local sandbox backend.
+- versioned `DecisionClassSpec`;
+- label/option schema;
+- explicit NONE/UNKNOWN where required;
+- class/provider/locale threshold policy;
+- batch request/result contracts;
+- stable item ids/order;
+- partial failure;
+- confidence-availability semantics;
+- uncertainty escalation;
+- usage/cost accounting.
 
 Exit:
 
-- bounded run cannot exceed declared egress/capability/budget;
-- cancellation and cleanup are proven;
-- no unrestricted host secret/filesystem inheritance.
+- historical receipts retain exact decision-class version;
+- one failed item cannot silently truncate a batch;
+- null confidence cannot be treated as above threshold;
+- escalation cannot widen authority.
+
+#### AIF-03D — Permission-first Retrieval / RAG
+
+Deliver:
+
+- `RetrievalPlan`, source and receipt contracts;
+- authorize-before-retrieval;
+- deterministic candidate narrowing;
+- optional semantic prefilter;
+- evidence refs/freshness;
+- rebuildable index/embedding projections;
+- deletion/revocation propagation;
+- prompt-injection treatment.
+
+Exit:
+
+- no cross-tenant retrieval leakage;
+- retrieved text cannot grant capability;
+- stale/contradictory evidence remains visible;
+- semantic prefiltering cannot replace authorization.
+
+### AIF-04 — Durable Agent Runtime
+
+#### AIF-04A — Durable Session + Input Substrate
+
+Deliver:
+
+- versioned append-only `AgentSession`;
+- stable caller `input_id`;
+- redelivery dedup;
+- canonical event ordering/causal lineage;
+- parent/fork lineage;
+- terminal-state semantics;
+- session retention classes.
+
+Exit:
+
+- unsupported session versions fail explicitly;
+- duplicate redelivery is safe;
+- consequential session state has no blind last-write-wins path;
+- cross-tenant/branch resume is denied.
+
+#### AIF-04B — Context Builder + Pure Tool Translation
+
+Deliver:
+
+- I/O-pure context builder;
+- `ContextBuildReceipt`;
+- explicit included/omitted/truncated/compacted refs;
+- pure tool-call validator/translator;
+- versioned serializable `OperationSpec`;
+- schema/parser/fan-out hard limits;
+- parameter/capability digests.
+
+Exit:
+
+- model tool calls do not perform side effects;
+- translator cannot resolve raw credentials or self-approve;
+- oversized/invalid outputs fail before dispatch;
+- tool-call status + operations are durable before execution.
+
+#### AIF-04C — Operation Manager + Recovery
+
+Deliver:
+
+- bounded execution backend;
+- transactional outbox/durable dispatch intent;
+- leases/fencing;
+- operation dependency graph;
+- idempotency/reconciliation;
+- cancellation/timeouts/budgets;
+- UNKNOWN external outcome;
+- integrity-bound execution receipts;
+- crash recovery campaign.
+
+Exit:
+
+- stale workers cannot commit newer results;
+- dependency/UNKNOWN semantics are preserved;
+- at-least-once dispatch does not become an exactly-once claim;
+- crash after side effect reconciles rather than blindly retries;
+- bounded run cannot exceed egress/capability/budget.
+
+#### AIF-04D — Fork / Compare
+
+Deliver:
+
+- bounded session fork lineage;
+- current authorization re-evaluation;
+- alternative model/plan simulation;
+- comparison receipts;
+- non-replay rules for completed writes.
+
+Exit:
+
+- fork cannot replay completed external side effects;
+- stale approvals are not inherited;
+- child capability ceiling does not exceed current parent/sponsor authority;
+- comparison output remains evidence, not authority.
 
 ### AIF-05 — Governed Browser Bridge
 
@@ -996,6 +1135,499 @@ Every breaking change defines:
 
 Historical receipts must remain interpretable after schema evolution.
 
+## 12B. Fast decision throughput and durable agent-runtime closure
+
+The 2026-09-23 donor review adds explicit architecture for high-throughput typed decisions and crash-safe agent execution.
+
+### 12B.1 Typed local decision providers
+
+A local typed-decision provider may optimize latency/cost/privacy, but it does not own policy.
+
+Laya-CoreML is a candidate provider for Apple-Silicon deployments.
+
+Provider admission must bind:
+
+```text
+provider_profile_id
+runtime_revision
+model_bundle_revision_or_digest
+tokenizer_config_digest
+compute_profile
+context_limit
+calibration_profile
+allowed_task_classes
+allowed_locales
+device_requirements
+offline_required
+fallback_policy
+evaluation_bundle
+```
+
+Rules:
+
+- admission is per task class;
+- local-only tasks never silently fall back to remote;
+- conversion fidelity is not task accuracy;
+- model probability is never healthcare authority;
+- calibration transforms/clamps must be represented in provider/evaluation identity;
+- current Laya-CoreML Python/macOS support does not prove iOS readiness.
+
+### 12B.2 Decision batch gateway
+
+High-volume low-authority classification should not require one large-model turn per item.
+
+Zyara owns a provider-neutral batch contract inspired by classifier.dev patterns.
+
+A batch must preserve:
+
+- stable item id;
+- original ordering;
+- per-item result/error;
+- confidence availability;
+- uncertainty/abstention;
+- escalation state;
+- provider/model/revision;
+- usage/cost;
+- cancellation/timeout;
+- partial failure.
+
+An uncertainty escalation may call another already-authorized provider or route to a human.
+
+A "smart" or second-pass provider never expands authority.
+
+The public classifier.dev hosted endpoint is not approved for PHI by this plan because request content can be forwarded to upstream model providers. Production PHI use requires a separately qualified private/self-hosted path plus an admitted backend.
+
+### 12B.3 Retrieval semantic prefilter
+
+A cheap semantic filter may reduce retrieval/context cost only after authorization.
+
+Preferred shape:
+
+```text
+authorize source set
+-> deterministic/metadata narrowing
+-> stable chunking
+-> cheap typed semantic filtering
+-> evidence-preserving survivors
+-> rerank/retrieve/reason
+```
+
+Jev Search supplies useful search-shaping patterns but is not admitted as a runtime dependency.
+
+Requirements:
+
+- no arbitrary filesystem crawl;
+- no symlink/path escape;
+- no raw PHI result-file logging;
+- deterministic chunk ids;
+- source refs retained;
+- cancellation/budgets;
+- remote decision calls only after egress approval;
+- revoked/deleted sources disappear from subsequent retrieval.
+
+### 12B.4 Durable agent session substrate
+
+An `AgentRun` must have a durable session/event substrate, not only a process lifecycle.
+
+Required concepts:
+
+```text
+AgentSession
+AgentInput
+ContextBuildReceipt
+ToolTranslation
+OperationSpec
+OperationState
+```
+
+Each externally submitted input has a caller-supplied stable `input_id` for redelivery deduplication.
+
+This is distinct from an operation idempotency key.
+
+### 12B.5 Pure tool translation
+
+A model-facing tool call must never perform external I/O directly.
+
+Preferred boundary:
+
+```text
+model tool call
+-> pure validation/translation
+-> serializable OperationSpec[]
+-> atomically persist call status + operations
+-> dispatch
+-> execute
+-> persist result
+-> translate result for model
+```
+
+The translator:
+
+- performs no external I/O;
+- cannot resolve raw credentials;
+- cannot bypass approval;
+- cannot expand capability scope;
+- emits stable reason codes;
+- emits versioned serializable operations.
+
+### 12B.6 Recovery ordering
+
+Before dispatching an operation, Zyara must durably persist enough state to recover without guessing.
+
+Crash points to qualify:
+
+- accepted input;
+- model response;
+- tool translation;
+- operation persisted before dispatch;
+- external side effect before receipt;
+- receipt before model-facing result.
+
+A crash after an external side effect but before receipt must reconcile instead of blindly retrying.
+
+### 12B.7 Context omission receipt
+
+The context builder must report what the model did **not** see.
+
+`ContextBuildReceipt` records:
+
+- included refs;
+- omitted refs;
+- truncated refs;
+- compacted/summarized refs;
+- budget reason;
+- builder version;
+- authorization scope.
+
+A model may not be presented as having reviewed evidence omitted from context.
+
+### 12B.8 Session forks and compare
+
+Forks may support:
+
+- compare plans;
+- simulation;
+- alternative agent strategies;
+- replay against synthetic fixtures.
+
+Fork rules:
+
+- preserve parent lineage;
+- re-evaluate current authorization;
+- do not replay completed external side effects;
+- use new operation idempotency keys where writes are allowed;
+- never reuse stale approvals;
+- result comparison is evidence, not authority.
+
+## 12C. Distributed-runtime, label-set, and supply-chain closure
+
+The implementation is not ready until concurrency, failover, label-set semantics, and local model artifact admission are explicit.
+
+### 12C.1 Decision class and label-set registry
+
+A typed classifier must not receive an unversioned ad-hoc label list for consequential workflows.
+
+Define a `DecisionClassSpec`:
+
+```text
+decision_class_id
+version
+purpose
+allowed_data_classes
+labels/options
+label_descriptions
+none_or_unknown_semantics
+multi_label_policy
+threshold_policy
+locale_policy
+escalation_policy
+provider_admission_refs
+evaluation_bundle
+owner
+rollout_state
+```
+
+Rules:
+
+- label-set changes create a new version;
+- historical receipts retain the exact decision-class version;
+- if "none of the above" is a real outcome, the class must model it explicitly;
+- providers that force a choice cannot be used when the class requires abstention/unknown;
+- thresholds are per decision class/provider/locale, not global;
+- label order must not become hidden policy;
+- class definitions may not encode protected or clinically inappropriate routing.
+
+### 12C.2 Fairness and operational harm evaluation
+
+Even administrative routing can create access harm.
+
+For decision classes that affect queue priority, access, outreach, scheduling, financial workflows, or human-review burden, evaluation must inspect:
+
+- language/locale performance;
+- Saudi Arabic and code-switching;
+- demographic proxy leakage;
+- disparate false-positive/false-negative patterns where lawful data is available;
+- systematic escalation burden;
+- denial/deprioritization risk;
+- missing-data behavior.
+
+A fairness metric never overrides a clinical/legal policy rule, but material disparities block admission until understood and mitigated.
+
+### 12C.3 Local model artifact supply chain
+
+A local model/runtime bundle is executable supply-chain material.
+
+Admission records:
+
+- source;
+- exact revision;
+- model artifact digest;
+- tokenizer/config digest;
+- conversion toolchain;
+- conversion source revision;
+- license/NOTICE/model-card obligations;
+- expected architecture;
+- supported device/runtime;
+- signature/checksum verification;
+- quarantine/rollback state.
+
+Rules:
+
+- artifact hash mismatch fails closed;
+- model update is a new candidate, not an in-place silent replacement;
+- rollback target remains available where operationally required;
+- local model download/update must honor the same egress and provenance controls as remote providers;
+- Apple-specific providers remain optional; Zyara contracts must support non-Apple local providers later.
+
+### 12C.4 Session ordering and causal identity
+
+Each durable session uses explicit monotonically increasing event sequence numbers or an equivalent canonical ordering.
+
+Every accepted input, model response, tool translation, operation, result, approval, cancellation, and terminal transition records:
+
+- session id;
+- event id;
+- causal parent/ref;
+- sequence/version;
+- correlation id;
+- actor;
+- observed time.
+
+Concurrent inputs must either:
+
+- serialize through one session coordinator; or
+- declare an explicit causal/merge model.
+
+Last-write-wins on consequential agent state is prohibited.
+
+### 12C.5 Operation dependencies
+
+A tool translation may emit more than one operation.
+
+`OperationSpec` therefore supports explicit dependencies:
+
+```text
+operation_id
+depends_on[]
+parallel_group?
+join_policy
+failure_policy
+```
+
+Rules:
+
+- no operation runs before required predecessors are durably successful;
+- parallel execution must not violate capability/credential/budget ceilings;
+- joins preserve partial/failed/unknown outcomes;
+- downstream operations do not run when an upstream outcome is UNKNOWN unless policy explicitly permits it.
+
+### 12C.6 Leases and fencing
+
+Crash recovery must prevent two workers from executing the same durable operation concurrently.
+
+The operation manager requires:
+
+- claim/lease state;
+- lease expiry;
+- worker identity;
+- monotonically increasing fencing token or equivalent compare-and-set generation;
+- heartbeat where appropriate;
+- bounded takeover;
+- terminal-state immutability.
+
+A stale worker with an old fence cannot commit a newer result.
+
+External APIs still require their own idempotency/reconciliation because internal fencing cannot make a third-party side effect exactly-once.
+
+### 12C.7 Transactional dispatch
+
+Use transactional outbox/equivalent durable intent so that:
+
+```text
+persist tool-call status
++ persist operation specs
++ persist dispatch intent
+= one durable transaction boundary
+```
+
+Dispatch happens only from committed intent.
+
+Do not claim exactly-once execution. The target is:
+
+- durable at-least-once dispatch;
+- idempotent/reconcilable side effects;
+- explicit UNKNOWN when proof is insufficient.
+
+### 12C.8 Receipt integrity and result provenance
+
+An `ExecutionReceipt` binds:
+
+- operation spec digest;
+- capability definition/version digest;
+- approval binding;
+- credential binding refs (opaque);
+- adapter/version;
+- worker/runtime identity;
+- external reference ids;
+- start/end times;
+- result/status;
+- verification result;
+- evidence refs;
+- previous receipt if correcting/reconciling.
+
+High-consequence receipts should be tamper-evident through append-only storage plus digest chaining or equivalent integrity controls.
+
+### 12C.9 Human-intent binding
+
+For user-initiated consequential actions, approval/confirmation must bind to what the person actually saw.
+
+The confirmation record includes:
+
+- human actor;
+- human-readable action summary;
+- normalized parameters digest;
+- data/recipient scope;
+- expiry;
+- one-time/reusable semantics;
+- capability/version;
+- UI/prompt version where material.
+
+Material parameter changes invalidate the confirmation.
+
+### 12C.10 Session retention, compaction, and legal hold
+
+Session history may contain PHI/PII even when tool receipts are minimized.
+
+Define separately:
+
+- canonical audit events;
+- model context snapshots;
+- raw prompts/responses;
+- compacted summaries;
+- operation payload refs;
+- attachments.
+
+Compaction can reduce model context but cannot rewrite canonical audit history.
+
+Deletion/legal-hold propagation follows the retention policy while preserving the minimum immutable evidence required by law/policy.
+
+### 12C.11 Hard parser and amplification limits
+
+Untrusted model/provider outputs need structural limits before they become runtime objects.
+
+Enforce:
+
+- maximum tool calls per turn;
+- maximum operations per tool call;
+- maximum nesting/depth;
+- maximum argument bytes;
+- maximum batch items;
+- maximum label/options count;
+- maximum context refs;
+- maximum fan-out/delegation;
+- schema additional-property policy;
+- numeric/string length bounds.
+
+Oversized/invalid output fails safely before persistence or dispatch.
+
+### 12C.12 Governed long-term memory
+
+Zyara must not accumulate opaque agent memory outside the data model.
+
+Persistent memory is either:
+
+1. an authoritative Zyara domain record; or
+2. a governed `MemoryObject` that is explicitly non-authoritative.
+
+A non-authoritative memory object records:
+
+```text
+memory_id
+tenant_id
+subject_scope
+purpose
+source_refs
+derived_by
+created_at
+expires_at
+data_class
+consent_or_policy_ref
+supersession_state
+deletion_state
+```
+
+Rules:
+
+- model conversation memory cannot mint clinical, insurance, appointment, identity, or payment truth;
+- memory retrieval is authorized before disclosure;
+- memory has explicit subject/purpose scope;
+- cross-patient or cross-tenant memory is prohibited;
+- summaries remain linked to sources and can become stale;
+- correction/supersession does not rewrite authoritative history;
+- revocation/deletion propagates to memory indexes/caches;
+- hidden provider-side memory is not treated as Zyara state;
+- user-visible memory controls and provenance are required before broad patient-facing persistent memory is enabled.
+
+### 12C.13 Trusted time semantics
+
+Leases, approvals, expiries, retries, and receipts depend on time and must not trust arbitrary client/model timestamps.
+
+Rules:
+
+- authoritative expiry/lease decisions use a trusted server/database clock;
+- persisted timestamps are normalized to UTC with timezone context retained where clinically/operationally necessary;
+- client-supplied timestamps are observations, not authority;
+- durations/timeouts use monotonic clocks inside a process where available;
+- clock skew is measured/alerted for distributed workers;
+- a worker whose clock/trust state is outside tolerance cannot claim time-sensitive authority;
+- daylight-saving/timezone changes cannot silently alter expiry or appointment semantics.
+
+### 12C.14 AI/runtime incident response
+
+Every admitted model/provider/runtime/tool adapter has an incident state:
+
+```text
+HEALTHY
+DEGRADED
+QUARANTINED
+SUSPENDED
+REVOKED
+```
+
+Incident response must support:
+
+- global/tenant/provider/model/capability kill switch;
+- credential rotation/revocation;
+- model/artifact quarantine;
+- stop-new-work while allowing safe evidence preservation;
+- bounded cancellation of in-flight runs;
+- forensic export of receipts/config/version/evidence without raw-secret leakage;
+- identification of affected runs/receipts;
+- replay/reconciliation after repair;
+- explicit re-admission gate.
+
+A provider security incident cannot trigger an automatic fallback that widens privacy, data residency, authority, or retention.
+
 ## 13. First implementation leaf
 
 The first implementation leaf after this plan is accepted is:
@@ -1024,6 +1656,9 @@ This plan is implementation-ready when:
 - secret handling is explicit;
 - privacy/egress is explicit;
 - retries/idempotency/outcome verification are explicit;
+- durable session ordering, operation dependencies, leases/fencing and transactional dispatch are explicit;
+- decision classes/label sets/UNKNOWN semantics are versioned;
+- model artifact provenance and rollback are explicit;
 - browser/local execution is bounded;
 - model decisions cannot grant authority;
 - human approval/exception integration is explicit;
@@ -1051,5 +1686,10 @@ These decisions close ambiguity before implementation:
 13. **External provider terms and automation rights are qualification inputs.** Technical browser success does not authorize use of a portal.
 14. **Local/private modes fail closed on unavailable local capability.** They do not silently route PHI to cloud services.
 15. **Donor code is replaceable.** Public Zyara contracts and evidence remain stable even when a donor library/runtime changes.
+16. **Model-facing tool translation is pure.** It validates and emits serializable operations; it does not perform external I/O.
+17. **Dispatch is durable, not exactly-once magic.** Persisted intent + leases/fencing + idempotency/reconciliation provide safe at-least-once execution semantics.
+18. **Decision classes are versioned artifacts.** Labels/options, UNKNOWN semantics, thresholds, locale policy and evaluation bundles are not ad-hoc prompt text.
+19. **Forks are analytical/runtime lineage, not side-effect replay.** Completed writes are never replayed merely because a session is forked.
+20. **Human confirmation binds to normalized action parameters.** Material changes invalidate stale approval/confirmation.
 
 `ZYARA_AI_OPERATING_FABRIC_PLAN_READY = YES`

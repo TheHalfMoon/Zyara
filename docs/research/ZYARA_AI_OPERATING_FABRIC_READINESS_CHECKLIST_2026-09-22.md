@@ -1,7 +1,9 @@
 # Zyara AI Operating Fabric — Readiness / Gap Closure Checklist
 
-Date: 2026-09-22  
-Planning base: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`
+Initial date: 2026-09-22  
+Amended: 2026-09-23  
+Initial planning base: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+2026-09-23 hardening base: `c17b654f6836997751967157728c664227b3e7e2`
 
 Purpose: prevent the AI Operating Fabric from being called implementation-ready while a major architectural concern is absent.
 
@@ -93,11 +95,64 @@ A checked planning item means the contract is defined in the planning packet. It
 | 81 | Capability/workflow/event schema evolution | COVERED | §12A.9 |
 | 82 | Model fallback cannot widen privacy/data residency | COVERED | §12A.1/AIF-03A |
 
+| 83 | Local typed-decision provider profile | COVERED | canonical §12B.1 + AIF-03B |
+| 84 | Local-only decision no-silent-remote-fallback | COVERED | §12B.1 + AIF-02 |
+| 85 | Calibration artifact/version in decision identity | COVERED | §12B.1 |
+| 86 | Conversion fidelity separated from task accuracy | COVERED | §12B.1/source deep dive |
+| 87 | Batch decision stable item ids/order | COVERED | §12B.2 + AIF-03C |
+| 88 | Batch partial-failure semantics | COVERED | §12B.2 + AIF-03C |
+| 89 | Null/unavailable confidence handling | COVERED | §12B.2 + AIF-03C |
+| 90 | Uncertain-item escalation without authority widening | COVERED | §12B.2 |
+| 91 | Hosted classifier endpoint prohibited for PHI by default | COVERED | §12B.2/source deep dive |
+| 92 | Retrieval semantic prefilter after authorization | COVERED | §12B.3 + AIF-03D |
+| 93 | Retrieval candidate filter cannot grant authorization | COVERED | §12B.3 |
+| 94 | Search prefilter path/symlink boundary | COVERED | §12B.3 |
+| 95 | Stable caller input id / redelivery dedup | COVERED | §12B.4 + AIF-04A |
+| 96 | Input dedup distinct from external action idempotency | COVERED | §12B.4 |
+| 97 | Versioned append-only agent session history | COVERED | §12B.4/AIF-04A |
+| 98 | I/O-pure context builder | COVERED | §12B.7/AIF-04B |
+| 99 | Context omission/truncation receipt | COVERED | §12B.7 |
+| 100 | Pure tool-call translation before execution | COVERED | §12B.5/AIF-04B |
+| 101 | Versioned serializable operation specs | COVERED | §12B.5/AIF-04B |
+| 102 | Persist status + operations before dispatch | COVERED | §12B.5/12B.6 |
+| 103 | Crash after external side effect requires reconciliation | COVERED | §12B.6/AIF-04C |
+| 104 | Unsupported session version explicit failure | COVERED | AIF-04A |
+| 105 | Fork lineage + authorization re-evaluation | COVERED | §12B.8/AIF-04D |
+| 106 | Fork cannot replay completed side effects | COVERED | §12B.8 |
+| 107 | New donor exact pins + permissions recorded | COVERED | donor deep dive/source adoption |
+| 108 | Jev Search public-license ambiguity isolated from runtime admission | COVERED | donor deep dive/source adoption |
+
+| 109 | Decision-class/label-set registry versioning | COVERED | canonical §12C.1 + AIF-03C |
+| 110 | Explicit none/unknown outcome where required | COVERED | §12C.1 |
+| 111 | Thresholds scoped by class/provider/locale | COVERED | §12C.1 |
+| 112 | Administrative fairness/operational-harm evaluation | COVERED | §12C.2 |
+| 113 | Local model artifact digest/toolchain provenance | COVERED | §12C.3 |
+| 114 | Local model artifact rollback/quarantine | COVERED | §12C.3 |
+| 115 | Apple-specific local provider remains optional | COVERED | §12C.3 |
+| 116 | Canonical session event ordering/causal lineage | COVERED | §12C.4 |
+| 117 | Consequential agent state rejects blind last-write-wins | COVERED | §12C.4 |
+| 118 | Explicit multi-operation dependency graph | COVERED | §12C.5 |
+| 119 | UNKNOWN predecessor blocks unsafe successor | COVERED | §12C.5 |
+| 120 | Worker lease/fencing against concurrent execution | COVERED | §12C.6 + AIF-04C |
+| 121 | Stale worker cannot commit newer result | COVERED | §12C.6 |
+| 122 | Transactional outbox / committed dispatch intent | COVERED | §12C.7 + AIF-04C |
+| 123 | No exactly-once overclaim | COVERED | §12C.7 |
+| 124 | Execution receipt integrity/provenance binding | COVERED | §12C.8 |
+| 125 | Human-intent/parameter-digest confirmation binding | COVERED | §12C.9 |
+| 126 | Session retention/compaction/legal hold | COVERED | §12C.10 |
+| 127 | Hard parser/fan-out/amplification limits | COVERED | §12C.11 |
+
+| 128 | Persistent agent memory is governed/non-authoritative | COVERED | canonical §12C.12 |
+| 129 | Memory authorization/provenance/expiry/deletion propagation | COVERED | §12C.12 |
+| 130 | Trusted server time + clock-skew semantics | COVERED | §12C.13 |
+| 131 | Client/model timestamps cannot grant time authority | COVERED | §12C.13 |
+| 132 | Model/provider/runtime incident quarantine + re-admission | COVERED | §12C.14 |
+
 ## Explicit unresolved items that are intentionally not design gaps
 
 These remain evidence/admission gates rather than missing architecture:
 
-1. exact canonical source repository/revision for Laya before code copy;
+1. exact canonical source repository/revision for the Laya Action Center product before any Action Center code copy (this is distinct from the now-pinned `mizorewww/laya-coreml` runtime donor);
 2. exact source repository/revision/license for Desktop Commander before code copy;
 3. provider-specific browser portal rights and terms;
 4. real clinic local-device validation;
@@ -113,7 +168,7 @@ The plan must not fabricate closure of these items.
 
 ## Plan readiness decision
 
-All architecture categories required to begin the first bounded implementation leaf are covered.
+All architecture categories currently known to be required for bounded implementation are covered, including the 2026-09-23 decision/runtime hardening pass. External evidence gates below remain intentionally unresolved and must not be misreported as repository completion.
 
 The first executable leaf remains:
 

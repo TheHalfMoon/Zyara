@@ -216,6 +216,10 @@ The founder supplied additional sources specifically to strengthen Zyara's agent
 | [laya.aay.sh](https://laya.aay.sh/) | exact canonical source repo not pinned in this pass | Action Center / approval-centric operations UX | REFERENCE_PENDING_SOURCE_PIN |
 | [desktopcommander.app](https://desktopcommander.app/) | exact canonical source repo not pinned in this pass | bounded local-machine bridge UX/operations reference | REFERENCE_PENDING_SOURCE_PIN |
 | [bespokelabs/Bespoke-Nimble-9B](https://huggingface.co/bespokelabs/Bespoke-Nimble-9B) | HF metadata observed 2026-09-22 | structured evidence-grounding candidate | QUALIFY only |
+| [mizorewww/laya-coreml](https://github.com/mizorewww/laya-coreml) | `4619e0483f07adf39068532e85b42ec2347edb83` | local typed decisions on Apple Silicon/Core ML, calibration/provenance | QUALIFY / ADAPT / optional DEPENDENCY |
+| [caio0452/jev_search](https://github.com/caio0452/jev_search) | `ea073f6db48f5bff73ae4b9f2240d2d302fb9dc1` | permission-first semantic prefilter/search-shaping patterns | REFERENCE / SELECTIVE_ADAPT; no public LICENSE observed |
+| [unreallabsai/unreal-agent](https://github.com/unreallabsai/unreal-agent) | `df8b0ba560da17fd705d941cbeb75eff86c74a1e` | durable agent sessions, context omission, pure tool translation, serializable operations, recovery | HIGH-PRIORITY ADAPT |
+| [mrmps/classifier-dev](https://github.com/mrmps/classifier-dev) | `8f2bb2b84a0d51ad1c9ed3436b64155908354f75` | batch typed-classification gateway, uncertainty review, eval/version/cost patterns | ADAPT / SELF-HOST PATTERN; hosted endpoint DEV_ONLY for non-PHI |
 
 ### Relevant founder-owned source clusters
 
@@ -229,6 +233,10 @@ For the operating fabric, prioritize:
 - `commandF`, `commandMed` — healthcare interoperability/model safety;
 - `Himsat`, `Wispral` — future local audio/voice control;
 - `Signthos` — forms/consent/documents.
+
+The 2026-09-23 decision/runtime donor analysis is authoritative for these four new sources:
+
+`docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
 
 The detailed AIF plan owns admission order. No donor becomes runtime authority merely by appearing in this index.
 

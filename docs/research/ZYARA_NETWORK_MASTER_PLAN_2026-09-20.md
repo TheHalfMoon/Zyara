@@ -110,3 +110,50 @@ AI geo actions are typed capabilities
 The first GEO implementation leaf is `GEO-01A — Geo assertion and precision contract`. It is independent of N6 and requires no external credentials.
 
 N9 spatial analytics must consume GEO-09 rather than invent a second geospatial stack. AIF-01 is the prerequisite for GEO-10 AI/voice geo capabilities.
+
+
+## 2026-09-23 Decision + Agent Runtime donor amendment
+
+The founder supplied and authorized four additional source donors:
+
+- `mizorewww/laya-coreml@4619e0483f07adf39068532e85b42ec2347edb83`
+- `caio0452/jev_search@ea073f6db48f5bff73ae4b9f2240d2d302fb9dc1`
+- `unreallabsai/unreal-agent@df8b0ba560da17fd705d941cbeb75eff86c74a1e`
+- `mrmps/classifier-dev@8f2bb2b84a0d51ad1c9ed3436b64155908354f75`
+
+Authoritative detailed analysis:
+
+`docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
+
+The AIF amendment now explicitly covers:
+
+```text
+local typed decisions
+-> provider-neutral decision batching
+-> uncertainty escalation
+-> permission-first semantic prefiltering
+-> durable agent sessions and stable input ids
+-> context omission receipts
+-> pure tool translation
+-> versioned serializable operations
+-> crash recovery/reconciliation
+-> bounded fork/compare
+```
+
+Permanent rules:
+
+```text
+confidence != authority
+input dedup != external-action idempotency
+model tool call != side effect
+persist operation before dispatch
+local-only != silent cloud fallback
+fork != replay completed side effects
+worker lease != external exactly-once guarantee
+persisted operation != authorized operation unless approval/policy still valid
+decision label set != unversioned prompt text
+```
+
+The final hardening pass also requires versioned decision classes, model-artifact provenance, causal session ordering, operation dependency graphs, leases/fencing, transactional dispatch intent, receipt integrity, human-intent binding, retention semantics and parser/fan-out limits.
+
+This does not change the first AIF implementation leaf: `AIF-01A Capability contract`.

@@ -1,7 +1,9 @@
 # Zyara AI Operating Fabric — Source Adoption Matrix
 
-Date: 2026-09-22  
-Base Zyara main: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`
+Initial date: 2026-09-22  
+Amended: 2026-09-23  
+Initial base Zyara main: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+2026-09-23 hardening base: `c17b654f6836997751967157728c664227b3e7e2`
 
 This document converts the founder-supplied source list and relevant TheHalfMoon repositories into implementation decisions for the AI Operating Fabric.
 
@@ -30,6 +32,10 @@ Permission to reuse code does not remove provenance, security, privacy, dependen
 | `laya.aay.sh` | website/source supplied by founder; exact canonical source repo not verified in this pass | not asserted here | Action Center UX, pre-researched action cards, human approval, operations briefing | REFERENCE_PENDING_SOURCE_PIN | Do not copy code until exact repository/revision/license/permission artifact is captured. Product patterns may inform Zyara-native UI immediately. |
 | `desktopcommander.app` | product/source supplied by founder; exact source repo not verified in this pass | not asserted here | bounded local-machine bridge patterns | REFERENCE_PENDING_SOURCE_PIN | Never translate generic desktop control into unrestricted care-agent shell/filesystem authority. |
 | Bespoke Nimble 9B | Hugging Face model `bespokelabs/Bespoke-Nimble-9B`; metadata observed 2026-09-22: Apache-2.0, structured-prediction/evidence-grounding tags | Apache-2.0 metadata | structured evidence extraction / candidate decision support | QUALIFY | Model output remains candidate evidence. Benchmark healthcare domain, privacy, hallucination, calibration, latency and Arabic applicability before use. |
+| `mizorewww/laya-coreml` | `4619e0483f07adf39068532e85b42ec2347edb83` | Apache-2.0 + NOTICE | local typed decisions on Apple Silicon/Core ML; calibration/provenance patterns | QUALIFY / ADAPT / optional DEPENDENCY | Founder states explicit permission. Strong candidate for local administrative decision classes only after Saudi Arabic/domain benchmark. Preserve upstream NOTICE and model-bundle provenance. No silent cloud fallback. |
+| `caio0452/jev_search` | `ea073f6db48f5bff73ae4b9f2240d2d302fb9dc1` | no public LICENSE observed in this pass | two-stage semantic search/prefilter pattern | REFERENCE / SELECTIVE_ADAPT | Founder states explicit permission. README warns it is AI-generated and not production-ready. Do not admit its OpenRouter path for PHI; adapt only behind Zyara auth/privacy/decision contracts. |
+| `unreallabsai/unreal-agent` | `df8b0ba560da17fd705d941cbeb75eff86c74a1e` | MIT | durable session/inbox/context/tool-translation/serializable-operation runtime semantics | ADAPT_HIGH_PRIORITY / COPY_SELECTIVE | Founder states explicit permission. Preserve pure translator/no-I/O separation, versioned sessions/operations, recovery semantics; add Zyara tenant/authority/approval/receipt boundaries. |
+| `mrmps/classifier-dev` / `classifier.dev` | `8f2bb2b84a0d51ad1c9ed3436b64155908354f75` | MIT | batch typed-classification gateway, uncertainty review, versioning/eval/cost patterns | ADAPT / SELF-HOST PATTERN / DEV_ONLY_HOSTED | Founder states explicit permission. Hosted service forwards content to model providers; public endpoint is not a PHI production path. Prefer a Zyara-owned provider-neutral batch gateway. |
 
 ## TheHalfMoon source priority
 
@@ -96,6 +102,8 @@ Qualify:
 - deterministic rules first;
 - SemIf;
 - Decider;
+- Laya-CoreML as a local Apple-Silicon typed-decision candidate;
+- a Zyara-owned classifier.dev-inspired batch gateway;
 - Bespoke Nimble or other structured-prediction models;
 - current approved model providers/local model runtimes.
 
@@ -105,6 +113,7 @@ Selection must be task-specific. There is no single global "best model."
 
 Study/adapt:
 
+- Unreal Agent session/inbox/context/translator/operation separation;
 - Google AX resource separation;
 - Kodac/Golam sandbox and approval binding;
 - MedScale/MESC process isolation;
@@ -214,6 +223,23 @@ Use:
 - Superset/PostHog only over approved privacy-preserving views.
 
 No donor may introduce raw-PHI session replay or unrestricted analytics credentials.
+
+## 2026-09-23 Decision/runtime donor amendment
+
+Detailed source qualification and contract additions are in:
+
+`docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
+
+Preferred combined interpretation:
+
+```text
+Laya-CoreML = local typed-decision provider candidate
+classifier.dev = batch-classification gateway/eval/escalation pattern
+Jev Search = permission-first semantic prefilter pattern
+Unreal Agent = durable session + pure translator + serializable operation runtime donor
+```
+
+None of these sources becomes healthcare authority.
 
 ## Source conflicts and preferred resolution
 
