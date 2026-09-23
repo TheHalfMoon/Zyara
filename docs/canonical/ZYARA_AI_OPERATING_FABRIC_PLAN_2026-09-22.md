@@ -586,17 +586,23 @@ Use a cross-cutting `AIF` program:
 ```text
 N5 complete
   |
-  +--> N6 Connect ------------------------------+
-  |                                             |
-  +--> AIF-01 Capability Gateway Contracts      |
-        -> AIF-02 Privacy/Egress + Secrets      |
-        -> AIF-03 Decision Plane Qualification  |
-        -> AIF-04 Agent Runtime                  |
-        -> AIF-05 Governed Browser Bridge -------+--> N8 external portal fallbacks
-        -> AIF-06 Local Bridge                   |
-        -> AIF-07 Action Center                  |
-        -> AIF-08 Operations Insights            |
-        -> AIF-09 End-to-end qualification ------+--> N9 automation-scale
+  +--> N6 Connect ---------------------------------------------+
+  |                                                            |
+  +--> AIF-01 Capability Gateway Contracts                     |
+        -> AIF-02 Privacy/Egress + Secrets                     |
+        -> AIF-03A Model/Prompt Registry                       |
+        -> AIF-03B Decision Provider Qualification             |
+        -> AIF-03C Decision Class + Batch Gateway              |
+        -> AIF-03D Permission-first Retrieval/RAG              |
+        -> AIF-04A Durable Session/Input Substrate             |
+        -> AIF-04B Context Builder + Pure Tool Translation     |
+        -> AIF-04C Operation Manager + Recovery                |
+        -> AIF-04D Fork/Compare                                |
+        -> AIF-05 Governed Browser Bridge ----------------------+--> N8 external portal fallbacks
+        -> AIF-06 Local Bridge                                 |
+        -> AIF-07 Action Center                                |
+        -> AIF-08 Operations Insights                          |
+        -> AIF-09 End-to-end qualification ---------------------+--> N9 automation-scale
 ```
 
 Dependency rules:
@@ -650,45 +656,168 @@ Exit:
 - secrets cannot enter model/tool payloads;
 - no-silent-cloud-fallback tests pass.
 
-### AIF-03 — Decision Plane Qualification
+### AIF-03 — Decision / Model / Retrieval Plane
+
+#### AIF-03A — Model + Prompt Registry
 
 Deliver:
 
-- deterministic rules;
-- model adapter contract;
-- typed option/result schema;
-- abstention;
-- thresholds;
+- provider-neutral `ModelProfile`;
+- exact model/runtime revision identity where observable;
+- data/task-class admission;
+- local/remote deployment profile;
+- prompt/template versioning;
+- structured-output schema binding;
+- rollout/rollback state;
+- evaluation-bundle digest;
+- kill-switch binding.
+
+Exit:
+
+- no model is globally admitted;
+- remote aliases such as `latest` are insufficient identity;
+- prompt edits cannot mutate historical receipts;
+- model/prompt revocation blocks new work.
+
+#### AIF-03B — Decision Provider Qualification
+
+Deliver:
+
+- deterministic provider zero;
+- typed provider SPI;
+- abstention/unknown semantics;
 - calibration/evaluation harness;
-- Arabic/Saudi Arabic/code-switch fixtures where the use case involves patient/staff language;
+- Arabic/Saudi Arabic/code-switch fixtures where relevant;
+- local provider qualification including Laya-CoreML candidates;
 - decision receipt.
 
 Exit:
 
 - model output cannot grant authority;
-- uncertainty is explicit;
-- benchmark determines whether SemIf, Decider, another local model, or no model is admitted per task class.
+- conversion fidelity is not confused with task accuracy;
+- no silent local-to-remote fallback;
+- provider admission is per decision class.
 
-### AIF-04 — Agent Runtime
+#### AIF-03C — Decision Class + Batch Gateway
 
 Deliver:
 
-- AgentRun lifecycle;
-- workspace profile;
-- network policy;
-- model profile;
-- capability grants;
-- time/cost/parallelism budgets;
-- cancellation;
-- checkpoint/suspend only where safe;
-- cleanup receipt;
-- local sandbox backend.
+- versioned `DecisionClassSpec`;
+- label/option schema;
+- explicit NONE/UNKNOWN where required;
+- class/provider/locale threshold policy;
+- batch request/result contracts;
+- stable item ids/order;
+- partial failure;
+- confidence-availability semantics;
+- uncertainty escalation;
+- usage/cost accounting.
 
 Exit:
 
-- bounded run cannot exceed declared egress/capability/budget;
-- cancellation and cleanup are proven;
-- no unrestricted host secret/filesystem inheritance.
+- historical receipts retain exact decision-class version;
+- one failed item cannot silently truncate a batch;
+- null confidence cannot be treated as above threshold;
+- escalation cannot widen authority.
+
+#### AIF-03D — Permission-first Retrieval / RAG
+
+Deliver:
+
+- `RetrievalPlan`, source and receipt contracts;
+- authorize-before-retrieval;
+- deterministic candidate narrowing;
+- optional semantic prefilter;
+- evidence refs/freshness;
+- rebuildable index/embedding projections;
+- deletion/revocation propagation;
+- prompt-injection treatment.
+
+Exit:
+
+- no cross-tenant retrieval leakage;
+- retrieved text cannot grant capability;
+- stale/contradictory evidence remains visible;
+- semantic prefiltering cannot replace authorization.
+
+### AIF-04 — Durable Agent Runtime
+
+#### AIF-04A — Durable Session + Input Substrate
+
+Deliver:
+
+- versioned append-only `AgentSession`;
+- stable caller `input_id`;
+- redelivery dedup;
+- canonical event ordering/causal lineage;
+- parent/fork lineage;
+- terminal-state semantics;
+- session retention classes.
+
+Exit:
+
+- unsupported session versions fail explicitly;
+- duplicate redelivery is safe;
+- consequential session state has no blind last-write-wins path;
+- cross-tenant/branch resume is denied.
+
+#### AIF-04B — Context Builder + Pure Tool Translation
+
+Deliver:
+
+- I/O-pure context builder;
+- `ContextBuildReceipt`;
+- explicit included/omitted/truncated/compacted refs;
+- pure tool-call validator/translator;
+- versioned serializable `OperationSpec`;
+- schema/parser/fan-out hard limits;
+- parameter/capability digests.
+
+Exit:
+
+- model tool calls do not perform side effects;
+- translator cannot resolve raw credentials or self-approve;
+- oversized/invalid outputs fail before dispatch;
+- tool-call status + operations are durable before execution.
+
+#### AIF-04C — Operation Manager + Recovery
+
+Deliver:
+
+- bounded execution backend;
+- transactional outbox/durable dispatch intent;
+- leases/fencing;
+- operation dependency graph;
+- idempotency/reconciliation;
+- cancellation/timeouts/budgets;
+- UNKNOWN external outcome;
+- integrity-bound execution receipts;
+- crash recovery campaign.
+
+Exit:
+
+- stale workers cannot commit newer results;
+- dependency/UNKNOWN semantics are preserved;
+- at-least-once dispatch does not become an exactly-once claim;
+- crash after side effect reconciles rather than blindly retries;
+- bounded run cannot exceed egress/capability/budget.
+
+#### AIF-04D — Fork / Compare
+
+Deliver:
+
+- bounded session fork lineage;
+- current authorization re-evaluation;
+- alternative model/plan simulation;
+- comparison receipts;
+- non-replay rules for completed writes.
+
+Exit:
+
+- fork cannot replay completed external side effects;
+- stale approvals are not inherited;
+- child capability ceiling does not exceed current parent/sponsor authority;
+- comparison output remains evidence, not authority.
 
 ### AIF-05 — Governed Browser Bridge
 
