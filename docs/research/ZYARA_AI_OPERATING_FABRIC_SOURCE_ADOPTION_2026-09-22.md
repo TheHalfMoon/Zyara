@@ -1,7 +1,9 @@
 # Zyara AI Operating Fabric — Source Adoption Matrix
 
-Date: 2026-09-22  
-Base Zyara main: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`
+Initial date: 2026-09-22  
+Amended: 2026-09-23  
+Initial base Zyara main: `7caa5da39bbf6d1157f42d183280b0e4682bdcf5`  
+2026-09-23 hardening base: `c17b654f6836997751967157728c664227b3e7e2`
 
 This document converts the founder-supplied source list and relevant TheHalfMoon repositories into implementation decisions for the AI Operating Fabric.
 
