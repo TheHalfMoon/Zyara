@@ -88,35 +88,36 @@ Read these first:
 4. `docs/canonical/ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md`
 5. `docs/research/ZYARA_AI_OPERATING_FABRIC_IMPLEMENTATION_HANDOFF_2026-09-22.md`
 6. `docs/research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`
-7. `docs/research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md`
-8. `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
-9. `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
-10. `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
-11. `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
-12. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
-13. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
-14. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
-15. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
-16. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
-17. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
-18. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
-19. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
-20. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
-21. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
-22. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
-23. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
-24. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
-25. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
-26. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
-27. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
-28. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
-29. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
-30. `docs/canonical/ZYARA_ROADMAP.md`
-31. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
-32. current V1 founder/scope/canonicalization documents;
-33. `docs/VOICE_AGENT_RUNTIME.md`
-34. `docs/COMPETITORS.md`
-35. `docs/SOURCES.md`
+7. `docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
+8. `docs/research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md`
+9. `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
+10. `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+11. `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
+12. `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
+13. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
+14. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
+15. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
+16. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
+17. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
+18. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
+19. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+20. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+21. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+22. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+23. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+24. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+25. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+26. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+27. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+28. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+29. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+30. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+31. `docs/canonical/ZYARA_ROADMAP.md`
+32. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+33. current V1 founder/scope/canonicalization documents;
+34. `docs/VOICE_AGENT_RUNTIME.md`
+35. `docs/COMPETITORS.md`
+36. `docs/SOURCES.md`
 
 Both the AI Operating Fabric and Geospatial readiness checklists must pass before their respective amendments are called implementation-ready.
 
@@ -139,7 +140,7 @@ It does not replace N6-N10. It defines how models, agents, tools, browsers and l
 - AIF-08 Operations Insights measures quality/cost/reliability;
 - AIF-09 qualifies the whole fabric.
 
-N6 Connect may proceed independently. Browser-portal automation in N8 and broad agent automation in N9 must satisfy the AIF dependencies in the canonical plan.
+N6 Connect may proceed independently. Browser-portal automation in N8 and broad agent automation in N9 must satisfy the AIF dependencies in the canonical plan. The 2026-09-23 donor deep dive additionally hardens local typed decisions, batch classification, permission-first semantic prefiltering, durable sessions, pure tool translation, serializable operations and crash recovery.
 
 ## Geospatial platform authority
 
