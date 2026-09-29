@@ -8,26 +8,20 @@ Marker: ZYARA_NETWORK_MASTER_PLAN_COMPLETE = YES (justified in Part 3).
 ## Product thesis
 Zyara Network is the umbrella product. Zyara - Your health partner. Surfaces: Zyara (patient), Zyara Clinic (ops workspace), Zyara Doctor (clinician), Zyara Connect (comms/telehealth), Zyara Insights (analytics), Zyara AI (grounded copilot), My Health (longitudinal patient area). Discovery is the entry wedge, not the ceiling.
 
-
 ## Preservation matrix
 Graph/search/ranking/profiles:M001-M013 PROVEN_COMPLETE preserve. Booking/holds/changes:M014-M018 PROVEN_COMPLETE preserve. Provider/attendance/reviews/metrics:M008,M021-M025 PROVEN_COMPLETE preserve. Waitlist/recall/referral/adapters:M031-M040 PROVEN_COMPLETE synthetic preserve. Voice/nav/clinical/modalities:M041-M056 PROVEN_COMPLETE synthetic preserve. Analytics/pack/scale:M057-M060 PROVEN_COMPLETE synthetic preserve. M028-M030 DEFERRED_EXTERNAL_VALIDATION. PR94 discovery UI PRESENT_NEEDS_ADAPTATION preserve-and-merge-via-gate. MyHealth-write/encounter-sign/eRx/NPHIES-prod/RCM/Connect-media MISSING new phases. Payroll/recruitment/biometrics REJECT-default.
-
 
 ## Architecture
 Modular monorepo preserved. FHIR R4 at boundaries, typed Postgres inside. One operation owner per transition. Outbox/idempotency/retries/DLQ/reconciliation/audit/correlation. Practitioner/PractitionerRole preserved; Doctor-vs-Facility reputation independent; insurance scoped by payer-network-product+branch+service+role+freshness. AI drafts only; typed ops + humans own facts. Connect media via qualification (LiveKit vs Jitsi vs OpenMeeting; BBB group-only). Comms split: orchestration vs inbox vs clinical-messaging vs channel-adapters vs gated-voice.
 
-
 ## Data-model delta (additive)
 Add staff_assignments, shifts, leave_requests, coverage_exceptions, clinic_rooms, resources, encounters (Appointment!=Encounter), clinical_notes draft-vs-signed, orders, prescriptions+refill_requests, results immutable+summary, care_plans, conversations+messages, telehealth_sessions, eligibility_checks, authorizations, claims, payments, reconciliation_runs, workflows+versions+actions+receipts+exception_queue, agent_identities, activity_events derived-only, saved_views+report_subscriptions+metric_definitions. All tenant-scoped with provenance/idempotency/correlation/audit.
-
 
 ## Source decisions
 Qdrat@e2d2889: org-workforce ADAPT; shifts-leave ADAPT; helpdesk ADAPT; WhatsApp HIGH-PRIORITY ADAPT with credential-isolation+webhook-verify+idempotency+consent; reports ADAPT to Insights; audit REFERENCE; payroll DEFER-INTEGRATE; recruitment DEFER; biometrics-geofencing-face REJECT-default. Buzz@4ab4f78 Apache-2.0: channels-threads ADAPT; human-agent-membership ADAPT; activity-stream ADAPT-concept derived-only; buzz-audit QUALIFY-ADAPT; workflow REFERENCE-QUALIFY vs current jobs; Nostr-as-canonical REJECT; shell-file-MCP REJECT-for-care-agents. GenHealth/Plena: workflow-reference only, reverify live before time-sensitive claims. MedScale/MESC/commandMed/commandF/Himsat/Wispral/Signthos/Sentrdel/Tarif/Ecra/Golam/Kodac/Winds/Ascout/SpecGrain/Diffcipline/Delethos/MSTR/Flake/wepld/gods-eye/openmeeting/SuiteMeet/Jitsi/LiveKit/Medplum/OpenEMR/OpenMRS-Novuhq-Chatwoot-OHIF-OpenELIS-PostGIS-Keycloak-Synthea: per existing S001-S115 ledger; new admissions need exact-revision+files+license+SBOM+security+update-strategy.
 
-
 ## Roadmap
 N0 Foundation done. N1 Access done+PR94-merge-via-gate. N2 Scheduling done. N3 Trust done. N4 Workforce next: W1 org-graph, W2 shifts-leave-coverage, W3 helpdesk-tasks, W4 WhatsApp-adapter. N5 Collaboration: C1 agent-identities, C2 activity-derived, C3 approval-exception-queue, C4 audit-chain-qualify. N6 Connect: T1 media-qualify, T2 session-lifecycle, T3 chat-files-consent, T4 reconnect. N7 MyHealth+Clinical: H1 timeline, H2 encounter-sign, H3 orders-results, H4 eRx-refills clinician-signed, H5 referrals-plans. N8 Insurance: I1 eligibility-sandbox, I2 prior-auth, I3 claims, I4 payments-recon; NPHIES-conformance-plan, no-prod-without-authority. N9 Insights+automation-scale. N10 Qualification-external-gates.
-
 
 ## First task + gates
 W1 Clinic-org-workforce-graph: additive migrations, scoped APIs, tests, provenance; no payroll-biometrics. Per-task gates: scope+deps+migration-privacy review, unit-contract-synthetic tests, evidence-packet digests, independent check; merge only on green required CI. Unresolved external: NPHIES-authority, eRx-auth, telehealth-governance, WhatsApp-prod-creds, pilots, payer-contracts, residency-signoff, prod-auth. None claimed.
@@ -65,8 +59,6 @@ model/tool/browser/agent output != healthcare authority
 ```
 
 The first AIF implementation leaf is `AIF-01A Capability contract`. It is dependency-independent from N6/T1 and may proceed concurrently only under repository governance.
-
-
 
 ## 2026-09-22 Geospatial Platform amendment
 
@@ -110,7 +102,6 @@ AI geo actions are typed capabilities
 The first GEO implementation leaf is `GEO-01A — Geo assertion and precision contract`. It is independent of N6 and requires no external credentials.
 
 N9 spatial analytics must consume GEO-09 rather than invent a second geospatial stack. AIF-01 is the prerequisite for GEO-10 AI/voice geo capabilities.
-
 
 ## 2026-09-23 Decision + Agent Runtime donor amendment
 
@@ -157,3 +148,62 @@ decision label set != unversioned prompt text
 The final hardening pass also requires versioned decision classes, model-artifact provenance, causal session ordering, operation dependency graphs, leases/fencing, transactional dispatch intent, receipt integrity, human-intent binding, retention semantics and parser/fan-out limits.
 
 This does not change the first AIF implementation leaf: `AIF-01A Capability contract`.
+
+## 2026-09-29 Work / Knowledge / Data Plane amendment
+
+The founder supplied and authorized three additional donor repositories:
+
+- `t8y2/dbx@4269a61e2cf6c19afdcaba41fed1e57d6e5e3512`
+- `paperclipai/paperclip@24beb005755465f71a19ec92a85da0958d1b9740`
+- `metadist/synaplan@e81eb3431deb3e242c3a114e8cbf08e2fbfd1e88`
+
+Authoritative packet:
+
+- `docs/canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md`
+- `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_IMPLEMENTATION_HANDOFF_2026-09-29.md`
+- `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_SOURCE_ADOPTION_2026-09-29.md`
+- `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`
+- `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`
+
+The cross-cutting `WKD` program strengthens AIF and N9 without creating a new authority plane:
+
+```text
+WKD-01 Module + provider readiness contracts
+WKD-02 Bounded PlanGraph + deterministic compiler
+WKD-03 Durable work/liveness
+WKD-04 Durable human interactions
+WKD-05 Routines + budgets
+WKD-06 Permission-first knowledge/connectors
+WKD-07 Curated Data Gateway
+WKD-08 Human Data Workspace
+WKD-09 Plugin/sidecar integrity
+WKD-10 Action Center + whole-plane qualification
+```
+
+Preferred donor roles:
+
+```text
+DBX = bounded data-workspace / data-grant / plugin-sidecar safety donor
+Paperclip = durable work/liveness/interactions/routines/budget donor
+Synaplan = provider readiness / capability inventory / bounded PlanGraph / local-knowledge donor
+```
+
+Permanent rules:
+
+```text
+agent org chart != healthcare authority
+work ownership != permission
+model availability != model admission
+PlanGraph != executable OperationSpec DAG
+module capability declaration != caller grant
+AI-generated SQL != approved data access
+raw operational DB SQL for care agents = reject by default
+blocked prose != routable blocker
+external interaction publication != durable settlement
+```
+
+WKD reuses N5 identities/approval/audit, W3 human tasks, AIF capabilities/privacy/runtime, and AIF-08 Insights. It must not duplicate those systems.
+
+The overall first AIF implementation leaf remains `AIF-01A`. The first WKD-specific implementation leaf is `WKD-01A — IntegrationModuleDescriptor + ProviderReadinessSnapshot`, after AIF-01A/AIF-01B are canonical.
+
+The base WKD readiness checklist records 204 dimensions (195 covered architecture dimensions + nine external evidence/authority gates). The final hardening addendum closes 28 additional architecture concerns for a combined **232 planning dimensions**. Both planning verdicts are `PASS_FOR_BOUNDED_IMPLEMENTATION`; this is not a production-readiness claim.
