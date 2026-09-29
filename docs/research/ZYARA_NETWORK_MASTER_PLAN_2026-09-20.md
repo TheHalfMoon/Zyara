@@ -163,6 +163,7 @@ Authoritative packet:
 - `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_IMPLEMENTATION_HANDOFF_2026-09-29.md`
 - `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_SOURCE_ADOPTION_2026-09-29.md`
 - `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`
+- `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`
 
 The cross-cutting `WKD` program strengthens AIF and N9 without creating a new authority plane:
 
@@ -205,4 +206,4 @@ WKD reuses N5 identities/approval/audit, W3 human tasks, AIF capabilities/privac
 
 The overall first AIF implementation leaf remains `AIF-01A`. The first WKD-specific implementation leaf is `WKD-01A — IntegrationModuleDescriptor + ProviderReadinessSnapshot`, after AIF-01A/AIF-01B are canonical.
 
-The 204-dimension WKD readiness checklist records 195 covered architecture dimensions and nine explicit external evidence/authority gates. Its repository planning verdict is `PASS_FOR_BOUNDED_IMPLEMENTATION`; this is not a production-readiness claim.
+The base WKD readiness checklist records 204 dimensions (195 covered architecture dimensions + nine external evidence/authority gates). The final hardening addendum closes 28 additional architecture concerns for a combined **232 planning dimensions**. Both planning verdicts are `PASS_FOR_BOUNDED_IMPLEMENTATION`; this is not a production-readiness claim.
