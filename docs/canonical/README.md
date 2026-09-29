@@ -18,23 +18,24 @@ Start the next Astro pass with:
 10. [`../research/ZYARA_WORK_KNOWLEDGE_DATA_IMPLEMENTATION_HANDOFF_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_IMPLEMENTATION_HANDOFF_2026-09-29.md)
 11. [`../research/ZYARA_WORK_KNOWLEDGE_DATA_SOURCE_ADOPTION_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_SOURCE_ADOPTION_2026-09-29.md)
 12. [`../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md)
-13. [`ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`](ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md)
-14. [`../research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md)
-15. [`../research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md)
-16. [`../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md)
-17. [`ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`](ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md)
-18. [`../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`](../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md)
-19. [`../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md)
-20. [`../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md)
-21. [`../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md)
-22. [`../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md)
-23. [`../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`](../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md)
-24. [`../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md)
-25. [`../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`](../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md)
+13. [`../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md)
+14. [`ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`](ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md)
+15. [`../research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md)
+16. [`../research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md)
+17. [`../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md)
+18. [`ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`](ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md)
+19. [`../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`](../research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md)
+20. [`../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md)
+21. [`../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`](../research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md)
+22. [`../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md)
+23. [`../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`](../research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md)
+24. [`../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`](../research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md)
+25. [`../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`](../research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md)
+26. [`../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`](../research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md)
 
-Gap-closure checklists: [`../research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md), [`../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md), and [`../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md).
+Gap-closure authority: [`../research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md), [`../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md) plus [`../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md), and [`../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`](../research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md).
 
-The 2026-09-29 Work / Knowledge / Data Plane amendment is cross-cutting authority for agent work/liveness, durable human interactions, provider/module readiness, bounded PlanGraph compilation, routines/budgets, permission-first knowledge connectors, and curated analytics/data access. It selectively adapts DBX, Paperclip, and Synaplan patterns while preserving Zyara-owned healthcare truth, N5 approval/audit authority, W3 human-task authority, and AIF capability/privacy/runtime authority.
+The 2026-09-29 Work / Knowledge / Data Plane amendment is cross-cutting authority for agent work/liveness, durable human interactions, provider/module readiness, bounded PlanGraph compilation, routines/budgets, permission-first knowledge connectors, and curated analytics/data access. It selectively adapts DBX, Paperclip, and Synaplan patterns while preserving Zyara-owned healthcare truth, N5 approval/audit authority, W3 human-task authority, and AIF capability/privacy/runtime authority. The base 204-dimension review plus the final 28-dimension hardening pass covers 232 planning dimensions; external evidence/authority gates remain separate.
 
 The umbrella product is now planned as **Zyara Network**: a whole patient + clinic + clinician health network. The 2026-09-16 AI-era direction additionally makes governed clinic automation a first-class architectural concern: repetitive work should be eliminated, automated, assisted or explicitly kept human under auditable authority boundaries rather than wrapped in generic chat. The discovery-first V1 work remains a preserved market-entry foundation, but it is no longer the planning ceiling. The complete master plan must cover patient discovery and My Health, clinic operations, doctor workflows, Zyara Connect/telehealth, communications, outpatient clinical workflows, prescriptions/orders, labs/imaging/referrals, Saudi insurance/NPHIES workflows, financial operations, analytics and AI/voice under explicit authority and evidence boundaries.
 
