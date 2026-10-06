@@ -1,0 +1,13 @@
+{
+  "description": "AIF-03A model and prompt registry: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "floating_identity": {"type": "noul", "instructions": "A model could run in production identified only by a floating alias (latest, stable) or without an exact revision or digest.", "criteria": {"true": "Some path admits or runs a model without an exact revision", "false": "Exact revision is required and aliases are refused"}},
+    "fallback_widens": {"type": "noul", "instructions": "Model selection or fallback could move work to a less-restricted residency, a remote provider from a local one, or a broader data-use boundary without an explicit, authorized choice.", "criteria": {"true": "A fallback can widen residency, data use or local-to-remote", "false": "Fallbacks are restricted to already-authorized equal-or-narrower alternatives"}},
+    "agent_class_leak": {"type": "noul", "instructions": "A patient-facing agent could obtain clinic-operations capabilities (or vice versa), or a clinician-assist agent could sign or prescribe, by sharing a model or prompt.", "criteria": {"true": "Agent classes can exchange capabilities or exceed their ceiling", "false": "Agent-class allowlists are separate and enforced"}},
+    "history_mutable": {"type": "noul", "instructions": "Editing a prompt or model profile could change what a historical invocation binding or receipt says was used.", "criteria": {"true": "Historical bindings can change", "false": "Versions are immutable and bindings frozen"}},
+    "kill_switch_weak": {"type": "noul", "instructions": "A kill switch or revocation could fail to stop new work, or could depend on the affected provider responding.", "criteria": {"true": "Some disable path is ineffective or provider-dependent", "false": "Disables are checked from a separate store before any use"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this registry design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"identity": "Model identity and revision", "selection": "Selection and fallback", "agent_classes": "Agent-class separation", "prompts": "Prompt versioning and binding", "kill_switch": "Kill switch and revocation", "completeness": "Missing rules or tests"}}
+  }
+}
