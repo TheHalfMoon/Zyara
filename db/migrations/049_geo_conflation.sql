@@ -76,7 +76,7 @@ CREATE INDEX IF NOT EXISTS geo_external_observations_ext_idx
 CREATE OR REPLACE FUNCTION geo_external_observations_guard() RETURNS TRIGGER
 LANGUAGE plpgsql
 SET search_path = pg_catalog, public
-AS $
+AS $$
 BEGIN
   IF NOT public.geo_external_id_ok(NEW.namespace, NEW.external_id, FALSE) THEN
     RAISE EXCEPTION 'external id does not match namespace %', NEW.namespace USING ERRCODE = '23514';
@@ -84,7 +84,7 @@ BEGIN
   NEW.recorded_at := now();
   RETURN NEW;
 END;
-$;
+$$;
 
 DROP TRIGGER IF EXISTS geo_external_observations_guard ON geo_external_observations;
 CREATE TRIGGER geo_external_observations_guard
@@ -183,7 +183,7 @@ CREATE TRIGGER geo_external_links_guard
 CREATE OR REPLACE FUNCTION geo_last_known_point(start_id TEXT, tenant TEXT) RETURNS geometry
 LANGUAGE sql STABLE
 SET search_path = pg_catalog, public
-AS $
+AS $$
   WITH RECURSIVE chain(id, point, supersedes_id, depth) AS (
     SELECT a.id, a.point, a.supersedes_id, 0
     FROM public.geo_location_assertions a
@@ -195,7 +195,7 @@ AS $
     WHERE c.point IS NULL
   )
   SELECT point FROM chain WHERE point IS NOT NULL ORDER BY depth LIMIT 1
-$;
+$$;
 
 -- ---------------------------------------------------------------------------
 -- Coordinate corrections: append-only, distance measured by the database.
@@ -239,7 +239,9 @@ DECLARE
   recent INTEGER;
 BEGIN
   from_point := public.geo_last_known_point(NEW.from_assertion_id, NEW.tenant_id);
-  SELECT a.point, a.supersedes_id INTO to_point, to_supersedes FROM public.geo_location_assertions a
+  SELECT a.supersedes_id INTO to_supersedes FROM public.geo_location_assertions a
+  WHERE a.id = NEW.to_assertion_id AND a.tenant_id = NEW.tenant_id;
+  SELECT a.point INTO to_point FROM public.geo_location_assertions a
   WHERE a.id = NEW.to_assertion_id AND a.tenant_id = NEW.tenant_id;
   IF to_supersedes IS DISTINCT FROM NEW.from_assertion_id THEN
     RAISE EXCEPTION 'the correcting assertion must directly supersede the corrected one' USING ERRCODE = '23514';
