@@ -372,11 +372,12 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
   let chosen = usable[0];
   if (principal.kind === "human") {
     const highAuthority = definition.authorityClass === "A4_EXECUTE_MED" || definition.authorityClass === "A5_HUMAN_ONLY";
-    // A clinical action: clinical-signing data, or a write over PHI. Administrative reads of
-    // PHI (for example an approved export) are governed by approval instead.
+    // Admin roles are kept out of clinical-signing data, and out of PHI unless the capability
+    // is approval-gated: an approved PHI export is governed by its N5/C3 approval, but a
+    // routine PHI read is never open to an admin-only account.
     const clinical =
       definition.dataClasses.includes("CLINICAL_SIGNING_REQUIRED") ||
-      (definition.readOrWrite === "write" && definition.dataClasses.includes("PHI"));
+      (definition.dataClasses.includes("PHI") && !requiresApproval(admitted));
     let firstDenial: string | undefined;
     const passing = usable.find((record) => {
       // Admin/clinical separation for every request, including tenant-wide ones, where

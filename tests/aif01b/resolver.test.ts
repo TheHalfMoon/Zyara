@@ -761,3 +761,28 @@ describe("AIF-01B fix cycle 2", () => {
     assert.equal(receipt.idempotencyKey, null);
   });
 });
+
+describe("AIF-01B fix cycle 3", () => {
+  async function phiRead(w: World): Promise<AdmittedCapability> {
+    const registry = new CapabilityContractRegistry();
+    const read = await registry.register(definition({ id: "records.chart.read", dataClasses: ["PHI"], consentPurpose: "care", branchScope: "BRANCH" }), RELEASE);
+    w.state.admit(read);
+    w.state.grant(grant({ grantId: "g-admin-chart", grantee: { kind: "human_role", id: "branch_admin" }, capabilityId: "records.chart.read", expiresAt: null }));
+    w.state.grant(grant({ grantId: "g-clin-chart", grantee: { kind: "human_role", id: "clinician" }, capabilityId: "records.chart.read", expiresAt: null }));
+    return read;
+  }
+
+  it("refuses a routine PHI read to an admin-only account", async () => {
+    const w = await world();
+    const read = await phiRead(w);
+    const admin = await resolveCapability(human([{ role: "branch_admin" }]), request(read), w.deps);
+    assert.deepEqual([admin.decision, admin.reasons], ["DENY", ["AUTHZ_ADMIN_CLINICAL_SEPARATION"]]);
+  });
+
+  it("lets a person with both admin and clinician roles act through the clinician grant", async () => {
+    const w = await world();
+    const read = await phiRead(w);
+    const both = await resolveCapability(human([{ role: "branch_admin" }, { role: "clinician" }]), request(read), w.deps);
+    assert.deepEqual([both.decision, both.grantId], ["ALLOW", "g-clin-chart"]);
+  });
+});
