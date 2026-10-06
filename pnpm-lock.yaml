@@ -166,6 +166,15 @@ importers:
         specifier: workspace:*
         version: link:../identity
 
+  packages/capability-gateway:
+    dependencies:
+      '@zyara/collaboration':
+        specifier: workspace:*
+        version: link:../collaboration
+      '@zyara/consent-boundaries':
+        specifier: workspace:*
+        version: link:../consent-boundaries
+
   packages/care-modalities:
     dependencies:
       '@zyara/domain':
@@ -485,6 +494,19 @@ importers:
       '@zyara/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/aif01a:
+    dependencies:
+      '@zyara/capability-gateway':
+        specifier: workspace:*
+        version: link:../../packages/capability-gateway
     devDependencies:
       tsx:
         specifier: 4.19.2
