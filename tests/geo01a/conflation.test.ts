@@ -257,6 +257,12 @@ describe("GEO-01C supersession authority and corrections", () => {
     const providerPoint = assertion({ id: "geo-2", supersedesId: "geo-1", precision: "PROVIDER_ATTESTED_POINT", verificationState: "PROVIDER_ATTESTED", verificationMethod: null, evidenceRef: null, source: { kind: "PROVIDER_ATTESTATION", ref: "p", revision: "r" } });
     expectCode(() => validateSupersession(verified, providerPoint), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
     assert.strictEqual(validateSupersession(verified, { ...providerPoint, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }).correctionRequired, false);
+    // A dispute cannot move the point, and a disputed head needs Zyara verification: a dispute
+    // is never a step to replace a verified point with a weaker one.
+    expectCode(() => validateSupersession(verified, { ...providerPoint, point: FAR, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    const disputed = { ...providerPoint, verificationState: "DISPUTED" as const, visibility: "TENANT_INTERNAL" as const };
+    expectCode(() => validateSupersession(disputed, { ...providerPoint, id: "geo-3", supersedesId: "geo-2" }), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    assert.strictEqual(validateSupersession(disputed, assertion({ id: "geo-3", supersedesId: "geo-2" })).movedM, 0);
     // An external dataset may refine an unverified head.
     const unverified = assertion({ precision: "APPROXIMATE_AREA", accuracyM: 800, verificationState: "UNVERIFIED", verificationMethod: null, evidenceRef: null });
     assert.strictEqual(validateSupersession(unverified, externalArea()).movedM, 0);

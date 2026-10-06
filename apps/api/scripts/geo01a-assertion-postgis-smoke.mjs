@@ -406,6 +406,17 @@ await expectDbError(() => client.query(A("geo-8", { supersedes: "'geo-7'", point
 await expectDbError(() => tx(A("geo-8", { supersedes: "'geo-7'", point: RIYADH }), CORR("corr-3", "geo-7", "geo-8")), "23514", "a large move after UNKNOWN still needs a reviewer", "independent reviewer");
 await tx(A("geo-8", { supersedes: "'geo-7'", point: RIYADH }), CORR("corr-3", "geo-7", "geo-8", { reviewer: "'admin-2'" }));
 
+// A dispute flags without moving; a disputed head is resolved by Zyara verification only.
+const PROVIDER_POINT = { precision: "PROVIDER_ATTESTED_POINT", method: "NULL", evidence: "NULL", sourceKind: "PROVIDER_ATTESTATION" };
+await expectDbError(
+  () => tx(A("geo-9", { ...PROVIDER_POINT, state: "DISPUTED", visibility: "TENANT_INTERNAL", supersedes: "'geo-8'", point: FAR_PT }), CORR("corr-9", "geo-8", "geo-9", { actorKind: "PROVIDER", actor: "provider-1", reviewer: "'admin-2'" })),
+  "23514",
+  "a dispute cannot move the point",
+);
+await client.query(A("geo-9", { ...PROVIDER_POINT, state: "DISPUTED", visibility: "TENANT_INTERNAL", supersedes: "'geo-8'" }));
+await expectDbError(() => client.query(A("geo-10", { ...PROVIDER_POINT, state: "PROVIDER_ATTESTED", supersedes: "'geo-9'" })), "23514", "a provider cannot resolve a dispute of a verified point");
+await client.query(A("geo-10", { supersedes: "'geo-9'" }));
+
 // Conflict resolution: reviewed, once, CORRECTED only with an audited correction.
 await expectDbError(() => client.query(RESOLVE("res-sys", "conflict-1", "KEEP_ZYARA", "NULL", "SYSTEM")), "23514", "the automated actor cannot close a conflict");
 await expectDbError(() => client.query(RESOLVE("res-bad", "conflict-1", "CORRECTED", "'geo-6'")), "23514", "CORRECTED needs a correction of the conflicted assertion");
@@ -442,7 +453,14 @@ const racing = client.query(LINK("link-race-2", { branch: "b1b", ns: "osm-relati
   () => null,
   (error) => error,
 );
-await new Promise((resolve) => setTimeout(resolve, 300));
+// Prove the second session is actually blocked on the advisory lock before the first commits.
+let waiting = 0;
+for (let attempt = 0; attempt < 50 && waiting === 0; attempt += 1) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  const locks = await other.query(`SELECT count(*)::int AS n FROM pg_locks WHERE locktype = 'advisory' AND NOT granted`);
+  waiting = locks.rows[0].n;
+}
+if (waiting === 0) fail("the concurrent link must wait on the advisory lock");
 await other.query("COMMIT");
 const raceError = await racing;
 if (raceError?.code !== "23514") fail(`a concurrent second link must be refused, got ${raceError?.code ?? "success"}`);

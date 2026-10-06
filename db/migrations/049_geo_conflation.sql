@@ -269,16 +269,20 @@ CREATE TRIGGER geo_coordinate_corrections_guard
 -- Supersession authority and move audit on GEO-01A assertions (new triggers, additive).
 -- ---------------------------------------------------------------------------
 -- A weaker source cannot supersede a stronger head (EXTERNAL_DATASET 1, PROVIDER_ATTESTATION
--- and REGULATOR_REGISTRY 2, ZYARA_VERIFICATION 3; a VERIFIED head needs 3, PROVIDER_ATTESTED
--- or DISPUTED needs 2). A provider or regulator may still dispute any head.
+-- and REGULATOR_REGISTRY 2, ZYARA_VERIFICATION 3; a VERIFIED or DISPUTED head needs 3, a
+-- PROVIDER_ATTESTED head needs 2). A provider or regulator may still dispute any head without
+-- moving it by more than 50 m; a dispute hides the point until Zyara verification resolves it,
+-- so it cannot be a step to replace a verified point with a weaker one.
 CREATE OR REPLACE FUNCTION geo_location_assertions_authority_guard() RETURNS TRIGGER
 LANGUAGE plpgsql
 SET search_path = pg_catalog, public
 AS $$
 DECLARE
   head_state TEXT;
+  head_point geometry;
   source_rank INTEGER;
   required_rank INTEGER;
+  dispute BOOLEAN;
 BEGIN
   IF NEW.supersedes_id IS NULL THEN
     RETURN NEW;
@@ -290,8 +294,11 @@ BEGIN
     RETURN NEW;
   END IF;
   source_rank := CASE NEW.source_kind WHEN 'EXTERNAL_DATASET' THEN 1 WHEN 'ZYARA_VERIFICATION' THEN 3 ELSE 2 END;
-  required_rank := CASE head_state WHEN 'VERIFIED' THEN 3 WHEN 'UNVERIFIED' THEN 1 ELSE 2 END;
-  IF NOT (NEW.verification_state = 'DISPUTED' AND source_rank >= 2) AND source_rank < required_rank THEN
+  required_rank := CASE head_state WHEN 'UNVERIFIED' THEN 1 WHEN 'PROVIDER_ATTESTED' THEN 2 ELSE 3 END;
+  head_point := public.geo_last_known_point(NEW.supersedes_id, NEW.tenant_id);
+  dispute := NEW.verification_state = 'DISPUTED' AND source_rank >= 2
+    AND (NEW.point IS NULL OR head_point IS NULL OR ST_Distance(head_point::geography, NEW.point::geography) <= 50);
+  IF NOT dispute AND source_rank < required_rank THEN
     RAISE EXCEPTION 'a % source cannot supersede a % assertion', NEW.source_kind, head_state USING ERRCODE = '23514';
   END IF;
   RETURN NEW;

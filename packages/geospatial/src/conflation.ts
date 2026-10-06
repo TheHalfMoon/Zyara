@@ -158,7 +158,7 @@ function findNamespace(namespaces: readonly GeoExternalNamespace[], namespace: u
   if (typeof namespace !== "string" || !NAMESPACE.test(namespace)) return null;
   const entry = namespaces.find((item) => item.namespace === namespace) ?? null;
   if (entry === null) return null;
-  if (!entry.idPattern.startsWith("^") || !entry.idPattern.endsWith("$")) fail("GEO_NAMESPACE_INVALID", "a namespace id pattern must be anchored");
+  if (typeof entry.idPattern !== "string" || !entry.idPattern.startsWith("^") || !entry.idPattern.endsWith("$")) fail("GEO_NAMESPACE_INVALID", "a namespace id pattern must be anchored");
   // Geocoder output never self-verifies (plan §23): a geocoder namespace is never linkable.
   if (entry.authority === "GEOCODER" && entry.linkAllowed) fail("GEO_NAMESPACE_INVALID", "a geocoder namespace cannot be linkable");
   return entry;
@@ -375,16 +375,19 @@ const SOURCE_RANK: Record<GeoSourceKind, number> = {
   REGULATOR_REGISTRY: 2,
   ZYARA_VERIFICATION: 3,
 };
+// A disputed head is resolved by Zyara verification, so a dispute cannot be used as a step to
+// replace a verified point with a weaker one.
 const REQUIRED_RANK: Record<GeoVerificationState, number> = {
   UNVERIFIED: 1,
   PROVIDER_ATTESTED: 2,
-  DISPUTED: 2,
+  DISPUTED: 3,
   VERIFIED: 3,
 };
 
 // The authority rule for any superseding assertion (migration 049 enforces it with a trigger
 // on geo_location_assertions). A weaker source cannot supersede a stronger head; a provider or
-// regulator may still dispute any head, which only hides it from the public directory. Returns
+// regulator may still dispute any head without materially moving it, which only hides it from
+// the public directory until Zyara verification resolves it. Returns
 // the move distance and whether a correction record is required. The move is measured from the
 // last known point in the chain (fromLastKnownPoint, as geo_last_known_point does in 049), so a
 // detour through UNKNOWN cannot hide a move.
@@ -396,13 +399,13 @@ export function validateSupersession(
   if (to.supersedesId !== from.id || to.tenantId !== from.tenantId || to.branchId !== from.branchId) {
     fail("GEO_CHAIN_INVALID", "the new assertion must directly supersede the head in the same tenant and branch");
   }
+  if (from.point !== null && (fromLastKnownPoint === null || fromLastKnownPoint.lon !== from.point.lon || fromLastKnownPoint.lat !== from.point.lat)) fail("GEO_CHAIN_INVALID", "the last known point of a head with a point is its own point");
+  const movedM = fromLastKnownPoint !== null && to.point !== null ? haversineMeters(fromLastKnownPoint, to.point) : null;
   const rank = SOURCE_RANK[to.source.kind];
-  const dispute = to.verificationState === "DISPUTED" && rank >= 2;
+  const dispute = to.verificationState === "DISPUTED" && rank >= 2 && (movedM === null || movedM <= MATERIAL_MOVE_M);
   if (!dispute && rank < REQUIRED_RANK[from.verificationState]) {
     fail("GEO_CORRECTION_AUTHORITY_TOO_LOW", `a ${to.source.kind} source cannot supersede a ${from.verificationState} assertion`);
   }
-  if (from.point !== null && (fromLastKnownPoint === null || fromLastKnownPoint.lon !== from.point.lon || fromLastKnownPoint.lat !== from.point.lat)) fail("GEO_CHAIN_INVALID", "the last known point of a head with a point is its own point");
-  const movedM = fromLastKnownPoint !== null && to.point !== null ? haversineMeters(fromLastKnownPoint, to.point) : null;
   return { movedM, correctionRequired: movedM !== null && movedM > MATERIAL_MOVE_M };
 }
 
