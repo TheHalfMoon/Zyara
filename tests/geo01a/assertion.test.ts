@@ -84,6 +84,7 @@ describe("GEO-01A precision and provenance", () => {
     assert.equal(code(() => validateGeoAssertion(assertion({ source: { kind: "ZYARA_VERIFICATION", ref: "v1", revision: "" } }))), "GEO_PROVENANCE_REQUIRED");
     assert.equal(code(() => validateGeoAssertion(assertion({ source: null as unknown as GeoLocationAssertion["source"] }))), "GEO_PROVENANCE_REQUIRED");
     assert.equal(code(() => validateGeoAssertion(assertion({ observedAt: "yesterday" }))), "GEO_TIME_INVALID");
+    assert.equal(code(() => validateGeoAssertion(assertion({ observedAt: "2026-02-30T00:00:00Z" }))), "GEO_TIME_INVALID");
     assert.equal(code(() => validateGeoAssertion(assertion({ expiresAt: "2026-09-01T00:00:00.000Z" }))), "GEO_TIME_INVALID");
   });
 

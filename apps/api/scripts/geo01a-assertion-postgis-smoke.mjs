@@ -92,6 +92,12 @@ await expectDbError(
   "a non-point geometry must be refused",
 );
 
+await expectDbError(
+  () => client.query(A("geo-3d", { point: "ST_SetSRID(ST_MakePoint(46.6753, 24.7136, 600), 4326)", branch: "b1b" })),
+  "23514",
+  "a 3D point must be refused (the contract is lon/lat only)",
+);
+
 // Provenance and precision rules.
 await expectDbError(() => client.query(A("geo-noref", { sourceRef: "NULL", branch: "b1b" })), "23502", "provenance source ref is mandatory");
 await expectDbError(() => client.query(A("geo-norev", { sourceRevision: "''", branch: "b1b" })), "23514", "provenance revision is mandatory");
@@ -115,6 +121,7 @@ await expectDbError(() => client.query(A("geo-time", { expires: "now() - interva
 
 // Branch integrity and the single chain.
 await expectDbError(() => client.query(A("geo-x-branch", { branch: "b2" })), "23503", "a branch of another tenant must be refused");
+await expectDbError(() => client.query(A("geo-no-branch", { branch: "b-missing" })), "23503", "a nonexistent branch must be refused");
 await expectDbError(() => client.query(A("geo-second-root")), "23505", "a branch has exactly one root assertion");
 await client.query(A("geo-2", { supersedes: "'geo-1'", accuracy: "8" }));
 await expectDbError(() => client.query(A("geo-fork", { supersedes: "'geo-1'" })), "23505", "an assertion has at most one successor (no fork)");
@@ -137,7 +144,10 @@ const plan = await client.query(
   `EXPLAIN SELECT id FROM geo_location_assertions WHERE ST_DWithin(point, ST_SetSRID(ST_MakePoint(46.67, 24.71), 4326), 0.05)`,
 );
 await client.query(`RESET enable_seqscan`);
+// Proven as the migration owner. Under zyara_app RLS the planner may prefer the branch index,
+// because st_dwithin is not leakproof; nothing leaks either way.
 if (!plan.rows.some((row) => /geo_location_assertions_point_gix/.test(row["QUERY PLAN"]))) fail("the GIST index must be usable for proximity");
+await expectDbError(() => client.query(`DELETE FROM branch_locations WHERE id = 'b1'`), "23503", "a branch with location history cannot be deleted");
 
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t1'`);

@@ -6,7 +6,8 @@
 -- precisely, from which source, and which earlier assertion it supersedes. Rows are
 -- append-only for the application (no UPDATE or DELETE grant): a correction or dispute is a
 -- new superseding row. There is no patient, account or session location here: only facility
--- points keyed to branch_locations.
+-- points keyed to branch_locations. Public reads arrive later through the GEO-02/03 directory
+-- projection; this slice only records public-directory eligibility (visibility).
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 
@@ -47,6 +48,7 @@ CREATE TABLE IF NOT EXISTS geo_location_assertions (
   CHECK (point IS NULL OR (
     GeometryType(point) = 'POINT'
     AND ST_SRID(point) = 4326
+    AND ST_NDims(point) = 2
     AND NOT ST_IsEmpty(point)
     AND ST_X(point) BETWEEN -180 AND 180
     AND ST_Y(point) BETWEEN -90 AND 90
@@ -73,8 +75,9 @@ CREATE TABLE IF NOT EXISTS geo_location_assertions (
 -- One chain per branch: a single root, and at most one successor per assertion.
 CREATE UNIQUE INDEX IF NOT EXISTS geo_location_assertions_one_root_uidx
   ON geo_location_assertions(tenant_id, branch_id) WHERE supersedes_id IS NULL;
+-- Tenant-scoped, so a uniqueness failure never reveals another tenant's chain.
 CREATE UNIQUE INDEX IF NOT EXISTS geo_location_assertions_one_successor_uidx
-  ON geo_location_assertions(supersedes_id) WHERE supersedes_id IS NOT NULL;
+  ON geo_location_assertions(tenant_id, supersedes_id) WHERE supersedes_id IS NOT NULL;
 CREATE INDEX IF NOT EXISTS geo_location_assertions_point_gix
   ON geo_location_assertions USING GIST (point);
 CREATE INDEX IF NOT EXISTS geo_location_assertions_branch_idx

@@ -36,9 +36,6 @@ export type GeoVisibility = (typeof GEO_VISIBILITIES)[number];
 export const GEO_EXACT_PIN_MAX_ACCURACY_M = 100;
 export const GEO_ACCURACY_MAX_M = 50_000;
 
-// WGS84 longitude/latitude with an explicit SRID (geo plan §4).
-export const GEO_SRID = 4326;
-
 export interface GeoPoint {
   lon: number;
   lat: number;
@@ -134,10 +131,13 @@ export function validateGeoPoint(point: unknown, bounds: GeoPlausibilityBounds |
 }
 
 function instant(value: unknown, label: string): number {
-  if (typeof value !== "string" || !ISO_INSTANT.test(value) || Number.isNaN(Date.parse(value))) {
+  const parsed = typeof value === "string" && ISO_INSTANT.test(value) ? Date.parse(value) : Number.NaN;
+  // Round-trip the calendar date, so a rolled-over day such as 2026-02-30 is refused (as
+  // PostgreSQL refuses it) instead of silently becoming 2 March.
+  if (Number.isNaN(parsed) || new Date(parsed).toISOString().slice(0, 10) !== (value as string).slice(0, 10)) {
     fail("GEO_TIME_INVALID", `${label} must be an ISO-8601 UTC instant`);
   }
-  return Date.parse(value);
+  return parsed;
 }
 
 function oneOf<T extends string>(values: readonly T[], value: unknown, label: string): T {
@@ -188,9 +188,7 @@ export function validateGeoAssertion(input: GeoLocationAssertion, bounds: GeoPla
   const evidenceRef = input.evidenceRef;
   if (verifiedPrecision) {
     if (verificationState !== "VERIFIED") fail("GEO_PRECISION_REQUIRES_VERIFICATION", "a verified precision needs state VERIFIED");
-    if (typeof verificationMethod !== "string" || !METHOD.test(verificationMethod)) {
-      fail("GEO_PRECISION_REQUIRES_VERIFICATION", "a verified precision needs a verification method");
-    }
+    if (verificationMethod === null) fail("GEO_PRECISION_REQUIRES_VERIFICATION", "a verified precision needs a verification method");
     opaque(evidenceRef, "evidenceRef", "GEO_PRECISION_REQUIRES_VERIFICATION");
   } else if (verificationState === "VERIFIED") {
     fail("GEO_VERIFIED_STATE_REQUIRES_VERIFIED_PRECISION", "state VERIFIED needs a verified precision");

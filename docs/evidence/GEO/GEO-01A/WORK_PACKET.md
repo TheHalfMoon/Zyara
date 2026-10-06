@@ -17,10 +17,12 @@ External credentials, real patient data or real provider data required: **none**
 
    The existing M012 helpers stay unchanged.
 2. Migration `047_geo_location_assertions.sql` (the next free number after 046, which is in review in PR AIF-01B; it is re-checked against live `main` before merge):
-   - enables PostGIS and creates an append-only `geo_location_assertions` table with `geometry(Point, 4326)`, a GIST index, tenant RLS (`FORCE`), and a composite FK to `branch_locations(id, tenant_id)`;
+   - enables PostGIS and creates an append-only `geo_location_assertions` table with an untyped `geometry` column plus CHECKs for the Point type, SRID 4326 and 2D (a `geometry(Point, 4326)` typmod would silently coerce SRID 0 instead of refusing it), a GIST index, tenant RLS (`FORCE`), and a composite FK to `branch_locations(id, tenant_id)`;
    - supersession stays inside the same tenant and branch;
    - a `security_invoker` view `geo_current_location_assertions` exposes the head of each chain.
 3. A real PostGIS smoke and synthetic unit tests.
+
+Public scope: `visibility` records public-directory eligibility only. Public reads arrive through the GEO-02/03 projection, which must also filter by visibility, staleness and dispute. Display is a precision rule, not an audience rule.
 
 Non-goals: entrances and service areas (GEO-01B), external POI conflation (GEO-01C), the public discovery projection and map UI (GEO-02/03), geocoding and routing (GEO-04/05). No basemap, tile, geocoder or router call. No patient location of any kind: this table holds facility points only.
 
@@ -69,7 +71,7 @@ Cross-field rules:
 
 Supersession: a correction or dispute appends a new assertion that `supersedes` the previous one, in the same tenant and branch. Each assertion has at most one successor, and each branch has at most one root (an assertion that supersedes nothing). A branch therefore has exactly one chain and one current assertion, its head. A dispute is resolved by appending a further assertion with a non-disputed state (for example `VERIFIED` after re-verification). History is never rewritten: the table has no UPDATE or DELETE grant.
 
-Display rule (`displayAs(assertion, now)`): `EXACT_PIN` only for a verified or provider-attested point that is not disputed, not expired at `now`, and has an `accuracyM` of at most 100. `AREA` for `APPROXIMATE_AREA`, and for any point that fails one of those conditions but still has a point and a radius. `LIST_ONLY` otherwise (`UNKNOWN`, `PRIVATE_HIDDEN`, or a point without a radius). An expired assertion stays listable, but it never renders as an exact pin.
+Display rule (`displayGeoAssertion(assertion, now)`): `EXACT_PIN` only for a verified or provider-attested point that is not disputed, not expired at `now`, and has an `accuracyM` of at most 100. `AREA` for `APPROXIMATE_AREA`, and for any point that fails one of those conditions but still has a point and a radius. `LIST_ONLY` otherwise (`UNKNOWN`, `PRIVATE_HIDDEN`, or a point without a radius). An expired assertion stays listable, but it never renders as an exact pin.
 
 ## Required tests
 
