@@ -159,6 +159,10 @@ describe("GEO-01B service areas", () => {
       assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates } }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_INVALID");
     }
     assert.equal(code(() => validateServiceArea(area({ geometry: { type: "LineString", coordinates: SQUARE } as unknown as GeoServiceArea["geometry"] }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_INVALID");
+    const bowtie = [[[46.665, 24.704], [46.685, 24.722], [46.685, 24.704], [46.665, 24.722], [46.665, 24.704]]];
+    assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates: bowtie } }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_INVALID");
+    const huge = [[[40, 18], [52, 18], [52, 30], [40, 30], [40, 18]]];
+    assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates: huge } }), SAME_BRANCH, null, null)), "GEO_SERVICE_AREA_INVALID");
     const outOfRange = [[[46.6, 24.7], [190, 24.7], [46.7, 24.8], [46.6, 24.7]]];
     assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates: outOfRange } }), SAME_BRANCH, FACILITY, null)), "GEO_LONGITUDE_OUT_OF_RANGE");
   });

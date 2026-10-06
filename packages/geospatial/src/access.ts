@@ -75,6 +75,10 @@ export interface GeoServiceArea {
 export const ENTRANCE_MAX_DISTANCE_M = 1_000;
 export const SERVICE_AREA_MAX_DISTANCE_KM = 100;
 export const SERVICE_AREA_MAX_POSITIONS = 10_000;
+export const SERVICE_AREA_MAX_KM2 = 50_000;
+// Rings up to this size get an exact self-intersection check here; larger rings rely on
+// PostGIS ST_IsValid (migration 048), which always runs on insert.
+export const SELF_INTERSECTION_CHECK_MAX_RING = 2_000;
 const LABEL_MAX = 120;
 const INSTRUCTIONS_MAX = 500;
 const OPAQUE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
@@ -280,8 +284,11 @@ export function validateServiceArea(
       const first = ring[0];
       const last = ring[ring.length - 1];
       if (first[0] !== last[0] || first[1] !== last[1]) fail("GEO_SERVICE_AREA_INVALID", "every ring must be closed");
+      if (ring.length <= SELF_INTERSECTION_CHECK_MAX_RING && ringSelfIntersects(ring)) fail("GEO_SERVICE_AREA_INVALID", "a ring must not intersect itself");
     }
   }
+  const areaKm2 = polygonsOf(geometry).reduce((total, polygon) => total + ringAreaKm2(polygon[0]) - polygon.slice(1).reduce((holes, hole) => holes + ringAreaKm2(hole), 0), 0);
+  if (areaKm2 > SERVICE_AREA_MAX_KM2) fail("GEO_SERVICE_AREA_INVALID", `a service area is at most ${SERVICE_AREA_MAX_KM2} km2`);
   const facilityPoint = usableFacilityPoint(facility);
   if (facilityPoint !== null) {
     const nearest = { lon: Math.min(Math.max(facilityPoint.lon, minLon), maxLon), lat: Math.min(Math.max(facilityPoint.lat, minLat), maxLat) };
@@ -306,6 +313,49 @@ export function validateServiceArea(
     status: input.status,
     supersedesId,
   });
+}
+
+function orientation(a: number[], b: number[], c: number[]): number {
+  const value = (b[1] - a[1]) * (c[0] - b[0]) - (b[0] - a[0]) * (c[1] - b[1]);
+  if (value === 0) return 0;
+  return value > 0 ? 1 : 2;
+}
+
+function onSegment(a: number[], b: number[], c: number[]): boolean {
+  return b[0] <= Math.max(a[0], c[0]) && b[0] >= Math.min(a[0], c[0]) && b[1] <= Math.max(a[1], c[1]) && b[1] >= Math.min(a[1], c[1]);
+}
+
+function segmentsIntersect(p1: number[], q1: number[], p2: number[], q2: number[]): boolean {
+  const o1 = orientation(p1, q1, p2);
+  const o2 = orientation(p1, q1, q2);
+  const o3 = orientation(p2, q2, p1);
+  const o4 = orientation(p2, q2, q1);
+  if (o1 !== o2 && o3 !== o4) return true;
+  return (o1 === 0 && onSegment(p1, p2, q1)) || (o2 === 0 && onSegment(p1, q2, q1)) || (o3 === 0 && onSegment(p2, p1, q2)) || (o4 === 0 && onSegment(p2, q1, q2));
+}
+
+// Non-adjacent edges of a closed ring must not touch or cross.
+function ringSelfIntersects(ring: number[][]): boolean {
+  const edges = ring.length - 1;
+  for (let i = 0; i < edges; i += 1) {
+    for (let j = i + 1; j < edges; j += 1) {
+      const adjacent = j === i + 1 || (i === 0 && j === edges - 1);
+      if (!adjacent && segmentsIntersect(ring[i], ring[i + 1], ring[j], ring[j + 1])) return true;
+    }
+  }
+  return false;
+}
+
+// Spherical-excess area approximation of a ring in km2 (good to well under 1% at city scale).
+function ringAreaKm2(ring: number[][]): number {
+  const rad = Math.PI / 180;
+  let sum = 0;
+  for (let i = 0; i < ring.length - 1; i += 1) {
+    const [lon1, lat1] = ring[i];
+    const [lon2, lat2] = ring[i + 1];
+    sum += (lon2 - lon1) * rad * (2 + Math.sin(lat1 * rad) + Math.sin(lat2 * rad));
+  }
+  return Math.abs((sum * (EARTH_RADIUS_M / 1000) ** 2) / 2);
 }
 
 function insideRing(point: GeoPoint, ring: number[][]): boolean {
