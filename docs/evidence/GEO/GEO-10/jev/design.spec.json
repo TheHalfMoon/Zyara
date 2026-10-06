@@ -1,0 +1,54 @@
+{
+  "description": "GEO-10 AI/voice geo capabilities: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "authority_escalation": {
+      "type": "noul",
+      "instructions": "An AI agent, workflow or voice command could change provider truth (a branch coordinate, entrance, link or any geo fact), act without a grant, or use one capability's grant for another, instead of only observing, drafting or proposing.",
+      "criteria": {
+        "true": "Some AI or voice path can change facts or act beyond its grant",
+        "false": "AI and voice can only read, change view, or draft; facts change only through the human-only admin command"
+      }
+    },
+    "untrusted_model_input": {
+      "type": "noul",
+      "instructions": "Model-supplied coordinates, entity ids or arguments could be trusted as facts, used as a search origin or patient location, or reach a write.",
+      "criteria": {
+        "true": "Some model output is trusted",
+        "false": "Model coordinates are view hints only and entity ids must resolve to current tool outputs"
+      }
+    },
+    "stale_reference": {
+      "type": "noul",
+      "instructions": "An entity id from an old, expired, superseded, other-session or other-tenant result set, or never returned at all, could be accepted.",
+      "criteria": {
+        "true": "Some stale or foreign reference is accepted",
+        "false": "Only current, unexpired, same-session, same-tenant returned ids resolve"
+      }
+    },
+    "share_leak": {
+      "type": "noul",
+      "instructions": "A public share state could carry a patient origin, precise location, search text, specialty or care intent, account/patient/session refs, or tenant-internal branches.",
+      "criteria": {
+        "true": "Some private field can reach a share state",
+        "false": "Share state is an allowlist of coarse public fields"
+      }
+    },
+    "untested_requirement": {
+      "type": "noul",
+      "instructions": "A handoff-required behaviour (unauthorized denied, model coordinates untrusted, stale result ids rejected, share strips private fields, voice view-only, geocoder cannot update coordinates without admin command) has no planned or implemented test.",
+      "criteria": {
+        "true": "A required behaviour is untested",
+        "false": "Every required behaviour has a test"
+      }
+    },
+    "schema_binding": {
+      "type": "noul",
+      "instructions": "A GEO-10 capability could register a placeholder, shared or mismatched schema digest instead of an exact reference to the JSON-compatible input/output schema that the tool boundary actually uses.",
+      "criteria": {
+        "true": "At least one capability schema reference is placeholder or does not hash to its schema body",
+        "false": "Every capability input/output reference is bound to an explicit schema body and its recomputed canonical SHA-256 digest"
+      }
+    }
+  }
+}

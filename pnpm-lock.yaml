@@ -262,7 +262,11 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
-  packages/geospatial: {}
+  packages/geospatial:
+    dependencies:
+      '@zyara/capability-gateway':
+        specifier: workspace:*
+        version: link:../capability-gateway
 
   packages/graph: {}
 
@@ -607,6 +611,9 @@ importers:
 
   tests/geo01a:
     dependencies:
+      '@zyara/capability-gateway':
+        specifier: workspace:*
+        version: link:../../packages/capability-gateway
       '@zyara/geospatial':
         specifier: workspace:*
         version: link:../../packages/geospatial

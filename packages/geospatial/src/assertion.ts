@@ -118,7 +118,13 @@ export type GeoContractErrorCode =
   | "GEO_INSIGHT_SUPPRESSION_TOO_WEAK"
   | "GEO_INSIGHT_SCOPE"
   | "GEO_INSIGHT_CELL_INVALID"
-  | "GEO_INSIGHT_WINDOW_INVALID";
+  | "GEO_INSIGHT_WINDOW_INVALID"
+  // GEO-10 (ai-tools.ts)
+  | "GEO_AI_ARGUMENT_INVALID"
+  | "GEO_AI_MODEL_COORDINATE_UNTRUSTED"
+  | "GEO_AI_RESULT_STALE"
+  | "GEO_AI_VOICE_VIEW_ONLY"
+  | "GEO_AI_AUTHORITY_DENIED";
 
 export class GeoContractError extends Error {
   readonly code: GeoContractErrorCode;

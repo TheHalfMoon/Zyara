@@ -10,5 +10,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",
     "test": "echo ok"
+  },
+  "dependencies": {
+    "@zyara/capability-gateway": "workspace:*"
   }
 }
