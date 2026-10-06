@@ -22,6 +22,8 @@ import {
 } from "@zyara/collaboration";
 import type { ConsentPurpose } from "@zyara/consent-boundaries";
 
+import { ISO_INSTANT_PATTERN, canonicalJson, sha256Hex } from "./canonical.js";
+
 // ---------------------------------------------------------------------------
 // Closed vocabularies
 // ---------------------------------------------------------------------------
@@ -98,7 +100,6 @@ export const EGRESS_POLICY_REF_PATTERN = /^egress_[a-z0-9_]{2,64}$/;
 const OWNER_DOMAIN_PATTERN = /^[a-z][a-z0-9_]{1,39}$/;
 const RECEIPT_KIND_PATTERN = /^[a-z][a-z0-9_]{1,63}$/;
 const OPAQUE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
-const ISO_INSTANT_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 
 // Value shapes that are credentials, never references. A definition carrying any of them
 // anywhere is refused, whatever field it sits in.
@@ -390,22 +391,6 @@ function deepFreeze<T>(value: T): T {
     Object.freeze(value);
   }
   return value;
-}
-
-// Canonical JSON: object keys sorted, arrays kept in order, no whitespace.
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-  if (isRecord(value)) {
-    const keys = Object.keys(value).sort();
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
-
-async function sha256Hex(input: string): Promise<string> {
-  const bytes = new TextEncoder().encode(input);
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
-  return [...digest].map((part) => part.toString(16).padStart(2, "0")).join("");
 }
 
 function assertOpaqueId(value: unknown, label: string, code: CapabilityContractErrorCode): string {

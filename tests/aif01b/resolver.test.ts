@@ -134,7 +134,8 @@ async function world(): Promise<World> {
     ),
     book: await registry.register(definition({ id: "booking.appointment.create", ...WRITE }), RELEASE),
   };
-  const state = new CapabilityRegistryState();
+  const now = { value: NOW };
+  const state = new CapabilityRegistryState({ now: () => now.value });
   state.admit(caps.report);
   state.admit(caps.remind);
   state.admit(caps.broadcast);
@@ -170,7 +171,6 @@ async function world(): Promise<World> {
   const approvals = new Map<string, ApprovalRequest>();
   const adapters = new Map<string, CertifiedAdapter>([["pms-1", { adapterId: "pms-1", certified: new Set(["read", "create"]) }]]);
   const confirmations: ConfirmationQuery[] = [];
-  const now = { value: NOW };
   const deps: ResolverDependencies = {
     clock: { now: () => now.value },
     registry: state.registryPort(),
@@ -237,10 +237,11 @@ function approval(overrides: Partial<ApprovalRequest> = {}): ApprovalRequest {
     evidenceRequired: true,
     parametersDigest: PARAMS,
     parameterKeys: ["audienceType", "channel", "scheduledHour"],
-    requesterKind: "human",
-    requesterAccountId: "acct-ops",
+    // Raised by the workflow that will spend it (N5/C3 records a system requester by ref).
+    requesterKind: "system",
+    requesterAccountId: null,
     requesterAgentId: null,
-    requesterRef: null,
+    requesterRef: "wf-recall",
     status: "approved",
     correlationId: null,
     idempotencyKey: null,
@@ -620,5 +621,109 @@ describe("AIF-01B receipts", () => {
     await assert.rejects(() => w.state.record(tampered), (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_RECEIPT_INVALID");
     const timeless = await resolveCapability(WORKFLOW, request(w.caps.remind), { ...w.deps, clock: { now: () => { throw new Error("x"); } } });
     assert.deepEqual([timeless.decidedAt, timeless.validUntil], [null, null]);
+  });
+});
+
+describe("AIF-01B panel hardening", () => {
+  it("binds an approval to its requester: another workflow cannot spend it", async () => {
+    const w = await world();
+    w.approvals.set("appr-1", approval());
+    w.state.grant(grant({ grantId: "g-wf2-broadcast", grantee: { kind: "workflow", id: "wf-other" }, capabilityId: "communications.outbound.broadcast" }));
+    const other: AuthenticatedPrincipal = { kind: "workflow", workflowId: "wf-other", tenantId: "t1" };
+    const receipt = await resolveCapability(other, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
+    assert.deepEqual([receipt.decision, receipt.reasons], ["DENY", ["CAPABILITY_APPROVAL_MISMATCH"]]);
+    assert.equal(receipt.approvalRequestId, null);
+  });
+
+  it("refuses an approval reference where none applies, and an unsafe one anywhere", async () => {
+    const w = await world();
+    w.approvals.set("appr-1", approval());
+    const routine = await resolveCapability(WORKFLOW, request(w.caps.remind, { approvalRequestId: "appr-1" }), w.deps);
+    assert.deepEqual([routine.decision, routine.reasons, routine.approvalRequestId], ["DENY", ["CAPABILITY_APPROVAL_NOT_APPLICABLE"], null]);
+    const unsafe = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-0501234567" }), w.deps);
+    assert.deepEqual(unsafe.reasons, ["INVOCATION_REFERENCE_INVALID"]);
+  });
+
+  it("does not let an approval port leak another tenant's or branch's approval through", async () => {
+    const w = await world();
+    w.deps.approvals.getRequest = () => approval({ tenantId: "t2" });
+    const foreign = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
+    assert.deepEqual(foreign.reasons, ["CAPABILITY_APPROVAL_MISMATCH"]);
+    w.deps.approvals.getRequest = () => approval({ branchId: null });
+    const wide = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
+    assert.deepEqual(wide.reasons, ["CAPABILITY_APPROVAL_MISMATCH"]);
+  });
+
+  it("lets a human spend their own approval", async () => {
+    const w = await world();
+    w.state.grant(grant({ grantId: "g-admin-broadcast", grantee: { kind: "human_role", id: "branch_admin" }, capabilityId: "communications.outbound.broadcast", expiresAt: null }));
+    w.approvals.set("appr-h", approval({ id: "appr-h", requesterKind: "human", requesterAccountId: "acct-doc-1", requesterRef: null }));
+    const admin = human([{ role: "branch_admin" }]);
+    const receipt = await resolveCapability(admin, request(w.caps.broadcast, { approvalRequestId: "appr-h" }), w.deps);
+    assert.deepEqual([receipt.decision, receipt.grantId, receipt.approvalRequestId], ["ALLOW", "g-admin-broadcast", "appr-h"]);
+    assert.equal(await w.state.record(receipt), "CLAIMED");
+  });
+
+  it("keeps an org admin out of clinical signing even with a mistaken grant", async () => {
+    const w = await world();
+    w.state.grant(grant({ grantId: "g-orgadmin-sign", grantee: { kind: "human_role", id: "org_admin" }, capabilityId: "documentation.note.sign", expiresAt: null }));
+    const orgAdmin = human([{ role: "org_admin", branchId: null }]);
+    const receipt = await resolveCapability(orgAdmin, request(w.caps.sign, { confirmationReceiptId: "conf-1" }), w.deps);
+    assert.deepEqual([receipt.decision, receipt.reasons], ["DENY", ["AUTHZ_ADMIN_CLINICAL_SEPARATION"]]);
+  });
+
+  it("names the grant of the role that actually passed authorization", async () => {
+    const w = await world();
+    // Clinician grant at b1 sorts first, but this account is a clinician only at b2; it is a
+    // receptionist at b1, whose (tenant-wide) grant is the real basis.
+    w.state.grant(grant({ grantId: "g-a-recept", grantee: { kind: "human_role", id: "receptionist" }, capabilityId: "reporting.read", branchId: null, expiresAt: null }));
+    w.state.grant(grant({ grantId: "g-0-clin-b1", grantee: { kind: "human_role", id: "clinician" }, capabilityId: "reporting.read", expiresAt: null }));
+    const account = human([{ role: "clinician", branchId: "b2" }, { role: "receptionist", branchId: "b1" }]);
+    const receipt = await resolveCapability(account, request(w.caps.report), w.deps);
+    assert.deepEqual([receipt.decision, receipt.grantId], ["ALLOW", "g-a-recept"]);
+  });
+
+  it("ignores a grant that is not yet in force", async () => {
+    const w = await world();
+    w.state.revokeGrant("g-wf-remind", "t1", "2026-10-05T00:00:00.000Z");
+    w.state.grant(grant({ grantId: "g-future", grantee: { kind: "workflow", id: "wf-recall" }, capabilityId: "communications.reminder.send", grantedAt: "2026-10-07T00:00:00.000Z", expiresAt: "2026-11-01T00:00:00.000Z" }));
+    const receipt = await resolveCapability(WORKFLOW, request(w.caps.remind), w.deps);
+    assert.deepEqual(receipt.reasons, ["CAPABILITY_GRANT_MISSING"]);
+  });
+
+  it("is undecidable when the grant or agent ports throw", async () => {
+    const w = await world();
+    w.deps.grants.grantsFor = () => { throw new Error("db down"); };
+    assert.equal((await resolveCapability(WORKFLOW, request(w.caps.remind), w.deps)).decision, "UNDECIDABLE");
+    const v = await world();
+    v.deps.agents.resolveAuthority = () => { throw new Error("db down"); };
+    assert.equal((await resolveCapability(AGENT, request(v.caps.report, { branchId: null }), v.deps)).decision, "UNDECIDABLE");
+  });
+
+  it("reads each input once, so a getter cannot change a value between checks", async () => {
+    const w = await world();
+    w.approvals.set("appr-1", approval());
+    let reads = 0;
+    const tricky = request(w.caps.broadcast, { approvalRequestId: "appr-1" });
+    Object.defineProperty(tricky, "parametersDigest", { enumerable: true, get: () => (reads++ === 0 ? PARAMS : OTHER_PARAMS) });
+    const receipt = await resolveCapability(WORKFLOW, tricky, w.deps);
+    assert.deepEqual([receipt.decision, receipt.parametersDigest, reads], ["ALLOW", PARAMS, 1]);
+  });
+
+  it("refuses a principal of an unknown kind outright", async () => {
+    const w = await world();
+    const bogus = { kind: "admin", tenantId: "t1" } as unknown as AuthenticatedPrincipal;
+    await assert.rejects(() => resolveCapability(bogus, request(w.caps.remind), w.deps), CapabilityContractError);
+  });
+
+  it("records ASK and timeless UNDECIDABLE receipts, and refuses an expired ALLOW", async () => {
+    const w = await world();
+    const ask = await resolveCapability(WORKFLOW, request(w.caps.broadcast), w.deps);
+    assert.equal(await w.state.record(ask), "RECORDED");
+    const timeless = await resolveCapability(WORKFLOW, request(w.caps.remind), { ...w.deps, clock: { now: () => "never" } });
+    assert.equal(await w.state.record(timeless), "RECORDED");
+    const allow = await resolveCapability(WORKFLOW, request(w.caps.remind), w.deps);
+    w.now.value = new Date(Date.parse(NOW) + RESOLUTION_VALIDITY_MS).toISOString();
+    await assert.rejects(() => w.state.record(allow), (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_RECEIPT_INVALID");
   });
 });

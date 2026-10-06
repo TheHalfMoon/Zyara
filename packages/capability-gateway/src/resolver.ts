@@ -22,6 +22,7 @@ import {
   type ApprovalRequest,
 } from "@zyara/collaboration";
 
+import { ISO_INSTANT_PATTERN, canonicalJson, sha256Hex } from "./canonical.js";
 import {
   CAPABILITY_DIGEST_PATTERN,
   CAPABILITY_ID_PATTERN,
@@ -41,8 +42,9 @@ import {
 export const RESOLUTION_DECISIONS = ["ALLOW", "ASK", "DENY", "UNDECIDABLE"] as const;
 export type ResolutionDecision = (typeof RESOLUTION_DECISIONS)[number];
 
-// A receipt is a point-in-time decision, not a capability token: the dispatcher re-resolves
-// immediately before dispatch and never dispatches on an expired receipt.
+// An ALLOW is a point-in-time decision, not a capability token: the dispatcher re-resolves
+// immediately before dispatch and never dispatches on an expired receipt. Other decisions are
+// valid only at the instant they were made.
 export const RESOLUTION_VALIDITY_MS = 60_000;
 
 export type ResolutionReasonCode =
@@ -60,6 +62,7 @@ export type ResolutionReasonCode =
   | "CAPABILITY_NOT_AGENT_CAPABILITY"
   | "CAPABILITY_GRANT_MISSING"
   | "CAPABILITY_ADAPTER_UNCERTIFIED"
+  | "CAPABILITY_APPROVAL_NOT_APPLICABLE"
   | "CAPABILITY_APPROVAL_RULE_MISSING"
   | "CAPABILITY_APPROVAL_UNKNOWN"
   | "CAPABILITY_APPROVAL_MISMATCH"
@@ -68,6 +71,8 @@ export type ResolutionReasonCode =
   | "CAPABILITY_APPROVAL_CONSUMED"
   | "CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY"
   | "CAPABILITY_CONFIRMATION_INVALID"
+  | "CAPABILITY_CONFIRMATION_NEEDS_INVOCATION_KEY"
+  | "INVOCATION_REFERENCE_INVALID"
   | `INVOCATION_${string}`
   | `AUTHZ_${string}`
   | `AGENT_${string}`;
@@ -121,7 +126,14 @@ export interface ConfirmationQuery {
   capabilityId: string;
   version: string;
   parametersDigest: string;
-  idempotencyKey: string | null;
+  idempotencyKey: string;
+}
+
+// The invocation identity that claimed an approval: who, and which invocation.
+export interface ApprovalClaimant {
+  actorKind: AuthenticatedPrincipal["kind"];
+  actorRef: string;
+  idempotencyKey: string;
 }
 
 // Ports. Each may throw or return "UNAVAILABLE"; both make the decision UNDECIDABLE.
@@ -139,8 +151,7 @@ export interface ResolverDependencies {
   };
   approvals: {
     getRequest(approvalRequestId: string, tenantId: string): ApprovalRequest | null | "UNAVAILABLE";
-    // The idempotency key of the invocation that already claimed this approval, or null.
-    claimant(approvalRequestId: string, tenantId: string): string | null | "UNAVAILABLE";
+    claimant(approvalRequestId: string, tenantId: string): ApprovalClaimant | null | "UNAVAILABLE";
   };
   adapters: {
     certified(adapterId: string): CertifiedAdapter | null | "UNAVAILABLE";
@@ -166,6 +177,7 @@ export interface ResolutionReceipt {
   correlationId: string | null;
   idempotencyKey: string | null;
   grantId: string | null;
+  // Only an approval that rule 8 actually evaluated and relied on.
   approvalRequestId: string | null;
   // null only when trusted time was unavailable (the decision is then UNDECIDABLE).
   decidedAt: string | null;
@@ -184,44 +196,37 @@ function available<T>(value: T | "UNAVAILABLE"): T {
   return value;
 }
 
-const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
-
 function instant(value: unknown): number {
-  if (typeof value !== "string" || !ISO_INSTANT.test(value)) throw new Undecidable("time unavailable");
+  if (typeof value !== "string" || !ISO_INSTANT_PATTERN.test(value)) throw new Undecidable("time unavailable");
   const parsed = Date.parse(value);
   if (Number.isNaN(parsed)) throw new Undecidable("time unavailable");
   return parsed;
 }
 
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-  if (typeof value === "object" && value !== null) {
-    const record = value as Record<string, unknown>;
-    return `{${Object.keys(record)
-      .sort()
-      .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`)
-      .join(",")}}`;
+const PRINCIPAL_KINDS = ["human", "agent", "workflow"] as const;
+
+// Reads the caller's objects exactly once into plain data, so a getter or Proxy cannot answer
+// one value to a check and another to a later check. A principal that is not one of the three
+// kinds is a server-side programming error and is refused outright.
+function snapshot<T>(value: T, label: string): T {
+  let text: string | undefined;
+  try {
+    text = JSON.stringify(value);
+  } catch {
+    text = undefined;
   }
-  return JSON.stringify(value);
+  if (text === undefined) throw new CapabilityContractError("CAPABILITY_FIELD_MISSING", `${label} must be plain data`);
+  return JSON.parse(text) as T;
 }
 
-async function sha256Hex(input: string): Promise<string> {
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input)));
-  return [...digest].map((part) => part.toString(16).padStart(2, "0")).join("");
-}
-
-// Defensive reads: a malformed principal yields "" (refused as PRINCIPAL_INVALID), never a
-// throw outside the evaluation's UNDECIDABLE guard.
 function principalTenant(principal: AuthenticatedPrincipal): string {
-  const value = principal?.kind === "human" ? principal.context?.claims?.tenant : (principal as { tenantId?: unknown })?.tenantId;
+  const value = principal.kind === "human" ? principal.context?.claims?.tenant : principal.tenantId;
   return typeof value === "string" ? value : "";
 }
 
 function principalRef(principal: AuthenticatedPrincipal): string {
-  if (principal?.kind === "human") return String(principal.context?.claims?.sub ?? "");
-  if (principal?.kind === "agent") return String(principal.agentId ?? "");
-  if (principal?.kind === "workflow") return String(principal.workflowId ?? "");
-  return "";
+  if (principal.kind === "human") return String(principal.context?.claims?.sub ?? "");
+  return String(principal.kind === "agent" ? principal.agentId : principal.workflowId);
 }
 
 function requiresApproval(admitted: AdmittedCapability): boolean {
@@ -236,7 +241,16 @@ function isAgentCapability(value: string): value is AgentCapability {
 // Narrowest first: a branch grant before a tenant-wide grant, then the lowest grant id.
 function grantOrder(a: CapabilityGrantRecord, b: CapabilityGrantRecord): number {
   if ((a.branchId === null) !== (b.branchId === null)) return a.branchId === null ? 1 : -1;
-  return a.grantId < b.grantId ? -1 : a.grantId > b.grantId ? 1 : 0;
+  if (a.grantId === b.grantId) return 0;
+  return a.grantId < b.grantId ? -1 : 1;
+}
+
+// The approval's requester must be the principal now invoking it: an approval raised by one
+// agent, account or workflow cannot be spent by another.
+function requestedBy(approval: ApprovalRequest, principal: AuthenticatedPrincipal): boolean {
+  if (principal.kind === "agent") return approval.requesterKind === "agent" && approval.requesterAgentId === principal.agentId;
+  if (principal.kind === "human") return approval.requesterKind === "human" && approval.requesterAccountId === principal.context.claims.sub;
+  return approval.requesterKind === "system" && approval.requesterRef === principal.workflowId;
 }
 
 interface Outcome {
@@ -244,6 +258,7 @@ interface Outcome {
   reasons: ResolutionReasonCode[];
   grantId: string | null;
   admitted: AdmittedCapability | null;
+  approvalUsed: string | null;
 }
 
 const deny = (reason: ResolutionReasonCode, admitted: AdmittedCapability | null = null): Outcome => ({
@@ -251,6 +266,7 @@ const deny = (reason: ResolutionReasonCode, admitted: AdmittedCapability | null 
   reasons: [reason],
   grantId: null,
   admitted,
+  approvalUsed: null,
 });
 
 // ---------------------------------------------------------------------------
@@ -260,7 +276,7 @@ const deny = (reason: ResolutionReasonCode, admitted: AdmittedCapability | null 
 function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResolutionRequest, deps: ResolverDependencies, nowIso: string): Outcome {
   const now = instant(nowIso);
   const tenantId = principalTenant(principal);
-  if (typeof tenantId !== "string" || tenantId.length === 0) return deny("PRINCIPAL_INVALID");
+  if (tenantId.length === 0) return deny("PRINCIPAL_INVALID");
 
   // Rule 2: registry.
   const registered = available(deps.registry.findCapability(request.capability.capabilityId));
@@ -277,16 +293,13 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     return deny("CAPABILITY_CROSS_TENANT", admitted);
   }
 
-  const actor: CapabilityGrantee =
-    principal.kind === "agent"
-      ? { kind: "agent", id: principal.agentId }
-      : principal.kind === "workflow"
-        ? { kind: "workflow", id: principal.workflowId }
-        : { kind: "human_role", id: "" };
+  let actor: CapabilityGrantee = { kind: "human_role", id: "shape-check" };
+  if (principal.kind === "agent") actor = { kind: "agent", id: principal.agentId };
+  if (principal.kind === "workflow") actor = { kind: "workflow", id: principal.workflowId };
 
-  // Rule 4: invocation shape, through the AIF-01A contract. Human principals are checked
-  // per granted role below, so the shape check uses a placeholder actor that it only
-  // validates structurally.
+  // Rule 4: invocation shape, through the AIF-01A contract, plus the references the contract
+  // does not carry. A reference that could not be echoed safely is refused before any lookup,
+  // so nothing is ever decided on an id the receipt cannot record.
   const invocation = (grantee: CapabilityGrantee): CapabilityInvocation => ({
     capabilityId: definition.id,
     version: definition.version,
@@ -300,14 +313,18 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     requestedAt: nowIso,
   });
   try {
-    validateInvocation(admitted, invocation(actor.kind === "human_role" ? { kind: "human_role", id: "shape-check" } : actor));
+    validateInvocation(admitted, invocation(actor));
   } catch (error) {
     if (error instanceof CapabilityContractError) return deny(`INVOCATION_${error.code}`, admitted);
     throw error;
   }
+  for (const reference of [request.approvalRequestId, request.confirmationReceiptId]) {
+    if (reference !== null && !isOpaqueToken(reference)) return deny("INVOCATION_REFERENCE_INVALID", admitted);
+  }
+  if (!isOpaqueToken(principalRef(principal))) return deny("PRINCIPAL_INVALID", admitted);
 
-  // Rule 5: principal checks.
-  let candidates: CapabilityGrantee[];
+  // Rule 5: principal checks for automated principals.
+  let candidates: CapabilityGrantee[] = [actor];
   if (principal.kind === "agent") {
     if (definition.authorityClass === "A5_HUMAN_ONLY") return deny("CAPABILITY_HUMAN_ONLY", admitted);
     if (!isAgentCapability(definition.id)) return deny("CAPABILITY_NOT_AGENT_CAPABILITY", admitted);
@@ -315,34 +332,31 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
       deps.agents.resolveAuthority(principal.agentId, tenantId, { capability: definition.id, branchId: request.branchId, at: nowIso }),
     );
     if (!decision.allow) return deny(decision.denial, admitted);
-    candidates = [actor];
   } else if (principal.kind === "workflow") {
     if (definition.authorityClass === "A5_HUMAN_ONLY") return deny("CAPABILITY_HUMAN_ONLY", admitted);
-    candidates = [actor];
   } else {
-    // A human acts through the roles of their own active memberships in this tenant.
-    const roles = [
-      ...new Set(
-        principal.context.memberships
-          .filter((membership) => membership.tenantId === tenantId && !membership.revoked)
-          .map((membership) => membership.role),
-      ),
-    ].sort();
-    candidates = roles.map((role) => ({ kind: "human_role", id: role }));
+    // A human acts through the roles of their own active memberships in this tenant; M002
+    // membership, branch and assurance are checked per granted role in rule 6.
+    const roles = principal.context.memberships
+      .filter((membership) => membership.tenantId === tenantId && !membership.revoked)
+      .map((membership) => membership.role);
+    candidates = [...new Set(roles)].sort().map((role) => ({ kind: "human_role", id: role }));
   }
 
-  // Rule 6: an active grant for this exact principal whose scope covers the invocation.
-  const usable: { record: CapabilityGrantRecord; grantee: CapabilityGrantee }[] = [];
+  // Rule 6: an active grant, in force at server time, for this exact principal, whose scope
+  // covers the invocation. The port's tenant and grantee filtering is re-checked here: the
+  // port is a storage adapter, not an authority.
+  const usable: CapabilityGrantRecord[] = [];
   let scopeFailure: ResolutionReasonCode | null = null;
   for (const grantee of candidates) {
     const records = available(deps.grants.grantsFor(tenantId, grantee, definition.id, definition.version));
     for (const record of records) {
       if (record.tenantId !== tenantId || record.grantee.kind !== grantee.kind || record.grantee.id !== grantee.id) continue;
-      if (record.revokedAt !== null) continue;
+      if (record.revokedAt !== null || instant(record.grantedAt) > now) continue;
       if (record.expiresAt !== null && instant(record.expiresAt) <= now) continue;
       try {
         checkInvocationScope(admitted, record, invocation(grantee));
-        usable.push({ record, grantee });
+        usable.push(record);
       } catch (error) {
         if (!(error instanceof CapabilityContractError)) throw error;
         scopeFailure ??= `INVOCATION_${error.code}`;
@@ -350,25 +364,33 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     }
   }
   if (usable.length === 0) return deny(scopeFailure ?? "CAPABILITY_GRANT_MISSING", admitted);
-  usable.sort((a, b) => grantOrder(a.record, b.record));
+  usable.sort(grantOrder);
 
+  // For a human the chosen grant is the narrowest one whose role passes M002 at this branch,
+  // so the receipt names the grant that was actually the basis of the decision.
+  let chosen = usable[0];
   if (principal.kind === "human") {
-    // M002 membership, branch and assurance, restricted to the roles that hold a grant.
-    const grantedRoles = [...new Set(usable.map((item) => item.grantee.id as BranchRole))];
     const highAuthority = definition.authorityClass === "A4_EXECUTE_MED" || definition.authorityClass === "A5_HUMAN_ONLY";
-    const authz = authorize(
-      { ...principal.context, nowIso },
-      {
-        action: definition.id,
-        resourceTenant: tenantId,
-        resourceBranch: request.branchId,
-        allowRoles: grantedRoles,
-        requireAssurance: highAuthority ? "aal2" : undefined,
-      },
-    );
-    if (!authz.allow) return deny(authz.denial ?? "AUTHZ_DENIED", admitted);
+    const clinical = definition.dataClasses.includes("PHI") || definition.dataClasses.includes("CLINICAL_SIGNING_REQUIRED");
+    let firstDenial: string | undefined;
+    const passing = usable.find((record) => {
+      const authz = authorize(
+        { ...principal.context, nowIso },
+        {
+          action: definition.id,
+          resourceTenant: tenantId,
+          resourceBranch: request.branchId,
+          allowRoles: [record.grantee.id as BranchRole],
+          requireAssurance: highAuthority ? "aal2" : undefined,
+          forbidAdminClinical: clinical,
+        },
+      );
+      if (!authz.allow) firstDenial ??= authz.denial;
+      return authz.allow;
+    });
+    if (!passing) return deny((firstDenial ?? "AUTHZ_DENIED") as ResolutionReasonCode, admitted);
+    chosen = passing;
   }
-  const chosen = usable[0].record;
 
   // Rule 7: provider adapter certification.
   if (entry.providerBinding !== null) {
@@ -379,31 +401,47 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     }
   }
 
-  // Rule 8: approval for high-risk and A4 capabilities.
-  if (requiresApproval(admitted)) {
+  // Rule 8: approval for high-risk and A4 capabilities, and only for them.
+  let approvalUsed: string | null = null;
+  if (!requiresApproval(admitted)) {
+    if (request.approvalRequestId !== null) return deny("CAPABILITY_APPROVAL_NOT_APPLICABLE", admitted);
+  } else {
     if (!Object.hasOwn(PROTECTED_ACTIONS, definition.id)) return deny("CAPABILITY_APPROVAL_RULE_MISSING", admitted);
     if (request.approvalRequestId === null) {
-      return { decision: "ASK", reasons: ["APPROVAL_REQUIRED"], grantId: chosen.grantId, admitted };
+      return { decision: "ASK", reasons: ["APPROVAL_REQUIRED"], grantId: chosen.grantId, admitted, approvalUsed: null };
     }
     // The approval is claimed by one invocation identity, so even an approval-gated read
     // must name its invocation with an idempotency key.
     if (request.idempotencyKey === null) return deny("CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY", admitted);
     const approval = available(deps.approvals.getRequest(request.approvalRequestId, tenantId));
     if (approval === null) return deny("CAPABILITY_APPROVAL_UNKNOWN", admitted);
-    if (approval.tenantId !== tenantId || approval.branchId !== request.branchId || approval.actionType !== definition.id) {
+    if (
+      approval.id !== request.approvalRequestId ||
+      approval.tenantId !== tenantId ||
+      approval.branchId !== request.branchId ||
+      approval.actionType !== definition.id ||
+      !requestedBy(approval, principal)
+    ) {
       return deny("CAPABILITY_APPROVAL_MISMATCH", admitted);
     }
     if (approval.status !== "approved" || instant(approval.expiresAt) <= now) return deny("CAPABILITY_APPROVAL_STALE", admitted);
     if (approval.parametersDigest !== request.parametersDigest) return deny("CAPABILITY_APPROVAL_PARAMETERS_CHANGED", admitted);
     const claimant = available(deps.approvals.claimant(approval.id, tenantId));
-    if (claimant !== null && claimant !== request.idempotencyKey) return deny("CAPABILITY_APPROVAL_CONSUMED", admitted);
+    if (
+      claimant !== null &&
+      (claimant.actorKind !== principal.kind || claimant.actorRef !== principalRef(principal) || claimant.idempotencyKey !== request.idempotencyKey)
+    ) {
+      return deny("CAPABILITY_APPROVAL_CONSUMED", admitted);
+    }
+    approvalUsed = approval.id;
   }
 
-  // Rule 9: exact confirmation for human-only capabilities.
-  if (definition.authorityClass === "A5_HUMAN_ONLY") {
-    if (principal.kind !== "human") return deny("CAPABILITY_HUMAN_ONLY", admitted);
+  // Rule 9: exact confirmation for human-only capabilities (rule 5 already refused A5 to every
+  // automated principal, so the principal here is human).
+  if (definition.authorityClass === "A5_HUMAN_ONLY" && principal.kind === "human") {
+    if (request.idempotencyKey === null) return deny("CAPABILITY_CONFIRMATION_NEEDS_INVOCATION_KEY", admitted);
     if (request.confirmationReceiptId === null) {
-      return { decision: "ASK", reasons: ["CONFIRMATION_REQUIRED"], grantId: chosen.grantId, admitted };
+      return { decision: "ASK", reasons: ["CONFIRMATION_REQUIRED"], grantId: chosen.grantId, admitted, approvalUsed };
     }
     const confirmed = available(
       deps.confirmations.isConfirmed({
@@ -419,7 +457,7 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     if (confirmed !== true) return deny("CAPABILITY_CONFIRMATION_INVALID", admitted);
   }
 
-  return { decision: "ALLOW", reasons: ["ALLOWED"], grantId: chosen.grantId, admitted };
+  return { decision: "ALLOW", reasons: ["ALLOWED"], grantId: chosen.grantId, admitted, approvalUsed };
 }
 
 // ---------------------------------------------------------------------------
@@ -427,10 +465,19 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
 // ---------------------------------------------------------------------------
 
 export async function resolveCapability(
-  principal: AuthenticatedPrincipal,
-  request: CapabilityResolutionRequest,
+  principalInput: AuthenticatedPrincipal,
+  requestInput: CapabilityResolutionRequest,
   deps: ResolverDependencies,
 ): Promise<ResolutionReceipt> {
+  const principal = snapshot(principalInput, "principal");
+  const request = snapshot(requestInput, "request");
+  if (typeof principal !== "object" || principal === null || !(PRINCIPAL_KINDS as readonly string[]).includes(principal.kind)) {
+    throw new CapabilityContractError("CAPABILITY_FIELD_MISSING", "principal must be a human, agent or workflow");
+  }
+  if (typeof request !== "object" || request === null) {
+    throw new CapabilityContractError("CAPABILITY_FIELD_MISSING", "request must be an object");
+  }
+
   let nowIso: string;
   let outcome: Outcome;
   try {
@@ -438,14 +485,14 @@ export async function resolveCapability(
     instant(nowIso);
   } catch {
     // Without trusted time nothing can be decided or even dated; the receipt says so.
-    outcome = { decision: "UNDECIDABLE", reasons: ["DEPENDENCY_UNAVAILABLE"], grantId: null, admitted: null };
+    outcome = { decision: "UNDECIDABLE", reasons: ["DEPENDENCY_UNAVAILABLE"], grantId: null, admitted: null, approvalUsed: null };
     return buildReceipt(principal, request, outcome, null);
   }
   try {
     outcome = evaluate(principal, request, deps, nowIso);
   } catch {
     // Any failure, including an unexpected exception, is UNDECIDABLE and never ALLOW.
-    outcome = { decision: "UNDECIDABLE", reasons: ["DEPENDENCY_UNAVAILABLE"], grantId: null, admitted: null };
+    outcome = { decision: "UNDECIDABLE", reasons: ["DEPENDENCY_UNAVAILABLE"], grantId: null, admitted: null, approvalUsed: null };
   }
   return buildReceipt(principal, request, outcome, nowIso);
 }
@@ -469,7 +516,7 @@ async function buildReceipt(
   nowIso: string | null,
 ): Promise<ResolutionReceipt> {
   // Identity fields come from the principal and the admitted definition when known.
-  const ref = request.capability ?? ({} as Partial<CapabilityRef>);
+  const ref: Partial<CapabilityRef> = typeof request.capability === "object" && request.capability !== null ? request.capability : {};
   const tenant = principalTenant(principal);
   const actorRef = principalRef(principal);
   const body: Omit<ResolutionReceipt, "receiptDigest"> = {
@@ -486,7 +533,7 @@ async function buildReceipt(
     correlationId: isOpaqueToken(request.correlationId) ? request.correlationId : null,
     idempotencyKey: isOpaqueToken(request.idempotencyKey) ? request.idempotencyKey : null,
     grantId: outcome.grantId,
-    approvalRequestId: isOpaqueToken(request.approvalRequestId) ? request.approvalRequestId : null,
+    approvalRequestId: outcome.approvalUsed,
     decidedAt: nowIso,
     validUntil:
       nowIso === null

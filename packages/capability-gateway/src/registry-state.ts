@@ -20,6 +20,7 @@ import {
 } from "./contract.js";
 import { RESOLUTION_DECISIONS, verifyReceiptDigest } from "./resolver.js";
 import type {
+  ApprovalClaimant,
   CapabilityGrantRecord,
   DefinitionStatus,
   ProviderAdapterBinding,
@@ -80,8 +81,14 @@ export class CapabilityRegistryState {
   readonly #statusEvents = new Map<string, StatusEvent[]>();
   readonly #grants = new Map<string, CapabilityGrantRecord>();
   readonly #revocations: Revocation[] = [];
-  readonly #claims = new Map<string, string>();
+  readonly #claims = new Map<string, ApprovalClaimant>();
   readonly #receipts: ResolutionReceipt[] = [];
+  readonly #now: () => string;
+
+  // The clock refuses to record an ALLOW whose validity has already passed.
+  constructor(options: { now?: () => string } = {}) {
+    this.#now = options.now ?? (() => new Date().toISOString());
+  }
 
   admit(admitted: AdmittedCapability, binding: ProviderAdapterBinding | null = null): void {
     const key = `${admitted.definition.id}@${admitted.definition.version}`;
@@ -119,16 +126,18 @@ export class CapabilityRegistryState {
     this.#revocations.push({ grantId, tenantId, revokedAt });
   }
 
-  // First claim wins; the same invocation (same idempotency key) may claim again. Private:
-  // the only way to claim is to record an approval-backed ALLOW receipt.
-  #claimApproval(tenantId: string, approvalRequestId: string, idempotencyKey: string): ApprovalClaimResult {
+  // First claim wins; the same invocation (same actor and idempotency key) may claim again.
+  // Private: the only way to claim is to record an approval-backed ALLOW receipt.
+  #claimApproval(tenantId: string, approvalRequestId: string, claimant: ApprovalClaimant): ApprovalClaimResult {
     const key = `${tenantId}:${approvalRequestId}`;
     const holder = this.#claims.get(key);
     if (holder === undefined) {
-      this.#claims.set(key, idempotencyKey);
+      this.#claims.set(key, Object.freeze({ ...claimant }));
       return "CLAIMED";
     }
-    return holder === idempotencyKey ? "SAME_INVOCATION" : "CLAIMED_BY_OTHER";
+    const same =
+      holder.actorKind === claimant.actorKind && holder.actorRef === claimant.actorRef && holder.idempotencyKey === claimant.idempotencyKey;
+    return same ? "SAME_INVOCATION" : "CLAIMED_BY_OTHER";
   }
 
   // For an ALLOW that used an approval, claims the approval first and appends the receipt
@@ -140,9 +149,17 @@ export class CapabilityRegistryState {
     if (!(await verifyReceiptDigest(receipt))) {
       throw new CapabilityContractError("CAPABILITY_RECEIPT_INVALID", "receipt content does not match its digest");
     }
+    // Written as "not after" so an unparseable time fails closed.
+    if (receipt.decision === "ALLOW" && !(Date.parse(receipt.validUntil ?? "") > Date.parse(this.#now()))) {
+      throw new CapabilityContractError("CAPABILITY_RECEIPT_INVALID", "an expired ALLOW cannot be recorded; re-resolve");
+    }
     if (receipt.decision === "ALLOW" && receipt.approvalRequestId !== null) {
-      if (receipt.idempotencyKey === null) fail("an approval-backed ALLOW must name its invocation");
-      const claim = this.#claimApproval(receipt.tenantId, receipt.approvalRequestId, receipt.idempotencyKey);
+      if (receipt.idempotencyKey === null || receipt.actorRef === null) fail("an approval-backed ALLOW must name its invocation");
+      const claim = this.#claimApproval(receipt.tenantId, receipt.approvalRequestId, {
+        actorKind: receipt.actorKind,
+        actorRef: receipt.actorRef,
+        idempotencyKey: receipt.idempotencyKey,
+      });
       if (claim === "CLAIMED_BY_OTHER") return claim;
       this.#receipts.push(receipt);
       return claim;

@@ -1,7 +1,8 @@
 // AIF-01B capability registry persistence smoke: real PostgreSQL proof that admitted
 // definitions, grants, revocations, approval claims and resolution receipts are append-only,
-// tenant-isolated by RLS, and that the database itself keeps A5 human-only, bounds agent and
-// workflow grants, refuses cross-tenant branches and enforces one approval per invocation.
+// tenant-isolated by RLS, stamped with database time, and that the database itself keeps A5
+// human-only, bounds agent and workflow grants, refuses cross-tenant branches and enforces
+// one approval per invocation identity.
 // Requires DATABASE_URL (CI postgres service or local PG); skips otherwise.
 import { readFileSync } from "node:fs";
 import pkg from "pg";
@@ -52,45 +53,35 @@ function fail(message) {
   throw new Error(message);
 }
 
-async function expectDbError(run, sqlstate, label) {
+async function expectDbError(run, sqlstate, label, messagePart = null) {
   try {
     await run();
   } catch (error) {
-    if (error.code === sqlstate) return;
-    fail(`${label}: expected SQLSTATE ${sqlstate}, got ${error.code}: ${error.message}`);
+    if (error.code === sqlstate && (messagePart === null || error.message.includes(messagePart))) return;
+    fail(`${label}: expected SQLSTATE ${sqlstate}${messagePart ? ` (${messagePart})` : ""}, got ${error.code}: ${error.message}`);
   }
   fail(`${label}: expected SQLSTATE ${sqlstate}, but the statement succeeded`);
 }
 
-const HEX = "a".repeat(64);
-const DEF = (id, options = {}) => {
-  const {
-    rw = "write",
-    authority = "A3_EXECUTE_LOW",
-    risk = "elevated",
-    digest = `cap_${id.length.toString(16).padStart(2, "0")}${HEX.slice(2)}`,
-    adapterId = "NULL",
-    adapterCap = "NULL",
-  } = options;
+const RLS = "row-level security";
+const DEF = (id, digest, options = {}) => {
+  const { rw = "write", authority = "A3_EXECUTE_LOW", adapterId = "NULL", adapterCap = "NULL" } = options;
   return `INSERT INTO capability_definitions(
-     capability_id,version,definition_digest,owner_domain,read_or_write,authority_class,risk_class,
+     capability_id,version,definition_digest,read_or_write,authority_class,risk_class,
      definition,adapter_id,adapter_capability,registered_by_kind,registered_by_id)
-   VALUES ('${id}','1.0.0','${digest}','${id.split(".")[0]}','${rw}','${authority}','${risk}',
+   VALUES ('${id}','1.0.0','cap_${digest.repeat(64)}','${rw}','${authority}','elevated',
      '{"synthetic":true}'::jsonb,${adapterId},${adapterCap},'release_pipeline','ci-release')`;
 };
 
-await client.query(DEF("communications.reminder.send", { digest: `cap_${"1".repeat(64)}` }));
-await client.query(DEF("documentation.note.sign", { authority: "A5_HUMAN_ONLY", digest: `cap_${"2".repeat(64)}` }));
-await client.query(
-  DEF("booking.appointment.create", { digest: `cap_${"3".repeat(64)}`, adapterId: "'pms-1'", adapterCap: "'create'" }),
-);
+await client.query(DEF("communications.reminder.send", "1"));
+await client.query(DEF("documentation.note.sign", "2", { authority: "A5_HUMAN_ONLY" }));
+await client.query(DEF("booking.appointment.create", "3", { adapterId: "'pms-1'", adapterCap: "'create'" }));
 
-await expectDbError(() => client.query(DEF("communications.reminder.send", { digest: `cap_${"4".repeat(64)}` })), "23505", "an admitted (id, version) must be immutable: no second registration");
-await expectDbError(() => client.query(DEF("communications.other.send", { digest: `cap_${"1".repeat(64)}` })), "23505", "a definition digest must be unique");
-await expectDbError(() => client.query(DEF("communications.bad.send", { digest: "cap_short" })), "23514", "a malformed definition digest must be refused");
-await expectDbError(() => client.query(DEF("Communications.*", { digest: `cap_${"5".repeat(64)}` })), "23514", "a wildcard or uppercase capability id must be refused");
-await expectDbError(() => client.query(DEF("communications.draft.send", { authority: "A1_DRAFT", digest: `cap_${"6".repeat(64)}` })), "23514", "a write registered as A1 must be refused");
-await expectDbError(() => client.query(DEF("booking.half.bound", { digest: `cap_${"7".repeat(64)}`, adapterId: "'pms-1'" })), "23514", "an adapter binding must name both adapter and capability");
+await expectDbError(() => client.query(DEF("communications.reminder.send", "4")), "23505", "an admitted (id, version) must be immutable: no second registration");
+await expectDbError(() => client.query(DEF("communications.other.send", "1")), "23505", "a definition digest must be unique");
+await expectDbError(() => client.query(DEF("communications.*", "5")), "23514", "a wildcard capability id must be refused");
+await expectDbError(() => client.query(DEF("communications.draft.send", "6", { authority: "A1_DRAFT" })), "23514", "a write registered as A1 must be refused");
+await expectDbError(() => client.query(DEF("booking.half.bound", "7", { adapterId: "'pms-1'" })), "23514", "an adapter binding must name both adapter and capability");
 
 const GRANT = (id, options = {}) => {
   const {
@@ -124,10 +115,11 @@ await expectDbError(
 await expectDbError(() => client.query(GRANT("g-forever", { expires: "NULL" })), "23514", "a workflow grant must expire");
 await expectDbError(() => client.query(GRANT("g-long", { expires: "now() + interval '91 days'" })), "23514", "a grant beyond 90 days must be refused");
 await expectDbError(() => client.query(GRANT("g-x-branch", { branch: "'b2'" })), "23503", "a grant cannot reference another tenant's branch");
+await expectDbError(() => client.query(GRANT("g-unknown", { capability: "communications.unknown.send" })), "23503", "a grant for an unadmitted capability must be refused");
 await expectDbError(
-  () => client.query(GRANT("g-unknown", { capability: "communications.unknown.send" })),
+  () => client.query(GRANT("g-ghost").replace("'acct-admin'", "'acct-ghost'")),
   "23503",
-  "a grant for an unadmitted capability must be refused",
+  "a grant must name a real granting account",
 );
 
 const APPROVAL = (id, status, created, expires) =>
@@ -142,30 +134,20 @@ const APPROVAL = (id, status, created, expires) =>
 await client.query(APPROVAL("aif01b-appr-1", "approved", "now()", "now() + interval '30 minutes'"));
 await client.query(APPROVAL("aif01b-appr-2", "awaiting_approval", "now()", "now() + interval '30 minutes'"));
 await client.query(APPROVAL("aif01b-appr-3", "approved", "now() - interval '2 hours'", "now() - interval '1 hour'"));
+await client.query(APPROVAL("aif01b-appr-4", "approved", "now()", "now() + interval '30 minutes'"));
 
 const RES = `res_${"c".repeat(64)}`;
-for (const [id, label] of [["aif01b-appr-2", "an approval still awaiting a decision"], ["aif01b-appr-3", "an expired approval"], ["aif01b-missing", "an unknown approval"]]) {
-  await expectDbError(
-    () => client.query(
-      `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,idempotency_key,receipt_digest)
-       VALUES ('t1','${id}','idem-0001','${RES}')`,
-    ),
-    "23514",
-    `${label} must not be claimable`,
-  );
+const CLAIM = (approval, key = "idem-0001", actor = "wf-recall") =>
+  `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,actor_kind,actor_ref,idempotency_key,receipt_digest)
+   VALUES ('t1','${approval}','workflow','${actor}','${key}','${RES}')`;
+for (const [id, label] of [
+  ["aif01b-appr-2", "an approval still awaiting a decision"],
+  ["aif01b-appr-3", "an expired approval"],
+  ["aif01b-missing", "an unknown approval"],
+]) {
+  await expectDbError(() => client.query(CLAIM(id)), "23514", `${label} must not be claimable`);
 }
-await client.query(
-  `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,idempotency_key,receipt_digest)
-   VALUES ('t1','aif01b-appr-1','idem-0001','${RES}')`,
-);
-await expectDbError(
-  () => client.query(
-    `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,idempotency_key,receipt_digest)
-     VALUES ('t1','aif01b-appr-1','idem-0002','${RES}')`,
-  ),
-  "23505",
-  "a second invocation must not claim the same approval",
-);
+await expectDbError(() => client.query(CLAIM("aif01b-appr-4", "0501234567")), "23514", "a claim key must not be a direct identifier");
 
 const RECEIPT = (digest, options = {}) => {
   const {
@@ -177,56 +159,78 @@ const RECEIPT = (digest, options = {}) => {
     correlation = "'corr-0001'",
     params = `'params_${"ab".repeat(32)}'`,
     idem = "'idem-0001'",
+    actor = "'wf-recall'",
     approval = "NULL",
     claimKey = "NULL",
+    reasons = "ARRAY['ALLOWED']",
+    capability = "'communications.reminder.send'",
   } = options;
   return `INSERT INTO capability_resolution_receipts(
      receipt_digest,tenant_id,branch_id,decision,reason_codes,capability_id,version,definition_digest,
      actor_kind,actor_ref,parameters_digest,correlation_id,idempotency_key,grant_id,approval_request_id,
      claim_idempotency_key,decided_at,valid_until)
-   VALUES ('${digest}','${tenant}','b1','${decision}',ARRAY['ALLOWED'],'communications.reminder.send','1.0.0',
-     'cap_${"1".repeat(64)}','workflow','wf-recall',${params},${correlation},${idem},${grant},${approval},
+   VALUES ('${digest}','${tenant}','b1','${decision}',${reasons},${capability},'1.0.0',
+     'cap_${"1".repeat(64)}','workflow',${actor},${params},${correlation},${idem},${grant},${approval},
      ${claimKey},${decided},${valid})`;
 };
+const R = (c) => `res_${c.repeat(64)}`;
 
-await client.query(RECEIPT(`res_${"d".repeat(64)}`));
-await client.query(RECEIPT(`res_${"e".repeat(64)}`, { decision: "UNDECIDABLE", decided: "NULL", valid: "NULL", grant: "NULL" }));
-await expectDbError(() => client.query(RECEIPT(`res_${"d".repeat(64)}`)), "23505", "the same receipt is recorded once");
-await expectDbError(() => client.query(RECEIPT(`res_${"f".repeat(64)}`, { decided: "NULL" })), "23514", "only UNDECIDABLE may lack trusted time");
-await expectDbError(() => client.query(RECEIPT(`res_${"0".repeat(64)}`, { grant: "NULL" })), "23514", "an ALLOW must name its grant");
-await expectDbError(() => client.query(RECEIPT(`res_${"9".repeat(64)}`, { valid: "now() - interval '1 second'" })), "23514", "an ALLOW must be valid after it is decided");
-await expectDbError(() => client.query(RECEIPT(`res_${"8".repeat(64)}`, { correlation: "'0501234567'" })), "23514", "a receipt correlation id must not be a direct identifier");
-await expectDbError(() => client.query(RECEIPT(`res_${"7".repeat(64)}`, { params: "'send to +966500000000'" })), "23514", "a receipt never stores parameter values");
-
-// An approval-backed ALLOW must match the claim won by the same invocation.
-const APPROVED = { approval: "'aif01b-appr-1'" };
-await client.query(RECEIPT(`res_${"6".repeat(64)}`, { ...APPROVED, claimKey: "'idem-0001'" }));
-await expectDbError(
-  () => client.query(RECEIPT(`res_${"5".repeat(64)}`, { ...APPROVED, idem: "'idem-0002'", claimKey: "'idem-0002'" })),
-  "23503",
-  "an ALLOW for an approval claimed by another invocation must be refused",
-);
-await expectDbError(
-  () => client.query(RECEIPT(`res_${"4".repeat(64)}`, APPROVED)),
-  "23514",
-  "an approval-backed ALLOW must be bound to its claim",
-);
-await expectDbError(
-  () => client.query(RECEIPT(`res_${"3".repeat(64)}`, { ...APPROVED, claimKey: "'idem-0009'" })),
-  "23514",
-  "the claim key must be the receipt's own invocation key",
-);
-await client.query(
-  RECEIPT(`res_${"2".repeat(64)}`, { ...APPROVED, decision: "DENY", idem: "'idem-0002'", grant: "NULL", valid: "now()" }),
-);
+await client.query(RECEIPT(R("d")));
+await client.query(RECEIPT(R("e"), { decision: "UNDECIDABLE", decided: "NULL", valid: "NULL", grant: "NULL" }));
+await client.query(RECEIPT(R("a"), { decision: "DENY", grant: "NULL", valid: "now()", correlation: "'2b0c9d4e-1234-4567-89ab-123456789012'" }));
+await expectDbError(() => client.query(RECEIPT(R("d"))), "23505", "the same receipt is recorded once");
+await expectDbError(() => client.query(RECEIPT(R("f"), { decided: "NULL" })), "23514", "only UNDECIDABLE may lack trusted time");
+await expectDbError(() => client.query(RECEIPT(R("0"), { grant: "NULL" })), "23514", "an ALLOW must name its grant");
+await expectDbError(() => client.query(RECEIPT(R("9"), { valid: "now() - interval '1 second'" })), "23514", "an ALLOW must be valid after it is decided");
+await expectDbError(() => client.query(RECEIPT(R("8"), { correlation: "'0501234567'" })), "23514", "a correlation id must not be an all-digit identifier");
+await expectDbError(() => client.query(RECEIPT(R("8"), { correlation: "'corr-0501234567890'" })), "23514", "a correlation id must not carry a long digit run");
+await expectDbError(() => client.query(RECEIPT(R("8"), { idem: "'access_token-abc'" })), "23514", "an idempotency key must not carry a credential shape");
+await expectDbError(() => client.query(RECEIPT(R("7"), { params: "'send to +966500000000'" })), "23514", "a receipt never stores parameter values");
+await expectDbError(() => client.query(RECEIPT(R("7"), { reasons: "ARRAY['patient asked to call 0501234567']" })), "23514", "reason codes are closed codes, never free text");
+await expectDbError(() => client.query(RECEIPT(R("7"), { capability: "'call me now'" })), "23514", "an unadmitted capability id is shape-checked");
+await expectDbError(() => client.query(RECEIPT(R("7"), { grant: "'g-nonexistent'" })), "23503", "an ALLOW must name an existing grant of its tenant");
 
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t1'`);
 
-// The application role can append, never rewrite or delete.
-await client.query(
-  `INSERT INTO capability_grant_revocations(grant_id,tenant_id,revoked_by,reason_code) VALUES ('g-1','t1','acct-admin','offboarded')`,
+// The application role claims through RLS and the guard, then records the matching ALLOW.
+await client.query(CLAIM("aif01b-appr-1"));
+await expectDbError(() => client.query(CLAIM("aif01b-appr-1", "idem-0002")), "23505", "a second invocation must not claim the same approval");
+await expectDbError(() => client.query(CLAIM("aif01b-appr-1", "idem-0001", "wf-other")), "23505", "another actor must not claim the same approval");
+
+const APPROVED = { approval: "'aif01b-appr-1'" };
+await client.query(RECEIPT(R("6"), { ...APPROVED, claimKey: "'idem-0001'" }));
+await expectDbError(
+  () => client.query(RECEIPT(R("5"), { ...APPROVED, idem: "'idem-0002'", claimKey: "'idem-0002'" })),
+  "23503",
+  "an ALLOW for an approval claimed by another invocation must be refused",
 );
+await expectDbError(
+  () => client.query(RECEIPT(R("5"), { ...APPROVED, actor: "'wf-other'", claimKey: "'idem-0001'" })),
+  "23503",
+  "an ALLOW for an approval claimed by another actor must be refused",
+);
+await expectDbError(() => client.query(RECEIPT(R("4"), APPROVED)), "23514", "an approval-backed ALLOW must be bound to its claim");
+await expectDbError(() => client.query(RECEIPT(R("3"), { ...APPROVED, claimKey: "'idem-0009'" })), "23514", "the claim key must be the receipt's own invocation key");
+await client.query(RECEIPT(R("2"), { ...APPROVED, decision: "DENY", idem: "'idem-0002'", grant: "NULL", valid: "now()" }));
+
+// Timestamps belong to the database: the application cannot backdate or future-date them.
+await expectDbError(
+  () => client.query(
+    `INSERT INTO capability_grants(id,tenant_id,branch_id,grantee_kind,grantee_id,capability_id,version,authority_class,granted_by,granted_at,expires_at)
+     VALUES ('g-future','t1','b1','workflow','wf-recall','communications.reminder.send','1.0.0','A3_EXECUTE_LOW','acct-admin',now() + interval '1 year',now() + interval '1 year 30 days')`,
+  ),
+  "42501",
+  "the application must not choose granted_at",
+);
+await expectDbError(
+  () => client.query(`INSERT INTO capability_grant_revocations(grant_id,tenant_id,revoked_by,reason_code,revoked_at) VALUES ('g-1','t1','acct-admin','x_y','2020-01-01')`),
+  "42501",
+  "the application must not choose revoked_at",
+);
+
+// The application role can append, never rewrite or delete.
+await client.query(`INSERT INTO capability_grant_revocations(grant_id,tenant_id,revoked_by,reason_code) VALUES ('g-1','t1','acct-admin','offboarded')`);
 await expectDbError(
   () => client.query(`INSERT INTO capability_grant_revocations(grant_id,tenant_id,revoked_by,reason_code) VALUES ('g-1','t1','acct-admin','again')`),
   "23505",
@@ -240,22 +244,40 @@ for (const [statement, label] of [
   [`DELETE FROM capability_resolution_receipts`, "receipts"],
   [`DELETE FROM capability_approval_claims`, "approval claims"],
   [`UPDATE capability_definitions SET authority_class='A0_OBSERVE'`, "definitions"],
-  [`INSERT INTO capability_definitions(capability_id,version,definition_digest,owner_domain,read_or_write,authority_class,risk_class,definition,registered_by_kind,registered_by_id)
-    VALUES ('reporting.self.grant','1.0.0','cap_${"b".repeat(64)}','reporting','read','A0_OBSERVE','routine','{}'::jsonb,'release_pipeline','app')`, "definitions"],
-  [`INSERT INTO capability_definition_status_events(id,capability_id,version,status,reason_code,actor_id)
-    VALUES ('s-1','communications.reminder.send','1.0.0','active','self_reinstate','app')`, "definition status"],
+  [`INSERT INTO capability_definitions(capability_id,version,definition_digest,read_or_write,authority_class,risk_class,definition,registered_by_kind,registered_by_id)
+    VALUES ('reporting.self.grant','1.0.0','cap_${"b".repeat(64)}','read','A0_OBSERVE','routine','{}'::jsonb,'release_pipeline','app')`, "definitions"],
+  [`INSERT INTO capability_definition_status_events(capability_id,version,status,reason_code,actor_id)
+    VALUES ('communications.reminder.send','1.0.0','active','self_reinstate','app')`, "definition status"],
 ]) {
-  await expectDbError(() => client.query(statement), "42501", `the application role must not rewrite or self-admit ${label}`);
+  await expectDbError(() => client.query(statement), "42501", `the application role must not rewrite or self-admit ${label}`, "permission denied");
 }
 
-await expectDbError(() => client.query(GRANT("g-t2", { tenant: "t2", branch: "'b2'" })), "42501", "a cross-tenant grant insert must be refused by RLS");
+await expectDbError(() => client.query(GRANT("g-t2", { tenant: "t2", branch: "'b2'" })), "42501", "a cross-tenant grant insert must be refused by RLS", RLS);
 
 const own = await client.query(`SELECT count(*)::int AS n FROM capability_grants`);
 if (own.rows[0].n !== 2) fail(`expected two t1 grants, got ${own.rows[0].n}`);
 const catalog = await client.query(`SELECT count(*)::int AS n FROM capability_definitions`);
 if (catalog.rows[0].n !== 3) fail(`the application role must read the installation catalog, got ${catalog.rows[0].n}`);
 
+// Under t2, the t1 approval is invisible to the guard (RLS + invoker) and the claim is refused.
 await client.query(`SET app.current_tenant='t2'`);
+await expectDbError(
+  () => client.query(
+    `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,actor_kind,actor_ref,idempotency_key,receipt_digest)
+     VALUES ('t2','aif01b-appr-4','workflow','wf-recall','idem-0001','${RES}')`,
+  ),
+  "23514",
+  "another tenant's approval must be invisible to the claim guard",
+);
+// A claim written for t1 while acting as t2: the BEFORE guard runs ahead of the RLS WITH
+// CHECK and already cannot see the t1 approval, so the refusal is the guard's 23514.
+await expectDbError(() => client.query(CLAIM("aif01b-appr-4")), "23514", "a claim for another tenant must be refused", "not approved and live");
+await expectDbError(
+  () => client.query(RECEIPT(R("1"), { tenant: "t1", decision: "DENY", grant: "NULL", valid: "now()" })),
+  "42501",
+  "a receipt for another tenant must be refused by RLS",
+  RLS,
+);
 for (const table of ["capability_grants", "capability_grant_revocations", "capability_approval_claims", "capability_resolution_receipts"]) {
   const rows = await client.query(`SELECT count(*)::int AS n FROM ${table}`);
   if (rows.rows[0].n !== 0) fail(`tenant read isolation failed for ${table}`);
@@ -263,16 +285,21 @@ for (const table of ["capability_grants", "capability_grant_revocations", "capab
 
 await client.query(`RESET ROLE`);
 const privileges = await client.query(
-  `SELECT table_name, string_agg(privilege_type, ',' ORDER BY privilege_type) AS p
+  `SELECT table_name, string_agg(DISTINCT privilege_type, ',' ORDER BY privilege_type) AS p
    FROM information_schema.role_table_grants
    WHERE grantee='zyara_app' AND table_name LIKE 'capability_%'
    GROUP BY table_name ORDER BY table_name`,
 );
 for (const row of privileges.rows) {
-  const expected = row.table_name.startsWith("capability_definition") ? "SELECT" : "INSERT,SELECT";
-  if (row.p !== expected) fail(`${row.table_name} must grant ${expected} only, got ${row.p}`);
+  if (row.p !== "SELECT") fail(`${row.table_name} must grant table-level SELECT only (INSERT is per column), got ${row.p}`);
 }
 if (privileges.rows.length !== 6) fail(`expected grants on six capability tables, got ${privileges.rows.length}`);
+const timestampInsert = await client.query(
+  `SELECT table_name, column_name FROM information_schema.column_privileges
+   WHERE grantee='zyara_app' AND privilege_type='INSERT' AND table_name LIKE 'capability_%'
+     AND column_name IN ('granted_at','revoked_at','claimed_at','recorded_at')`,
+);
+if (timestampInsert.rows.length !== 0) fail(`application may set database timestamps: ${JSON.stringify(timestampInsert.rows)}`);
 
 const secretColumns = await client.query(
   `SELECT column_name FROM information_schema.columns
@@ -282,6 +309,6 @@ const secretColumns = await client.query(
 if (secretColumns.rows.length !== 0) fail(`secret or parameter-value columns persisted: ${JSON.stringify(secretColumns.rows)}`);
 
 console.log(
-  "AIF-01B capability registry DB smoke PASS: immutable catalog, append-only grants/revocations/claims/receipts, RLS isolation, DB-enforced A5 human-only, bounded grants, one approval per invocation",
+  "AIF-01B capability registry DB smoke PASS: immutable catalog, append-only grants/revocations/claims/receipts, database-owned timestamps, RLS isolation, DB-enforced A5 human-only, bounded grants, one approval per invocation identity",
 );
 await client.end();

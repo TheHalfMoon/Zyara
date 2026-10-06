@@ -39,22 +39,22 @@ A `requestedTenantId` in the request is only compared with the principal's tenan
 1. A dependency that fails, throws or answers "unknown" yields `UNDECIDABLE`. Never `ALLOW`.
 2. Registry lookup: unknown id → `DENY CAPABILITY_UNKNOWN`; unregistered version → `DENY CAPABILITY_VERSION_MISMATCH`; digest differs → `DENY CAPABILITY_DIGEST_MISMATCH`; revoked or quarantined definition → `DENY CAPABILITY_REVOKED`.
 3. Body tenant differs from the principal tenant → `DENY CAPABILITY_CROSS_TENANT`.
-4. Invocation shape (AIF-01A `validateInvocation`) fails → `DENY` with that code (for example a wrong parameter digest format or a missing idempotency key).
-5. Principal checks:
-   - human: a membership with a granted role must pass `authorize()` for the tenant and branch, with `aal2` required for A4 and A5; otherwise `DENY` with the `AUTHZ_*` code;
-   - agent: A5 → `DENY CAPABILITY_HUMAN_ONLY`; the capability id must be an N5/C1 agent capability, and `resolveAuthority()` must allow it (revoked, expired, suspended, cross-branch and sponsor checks); otherwise `DENY` with the `AGENT_*` code;
+4. Invocation shape (AIF-01A `validateInvocation`) fails → `DENY` with that code (for example a wrong parameter digest format or a missing idempotency key). An approval or confirmation reference that is not a safe opaque token → `DENY INVOCATION_REFERENCE_INVALID`, before any lookup, so nothing is decided on an id the receipt could not record.
+5. Automated principals:
+   - agent: A5 → `DENY CAPABILITY_HUMAN_ONLY`; a capability id outside the N5/C1 agent capability set → `DENY CAPABILITY_NOT_AGENT_CAPABILITY`; otherwise `resolveAuthority()` must allow it (revoked, expired, suspended, cross-branch and sponsor checks), or `DENY` with its `AGENT_*` code;
    - workflow: A5 → `DENY CAPABILITY_HUMAN_ONLY`.
-6. Grant: no active grant (unrevoked, unexpired at server time) for this principal, capability, version and tenant that also passes `checkInvocationScope` → `DENY CAPABILITY_GRANT_MISSING` (or the scope code, for example `CAPABILITY_SCOPE_WIDENING`).
+6. Grant: no grant for this principal, capability, version and tenant that is unrevoked, already in force (`grantedAt ≤ now`), unexpired at server time, and passes `checkInvocationScope` → `DENY CAPABILITY_GRANT_MISSING` (or the scope code, for example `CAPABILITY_SCOPE_WIDENING`). A human acts through the roles of their active memberships: grants are looked up per role, and the narrowest grant whose role passes `authorize()` at this branch is chosen. `aal2` is required for A4 and A5, and admin/clinical separation applies to PHI and clinical-signing capabilities. If no role passes → `DENY` with the first `AUTHZ_*` code.
 7. Adapter: if the capability is bound to a provider adapter, that adapter must hold the bound certified capability → otherwise `DENY CAPABILITY_ADAPTER_UNCERTIFIED`. An unknown adapter → `UNDECIDABLE`.
-8. Approval, required when `riskClass ∈ {high, critical}` or the authority class is `A4_EXECUTE_MED`:
+8. Approval, required when `riskClass ∈ {high, critical}` or the authority class is `A4_EXECUTE_MED`, and only then (an approval presented to any other capability → `DENY CAPABILITY_APPROVAL_NOT_APPLICABLE`, so a low-risk call cannot use up someone else's approval):
    - the capability id must be an N5/C3 protected action type → otherwise `DENY CAPABILITY_APPROVAL_RULE_MISSING`;
    - no approval presented → `ASK APPROVAL_REQUIRED`;
+   - no idempotency key → `DENY CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY` (this covers approval-gated reads);
    - unknown approval → `DENY CAPABILITY_APPROVAL_UNKNOWN`;
-   - different tenant, branch or action type → `DENY CAPABILITY_APPROVAL_MISMATCH`;
+   - different tenant, branch or action type, or a requester other than this principal (agent id, account, or workflow as the `system` requester ref) → `DENY CAPABILITY_APPROVAL_MISMATCH`;
    - status other than `approved`, or expired at server time → `DENY CAPABILITY_APPROVAL_STALE`;
    - parameter digest differs → `DENY CAPABILITY_APPROVAL_PARAMETERS_CHANGED`.
-   - the approval is already claimed by another invocation (a different idempotency key) → `DENY CAPABILITY_APPROVAL_CONSUMED`.
-9. `A5_HUMAN_ONLY` (human principals only): no confirmation presented → `ASK CONFIRMATION_REQUIRED`; a confirmation that does not match → `DENY CAPABILITY_CONFIRMATION_INVALID`. A confirmation counts only when the confirmation port answers that it was given by this account for exactly this capability, version, tenant, parameters digest and idempotency key.
+   - the approval is already claimed by another invocation identity (a different actor or idempotency key) → `DENY CAPABILITY_APPROVAL_CONSUMED`.
+9. `A5_HUMAN_ONLY` (human principals only): no idempotency key → `DENY CAPABILITY_CONFIRMATION_NEEDS_INVOCATION_KEY`; no confirmation presented → `ASK CONFIRMATION_REQUIRED`; a confirmation that does not match → `DENY CAPABILITY_CONFIRMATION_INVALID`. A confirmation counts only when the confirmation port answers that it was given by this account for exactly this capability, version, tenant, parameters digest and idempotency key.
 10. Otherwise `ALLOW`.
 
 Server time always comes from the clock port, never from the request.
@@ -65,11 +65,13 @@ Revoked grants and grants expired at server time are ignored. Among the remainin
 
 ### One approval, one invocation
 
-An approval authorizes one invocation identity: (approval request id, idempotency key). The first `ALLOW` that uses an approval claims it in `capability_approval_claims`, where the primary key (tenant, approval request id) is the race-safe serialization point. A re-resolution with the same idempotency key is the same invocation. A different key is refused with `CAPABILITY_APPROVAL_CONSUMED`. If two concurrent resolutions both see an unclaimed approval, only one claim insert succeeds, and the caller must treat the loser as `DENY`.
+An approval authorizes one invocation identity: (approval request id, actor kind, actor ref, idempotency key). The first `ALLOW` that uses an approval claims it in `capability_approval_claims`, where the primary key (tenant, approval request id) is the race-safe serialization point. A re-resolution by the same actor with the same key is the same invocation. Anything else is refused with `CAPABILITY_APPROVAL_CONSUMED`. If two concurrent resolutions both see an unclaimed approval, only one claim insert succeeds; the losing `ALLOW` is never stored, and re-resolving it yields the `DENY`.
+
+Scope note: this claim mechanism goes beyond the handoff's minimum table list. It was added because the Jev design challenge found approval replay (p=0.26 that the original design prevented it). The pstack parsimony judge questioned it, and it is kept because the resolver cannot be deny-by-default while one approval can authorize unlimited invocations.
 
 ### Decisions are point-in-time (time of check vs time of use)
 
-`ALLOW` is not a capability token. A receipt is valid until `validUntil = decidedAt + 60 s` (`RESOLUTION_VALIDITY_MS`). The dispatcher (AIF-04C) must re-resolve immediately before dispatch and must not dispatch on an expired receipt. A grant, agent or approval revoked after the decision is therefore seen at dispatch. The receipt also names the grant and approval it relied on, so a later audit can check them.
+`ALLOW` is not a capability token. An `ALLOW` receipt is valid until `validUntil = decidedAt + 60 s` (`RESOLUTION_VALIDITY_MS`); every other decision has `validUntil = decidedAt`. Recording refuses an `ALLOW` whose validity has passed. The dispatcher (AIF-04C) must re-resolve immediately before dispatch and must not dispatch on an expired receipt. A grant, agent or approval revoked after the decision is therefore seen at dispatch. The receipt also names the grant and approval it relied on, so a later audit can check them.
 
 ### Every decision is receipted
 
@@ -105,6 +107,7 @@ An approval authorizes one invocation identity: (approval request id, idempotenc
 - approval claimed by another invocation denied; the same invocation re-resolves to ALLOW;
 - confirmation for other parameters denied;
 - the narrowest active grant is chosen; a revoked branch grant does not hide an active tenant-wide one;
-- every decision kind produces a receipt; `validUntil` is 60 s after server time.
+- every decision kind produces a receipt; an `ALLOW` is valid for 60 s after server time;
+- the request and principal are each read once, so a getter cannot change a value between checks.
 
 DB smoke (real PostgreSQL 16): RLS read and write isolation; no `UPDATE`/`DELETE` on any table; A5 grant to an agent refused by the database; non-human grant without expiry refused; cross-tenant branch refused; malformed digest refused.
