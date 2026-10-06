@@ -14,6 +14,7 @@
 // and the M051 consent purposes rather than inventing parallel vocabularies.
 
 import {
+  APPROVAL_DIRECT_IDENTIFIER_PATTERNS,
   APPROVAL_PARAMETERS_DIGEST_PATTERN,
   APPROVAL_RISK_CLASSES,
   isReservedCapability,
@@ -121,9 +122,8 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
 ];
 
 // Direct identifiers (national ids, phone numbers, MRNs) are runs of digits; opaque tokens
-// that travel with an invocation must not carry them. This is the N5 rule (approvals,
-// activity, audit chain and migration 045), so a token accepted there is accepted here.
-const DIRECT_IDENTIFIER_PATTERNS: readonly RegExp[] = [/^[0-9]{7,}$/, /[0-9]{9,}/];
+// that travel with an invocation must not carry them. The patterns are the N5/C3 ones
+// (APPROVAL_DIRECT_IDENTIFIER_PATTERNS), so a token accepted there is accepted here.
 // A canonical lowercase UUID is random hex by construction. Digit-run heuristics would
 // refuse about 3% of random UUIDs, so this shape is accepted as opaque without them.
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -412,7 +412,7 @@ function assertOpaqueToken(value: unknown, label: string, code: CapabilityContra
   if (UUID_PATTERN.test(token)) return token;
   if (
     SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) ||
-    DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(token))
+    APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(token))
   ) {
     fail(code, `${label} must be opaque and carry no credential or direct identifier`);
   }

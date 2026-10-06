@@ -20,12 +20,13 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22.12.0"
       - uses: pnpm/action-setup@v4
         with:
           version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @zyara/capability-gateway typecheck
       - run: pnpm --filter @zyara/collaboration typecheck
