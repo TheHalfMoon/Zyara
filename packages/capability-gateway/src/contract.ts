@@ -22,6 +22,8 @@ import {
 } from "@zyara/collaboration";
 import type { ConsentPurpose } from "@zyara/consent-boundaries";
 
+import { ISO_INSTANT_PATTERN, canonicalJson, sha256Hex } from "./canonical.js";
+
 // ---------------------------------------------------------------------------
 // Closed vocabularies
 // ---------------------------------------------------------------------------
@@ -98,7 +100,6 @@ export const EGRESS_POLICY_REF_PATTERN = /^egress_[a-z0-9_]{2,64}$/;
 const OWNER_DOMAIN_PATTERN = /^[a-z][a-z0-9_]{1,39}$/;
 const RECEIPT_KIND_PATTERN = /^[a-z][a-z0-9_]{1,63}$/;
 const OPAQUE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
-const ISO_INSTANT_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 
 // Value shapes that are credentials, never references. A definition carrying any of them
 // anywhere is refused, whatever field it sits in.
@@ -130,6 +131,11 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
 // zero-padded shapes such as 00000000-0000-0000-0000-966501234567. These heuristics catch
 // accidental leaks only; a caller set on hiding an identifier could still hex-encode it.
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+// Credential words refused anywhere in an opaque token. This is exactly the 045/046 SQL
+// denylist (capability_is_opaque_token), so a token the resolver accepts is never refused
+// when its claim or receipt is recorded.
+const TOKEN_CREDENTIAL_WORDS =
+  /(secret:\/\/|bearer|api[_-]?key|access[_-]?token|refresh[_-]?token|app[_-]?secret|verify[_-]?token|private[_-]?key|password|passwd|credential|authorization|eaag)/i;
 // A long hex run inside a credential reference is a key, not a name.
 const LONG_HEX_PATTERN = /[0-9a-f]{32}/;
 
@@ -392,22 +398,6 @@ function deepFreeze<T>(value: T): T {
   return value;
 }
 
-// Canonical JSON: object keys sorted, arrays kept in order, no whitespace.
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
-  if (isRecord(value)) {
-    const keys = Object.keys(value).sort();
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
-  }
-  return JSON.stringify(value);
-}
-
-async function sha256Hex(input: string): Promise<string> {
-  const bytes = new TextEncoder().encode(input);
-  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
-  return [...digest].map((part) => part.toString(16).padStart(2, "0")).join("");
-}
-
 function assertOpaqueId(value: unknown, label: string, code: CapabilityContractErrorCode): string {
   if (typeof value !== "string" || !OPAQUE_ID_PATTERN.test(value)) fail(code, `${label} must be a non-empty opaque id`);
   return value;
@@ -419,12 +409,28 @@ function assertOpaqueToken(value: unknown, label: string, code: CapabilityContra
   const token = assertOpaqueId(value, label, code);
   if (UUID_PATTERN.test(token)) return token;
   if (
+    TOKEN_CREDENTIAL_WORDS.test(token) ||
     SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) ||
     APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(token))
   ) {
     fail(code, `${label} must be opaque and carry no credential or direct identifier`);
   }
   return token;
+}
+
+// Non-throwing forms for callers that must echo a value only when it is safe (AIF-01B
+// receipts): an opaque id, and an opaque token free of credential shapes and direct ids.
+export function isOpaqueId(value: unknown): value is string {
+  return typeof value === "string" && OPAQUE_ID_PATTERN.test(value);
+}
+
+export function isOpaqueToken(value: unknown): value is string {
+  try {
+    assertOpaqueToken(value, "token", "CAPABILITY_CORRELATION_REQUIRED");
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function assertInstant(value: unknown, label: string): string {

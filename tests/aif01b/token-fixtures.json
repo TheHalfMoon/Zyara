@@ -1,0 +1,32 @@
+{
+  "description": "Opaque-token parity fixtures shared by tests/aif01b (TypeScript isOpaqueToken) and apps/api/scripts/aif01b-capability-rls-smoke.mjs (SQL capability_is_opaque_token). Both must agree on accept and refuse; tsOnlyRefuse are shapes TypeScript additionally refuses (fail closed).",
+  "accept": [
+    "corr-0001",
+    "idem-0001",
+    "wf-recall",
+    "ref-1234567",
+    "appt-a1b2:cancel",
+    "2b0c9d4e-1234-4567-89ab-123456789012",
+    "12345678-1234-4123-8123-123456789012"
+  ],
+  "refuse": [
+    "0501234567",
+    "corr-0501234567890",
+    "password-reset-42",
+    "reauthorization-7",
+    "bearer-x",
+    "api_key-1",
+    "access_token-abc",
+    "refresh-token-9",
+    "eaag-123",
+    "credential-ref-2",
+    "00000000-0000-0000-0000-966501234567",
+    "has space",
+    "-leading-dash"
+  ],
+  "tsOnlyRefuse": [
+    "sk_live_abcdefghijklmnop",
+    "AKIAIOSFODNN7EXAMPLE",
+    "ghp_abcdefghijklmnopqrstuvwxyz0123456789"
+  ]
+}

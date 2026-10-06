@@ -1,0 +1,14 @@
+{
+  "description": "AIF-01B capability resolver: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "unknown_can_allow": {"type": "noul", "instructions": "A missing, failing or unknown dependency answer (registry, grant, agent, approval, adapter, confirmation or clock) could result in ALLOW.", "criteria": {"true": "Some unknown or failing input path ends in ALLOW", "false": "Every unknown or failing input yields UNDECIDABLE or DENY"}},
+    "caller_controls_identity": {"type": "noul", "instructions": "The caller can choose the tenant, actor kind or actor id that the decision is evaluated for (for example via a body field), or an agent can be evaluated as a workflow or human.", "criteria": {"true": "Tenant or actor identity can be supplied or switched by the request", "false": "Tenant and actor come only from a server-derived principal; body tenant is only compared"}},
+    "approval_bypass": {"type": "noul", "instructions": "A high-risk or approval-gated capability could be allowed with a stale, expired, rejected, other-tenant, other-branch, other-action or parameter-changed approval, or with no approval.", "criteria": {"true": "Some approval defect still yields ALLOW", "false": "Every approval defect yields ASK or DENY"}},
+    "human_only_leak": {"type": "noul", "instructions": "An A5 human-only capability could be allowed for an agent or workflow, or for a human without exact confirmation.", "criteria": {"true": "A5 can be allowed to a non-human or without confirmation", "false": "A5 is human-only and needs confirmation, enforced in code and in the database"}},
+    "durable_state_mutable": {"type": "noul", "instructions": "Admitted definitions, grants, revocations or resolution receipts can be updated or deleted in place by the application, or a tenant can read another tenant's rows.", "criteria": {"true": "Some durable record is mutable or not tenant-isolated", "false": "All are append-only with RLS on tenant tables"}},
+    "receipt_leaks": {"type": "noul", "instructions": "A resolution receipt could carry parameter values, free text from the request, secrets or patient identifiers.", "criteria": {"true": "Receipt fields can carry such content", "false": "Receipt carries only ids, digests, codes and server time"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this resolver design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"unknown_handling": "UNDECIDABLE vs ALLOW on unknown state", "identity": "Principal binding and tenant source", "approval": "Approval binding and staleness", "human_only": "A5 and confirmation", "durability": "Append-only and RLS storage", "receipts": "Receipt content and determinism", "completeness": "Missing rules or tests"}}
+  }
+}
