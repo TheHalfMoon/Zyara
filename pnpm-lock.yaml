@@ -307,6 +307,12 @@ importers:
         specifier: workspace:*
         version: link:../domain
 
+  packages/model-registry:
+    dependencies:
+      '@zyara/capability-gateway':
+        specifier: workspace:*
+        version: link:../capability-gateway
+
   packages/navigation-safety:
     dependencies:
       '@zyara/domain':
@@ -569,6 +575,19 @@ importers:
       '@zyara/privacy-egress':
         specifier: workspace:*
         version: link:../../packages/privacy-egress
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/aif03a:
+    dependencies:
+      '@zyara/model-registry':
+        specifier: workspace:*
+        version: link:../../packages/model-registry
     devDependencies:
       tsx:
         specifier: 4.19.2
