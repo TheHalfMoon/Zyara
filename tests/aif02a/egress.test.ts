@@ -330,7 +330,7 @@ describe("AIF-02A delta-1 hardening", () => {
 
   it("denies a non-finite number instead of sending it as null", async () => {
     const decision = await decideEgress(request({ payload: [{ path: "slotLabel", value: Number.NaN }] }), await deps());
-    assert.deepEqual([decision.receipt.decision, decision.payload], ["DENY", null]);
+    assert.deepEqual([decision.receipt.decision, decision.receipt.reasons, decision.payload], ["DENY", ["EGRESS_PAYLOAD_INVALID"], null]);
   });
 
   it("never echoes an identifier-shaped provider or policy id into a receipt", async () => {
@@ -348,5 +348,25 @@ describe("AIF-02A delta-1 hardening", () => {
     assert.equal(decision.receipt.decision, "ALLOW");
     const [name, phone] = ["patientName", "patientPhone"].map((path) => decision.payload?.find((field) => field.path === path)?.value);
     assert.notEqual(name, phone);
+  });
+});
+
+describe("AIF-02A delta-2 hardening", () => {
+  it("allows UUID tenants and date-versioned refs, and every ALLOW receipt names them", async () => {
+    const tenant = "2b0c9d4e-1234-4567-89ab-123456789012";
+    const datedPolicy: EgressPolicy = { ...POLICY, version: "2026-09-22" };
+    const decision = await decideEgress(
+      request({ tenantId: tenant, policy: { id: POLICY.id, version: "2026-09-22" } }),
+      await deps({ policies: { find: () => datedPolicy } }),
+    );
+    assert.equal(decision.receipt.decision, "ALLOW");
+    assert.deepEqual([decision.receipt.tenantId, decision.receipt.policy?.version, decision.receipt.schema?.id, decision.receipt.providerId], [tenant, "2026-09-22", SCHEMA.id, "llm-ksa"]);
+  });
+
+  it("denies up front when an id the receipt must carry is not echoable", async () => {
+    for (const bad of [{ tenantId: "0501234567" }, { providerId: "someone@example.test" }, { schema: { id: "reminder payload", version: "1.0.0" } }]) {
+      const decision = await decideEgress(request(bad as Partial<EgressRequest>), await deps());
+      assert.deepEqual(decision.receipt.reasons, ["EGRESS_PAYLOAD_INVALID"], JSON.stringify(bad));
+    }
   });
 });

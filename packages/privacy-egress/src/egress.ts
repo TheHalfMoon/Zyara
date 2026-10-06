@@ -14,7 +14,7 @@
 import {
   APPROVAL_DIRECT_IDENTIFIER_PATTERNS,
 } from "@zyara/collaboration";
-import { CAPABILITY_DATA_CLASSES, containsCredentialShape, type CapabilityDataClass } from "@zyara/capability-gateway";
+import { CAPABILITY_DATA_CLASSES, containsCredentialShape, isOpaqueToken, type CapabilityDataClass } from "@zyara/capability-gateway";
 import type { ConsentGrant, ConsentPurpose } from "@zyara/consent-boundaries";
 
 export const TRUST_ZONES = ["ZYARA_CORE", "TENANT_DEVICE", "QUALIFIED_PROVIDER", "EXTERNAL"] as const;
@@ -219,7 +219,17 @@ const denied = (reason: EgressReasonCode, partial: Partial<Evaluation> = {}): Ev
 
 // Rules 1-10 of the work packet, in order. Returns the first failing reason, or ALLOWED.
 function evaluate(request: EgressRequest, deps: EgressDependencies, nowIso: string): Evaluation {
-  if (typeof request.tenantId !== "string" || !OPAQUE.test(request.tenantId) || safeZone(request.sourceZone) === null) return denied("EGRESS_PAYLOAD_INVALID");
+  // Every id the receipt must carry is checked up front, so an ALLOW receipt always names its
+  // tenant, provider, policy and schema.
+  if (
+    !echoable(request.tenantId) ||
+    !echoable(request.providerId) ||
+    safeRef(request.policy) === null ||
+    safeRef(request.schema) === null ||
+    safeZone(request.sourceZone) === null
+  ) {
+    return denied("EGRESS_PAYLOAD_INVALID");
+  }
 
   // Rule 1: policy.
   const policy = available(deps.policies.find(request.policy));
@@ -442,8 +452,11 @@ export async function decideEgress(requestInput: EgressRequest, deps: EgressDepe
 
 // A request value is echoed into a receipt only when it is an opaque id that does not look like
 // a direct identifier (a phone or national id typed into an id field).
+// The AIF-01A opaque-token rule on the raw string (N5 digit rule, UUID exemption, credential
+// words), plus no e-mail address. Unlike the payload heuristic it does not strip separators,
+// so date versions (2026-09-22) and random UUIDs stay echoable.
 function echoable(value: unknown): value is string {
-  return typeof value === "string" && OPAQUE.test(value) && !looksLikeDirectIdentifier(value);
+  return isOpaqueToken(value) && !EMAIL.test(value);
 }
 
 function safeRef(value: unknown): VersionedRef | null {
