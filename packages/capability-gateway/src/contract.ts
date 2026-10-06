@@ -14,9 +14,9 @@
 // and the M051 consent purposes rather than inventing parallel vocabularies.
 
 import {
-  AGENT_RESERVED_CAPABILITY_PREFIXES,
   APPROVAL_PARAMETERS_DIGEST_PATTERN,
   APPROVAL_RISK_CLASSES,
+  isReservedCapability,
   type ApprovalRiskClass,
 } from "@zyara/collaboration";
 import type { ConsentPurpose } from "@zyara/consent-boundaries";
@@ -92,7 +92,7 @@ export const CAPABILITY_ID_PATTERN = /^[a-z][a-z0-9_]{0,39}(\.[a-z][a-z0-9_]{0,3
 export const CAPABILITY_VERSION_PATTERN = /^(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})$/;
 export const CAPABILITY_DIGEST_PATTERN = /^cap_[0-9a-f]{64}$/;
 export const SCHEMA_DIGEST_PATTERN = /^schema_[0-9a-f]{64}$/;
-export const CREDENTIAL_REF_PATTERN = /^credref_[a-z0-9_]{4,64}$/;
+export const CREDENTIAL_REF_PATTERN = /^credref_[a-z][a-z0-9_]{3,63}$/;
 export const EGRESS_POLICY_REF_PATTERN = /^egress_[a-z0-9_]{2,64}$/;
 const OWNER_DOMAIN_PATTERN = /^[a-z][a-z0-9_]{1,39}$/;
 const RECEIPT_KIND_PATTERN = /^[a-z][a-z0-9_]{1,63}$/;
@@ -101,16 +101,33 @@ const ISO_INSTANT_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/
 
 // Value shapes that are credentials, never references. A definition carrying any of them
 // anywhere is refused, whatever field it sits in.
+// Every quantifier is bounded and every scanned string is length-capped first
+// (CAPABILITY_STRING_MAX_LENGTH), so no pattern can backtrack super-linearly.
 const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
+  /\b[sr]k[-_](live|test)?[-_]?[A-Za-z0-9]{8,}/,
   /\bsk-[A-Za-z0-9_-]{8,}/,
+  /\bAIza[0-9A-Za-z_-]{30,40}/,
+  /:\/\/[^/\s:@]{1,256}:[^/\s@]{1,256}@/,
+  /secret:\/\//i,
   /\bBearer\s+\S+/i,
-  /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-  /\beyJ[A-Za-z0-9_-]{4,}\.[A-Za-z0-9_-]*\./,
+  /-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----/,
+  /\beyJ[A-Za-z0-9_-]{4,512}\.[A-Za-z0-9_-]{0,2048}\./,
   /\b(AKIA|ASIA)[A-Z0-9]{16}\b/,
   /\bgh[pousr]_[A-Za-z0-9]{20,}/,
   /\bxox[abpr]-[A-Za-z0-9-]{10,}/,
   /\b(password|passwd|secret|api[_-]?key|token)\s*[:=]/i,
+  /(access|refresh)[_-]?token/i,
+  /private[_-]?key/i,
 ];
+
+// Direct identifiers (national ids, phone numbers, MRNs) are runs of digits; opaque tokens
+// that travel with an invocation must not carry them.
+const DIRECT_IDENTIFIER_PATTERN = /[0-9]{7}/;
+// A long hex run inside a credential reference is a key, not a name.
+const LONG_HEX_PATTERN = /[0-9a-f]{32}/;
+
+export const CAPABILITY_STRING_MAX_LENGTH = 512;
+export const CAPABILITY_DEFINITION_MAX_BYTES = 16_384;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -229,6 +246,7 @@ export interface InvocationReceipt {
 export type CapabilityContractErrorCode =
   | "CAPABILITY_FIELD_UNKNOWN"
   | "CAPABILITY_FIELD_MISSING"
+  | "CAPABILITY_VALUE_TOO_LARGE"
   | "CAPABILITY_ID_INVALID"
   | "CAPABILITY_VERSION_INVALID"
   | "CAPABILITY_OWNER_INVALID"
@@ -299,10 +317,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function exactKeys(value: unknown, keys: readonly string[], label: string, code: CapabilityContractErrorCode): Record<string, unknown> {
   if (!isRecord(value)) fail(code, `${label} must be an object`);
   for (const key of Object.keys(value)) {
-    if (!keys.includes(key)) fail("CAPABILITY_FIELD_UNKNOWN", `${label} has an unknown field '${key}'`);
+    // The key itself is not echoed: an unexpected key name may be a secret.
+    if (!keys.includes(key)) fail("CAPABILITY_FIELD_UNKNOWN", `${label} has an unknown field`);
   }
   for (const key of keys) {
-    if (!(key in value)) fail("CAPABILITY_FIELD_MISSING", `${label} is missing '${key}'`);
+    if (!Object.hasOwn(value, key)) fail("CAPABILITY_FIELD_MISSING", `${label} is missing '${key}'`);
   }
   return value;
 }
@@ -315,6 +334,9 @@ function authorityRank(value: CapabilityAuthorityClass): number {
 // hide in a field the structural checks would otherwise refuse with a different code.
 function assertNoSecretValues(value: unknown, path: string): void {
   if (typeof value === "string") {
+    if (value.length > CAPABILITY_STRING_MAX_LENGTH) {
+      fail("CAPABILITY_VALUE_TOO_LARGE", `${path} exceeds ${CAPABILITY_STRING_MAX_LENGTH} characters`);
+    }
     for (const pattern of SECRET_VALUE_PATTERNS) {
       if (pattern.test(value)) {
         fail("CAPABILITY_CREDENTIAL_PLAINTEXT", `${path} carries a credential-shaped value`);
@@ -327,8 +349,27 @@ function assertNoSecretValues(value: unknown, path: string): void {
     return;
   }
   if (isRecord(value)) {
-    for (const [key, item] of Object.entries(value)) assertNoSecretValues(item, `${path}.${key}`);
+    for (const [key, item] of Object.entries(value)) {
+      // Keys are scanned like values; the path then uses a placeholder so a refused key is
+      // never echoed back in an error message.
+      assertNoSecretValues(key, `${path} key`);
+      assertNoSecretValues(item, `${path}.${key}`);
+    }
   }
+}
+
+function snapshotPlainData(input: unknown): unknown {
+  let text: string | undefined;
+  try {
+    text = JSON.stringify(input);
+  } catch {
+    fail("CAPABILITY_FIELD_MISSING", "definition must be plain JSON-compatible data");
+  }
+  if (text === undefined) fail("CAPABILITY_FIELD_MISSING", "definition must be plain JSON-compatible data");
+  if (text.length > CAPABILITY_DEFINITION_MAX_BYTES) {
+    fail("CAPABILITY_VALUE_TOO_LARGE", `definition exceeds ${CAPABILITY_DEFINITION_MAX_BYTES} characters`);
+  }
+  return JSON.parse(text) as unknown;
 }
 
 function deepFreeze<T>(value: T): T {
@@ -360,6 +401,16 @@ function assertOpaqueId(value: unknown, label: string, code: CapabilityContractE
   return value;
 }
 
+// Tokens that travel with an invocation or receipt (correlation, idempotency, invocation
+// ids) are opaque: no credential shape and no direct identifier may ride inside them.
+function assertOpaqueToken(value: unknown, label: string, code: CapabilityContractErrorCode): string {
+  const token = assertOpaqueId(value, label, code);
+  if (SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) || DIRECT_IDENTIFIER_PATTERN.test(token)) {
+    fail(code, `${label} must be opaque and carry no credential or direct identifier`);
+  }
+  return token;
+}
+
 function assertInstant(value: unknown, label: string): string {
   if (typeof value !== "string" || !ISO_INSTANT_PATTERN.test(value) || Number.isNaN(Date.parse(value))) {
     fail("CAPABILITY_TIME_INVALID", `${label} must be an ISO-8601 UTC instant`);
@@ -384,7 +435,13 @@ function validateSchemaRef(value: unknown, label: string): SchemaRef {
 function validateCredentialBinding(value: unknown): CredentialBindingRef {
   if (!isRecord(value)) fail("CAPABILITY_CREDENTIAL_PLAINTEXT", "credentialBinding must be an opaque reference");
   if (value.kind === "none" && Object.keys(value).length === 1) return { kind: "none" };
-  if (value.kind === "ref" && Object.keys(value).length === 2 && typeof value.ref === "string" && CREDENTIAL_REF_PATTERN.test(value.ref)) {
+  if (
+    value.kind === "ref" &&
+    Object.keys(value).length === 2 &&
+    typeof value.ref === "string" &&
+    CREDENTIAL_REF_PATTERN.test(value.ref) &&
+    !LONG_HEX_PATTERN.test(value.ref)
+  ) {
     return { kind: "ref", ref: value.ref };
   }
   return fail("CAPABILITY_CREDENTIAL_PLAINTEXT", "credentialBinding must be { kind: 'none' } or an opaque credref_ reference");
@@ -420,8 +477,12 @@ const DEFINITION_KEYS = [
 // Returns a fresh, structurally exact copy. Nothing from the input object is retained, so
 // later mutation of the caller's object cannot reach an admitted definition.
 export function validateCapabilityDefinition(input: unknown): CapabilityDefinition {
-  assertNoSecretValues(input, "definition");
-  const raw = exactKeys(input, DEFINITION_KEYS, "definition", "CAPABILITY_FIELD_MISSING");
+  // Read the caller's object exactly once. Every later check and the returned copy work on
+  // this plain-data snapshot, so a getter or Proxy cannot answer one value to the checks and
+  // another to the copy, and inherited (prototype) fields are not seen at all.
+  const snapshot = snapshotPlainData(input);
+  assertNoSecretValues(snapshot, "definition");
+  const raw = exactKeys(snapshot, DEFINITION_KEYS, "definition", "CAPABILITY_FIELD_MISSING");
 
   if (typeof raw.id !== "string" || !CAPABILITY_ID_PATTERN.test(raw.id)) {
     fail("CAPABILITY_ID_INVALID", "id must be a dotted lowercase name with at least two segments and no wildcard");
@@ -449,9 +510,11 @@ export function validateCapabilityDefinition(input: unknown): CapabilityDefiniti
   }
   const dataClasses: CapabilityDataClass[] = [];
   for (const item of raw.dataClasses) {
-    if (!isOneOf(CAPABILITY_DATA_CLASSES, item)) fail("CAPABILITY_DATA_CLASS_UNSUPPORTED", `unsupported data class '${String(item)}'`);
+    if (!isOneOf(CAPABILITY_DATA_CLASSES, item)) fail("CAPABILITY_DATA_CLASS_UNSUPPORTED", "dataClasses contains an unsupported value");
     if (!dataClasses.includes(item)) dataClasses.push(item);
   }
+  // Canonical order, so the same set of classes always yields the same digest.
+  dataClasses.sort((a, b) => CAPABILITY_DATA_CLASSES.indexOf(a) - CAPABILITY_DATA_CLASSES.indexOf(b));
   if (dataClasses.includes("CREDENTIAL")) {
     fail("CAPABILITY_CREDENTIAL_AS_DATA", "credentials are never capability data; bind them by opaque reference");
   }
@@ -616,12 +679,6 @@ export class CapabilityContractRegistry {
 // Grants, invocation scope, invocation and receipt shape
 // ---------------------------------------------------------------------------
 
-function isReservedForAgents(capabilityId: CapabilityId): boolean {
-  return AGENT_RESERVED_CAPABILITY_PREFIXES.some(
-    (prefix) => capabilityId === prefix || capabilityId.startsWith(`${prefix}.`),
-  );
-}
-
 function validateGrantee(value: unknown, label: string): CapabilityGrantee {
   if (!isRecord(value) || !isOneOf(["agent", "human_role", "workflow"] as const, value.kind)) {
     fail("CAPABILITY_GRANT_MISMATCH", `${label} must be an agent, human role or workflow`);
@@ -647,11 +704,14 @@ export function validateGrant(admitted: AdmittedCapability, grant: CapabilityGra
   if (definition.branchScope === "BRANCH" && grant.branchId === null) {
     fail("CAPABILITY_SCOPE_WIDENING", "a branch-scoped capability cannot be granted tenant-wide");
   }
+  // A5 is human-only for every automated principal: an agent and a workflow alike.
+  if (grantee.kind !== "human_role" && definition.authorityClass === "A5_HUMAN_ONLY") {
+    fail("CAPABILITY_HUMAN_ONLY", "an A5_HUMAN_ONLY capability can only be granted to a human role");
+  }
+  // Reserved namespaces stay with typed Zyara operations (workflows) and humans; an agent
+  // may only observe or draft inside them (N5/C1).
   if (grantee.kind === "agent") {
-    if (definition.authorityClass === "A5_HUMAN_ONLY") {
-      fail("CAPABILITY_HUMAN_ONLY", "an A5_HUMAN_ONLY capability can never be granted to an agent");
-    }
-    if (isReservedForAgents(definition.id) && authorityRank(definition.authorityClass) > authorityRank("A1_DRAFT")) {
+    if (isReservedCapability(definition.id) && authorityRank(definition.authorityClass) > authorityRank("A1_DRAFT")) {
       fail("CAPABILITY_AGENT_RESERVED_NAMESPACE", "agents may only observe or draft inside a reserved namespace");
     }
   }
@@ -683,15 +743,16 @@ export function validateInvocation(admitted: AdmittedCapability, invocation: Cap
     fail("CAPABILITY_DIGEST_MISMATCH", "invocation is bound to another definition digest");
   }
   assertScopeIds(invocation.tenantId, invocation.branchId, "invocation");
+  if (admitted.definition.branchScope === "BRANCH" && invocation.branchId === null) {
+    fail("CAPABILITY_SCOPE_WIDENING", "a branch-scoped capability needs a branch on every invocation");
+  }
   validateGrantee(invocation.actor, "invocation.actor");
   if (typeof invocation.parametersDigest !== "string" || !APPROVAL_PARAMETERS_DIGEST_PATTERN.test(invocation.parametersDigest)) {
     fail("CAPABILITY_PARAMETERS_DIGEST_INVALID", "parametersDigest must be a normalized params_ digest, never raw parameters");
   }
-  assertOpaqueId(invocation.correlationId, "invocation.correlationId", "CAPABILITY_CORRELATION_REQUIRED");
-  if (admitted.definition.idempotency.mode === "CALLER_KEY") {
-    assertOpaqueId(invocation.idempotencyKey, "invocation.idempotencyKey", "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED");
-  } else if (invocation.idempotencyKey !== null) {
-    assertOpaqueId(invocation.idempotencyKey, "invocation.idempotencyKey", "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED");
+  assertOpaqueToken(invocation.correlationId, "invocation.correlationId", "CAPABILITY_CORRELATION_REQUIRED");
+  if (admitted.definition.idempotency.mode === "CALLER_KEY" || invocation.idempotencyKey !== null) {
+    assertOpaqueToken(invocation.idempotencyKey, "invocation.idempotencyKey", "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED");
   }
   assertInstant(invocation.requestedAt, "invocation.requestedAt");
 }
@@ -699,9 +760,12 @@ export function validateInvocation(admitted: AdmittedCapability, invocation: Cap
 export function validateReceipt(admitted: AdmittedCapability, receipt: InvocationReceipt): void {
   assertSameCapability(admitted, receipt.capabilityId, receipt.version, "receipt");
   if (receipt.definitionDigest !== admitted.digest) fail("CAPABILITY_DIGEST_MISMATCH", "receipt is bound to another definition digest");
-  assertOpaqueId(receipt.invocationId, "receipt.invocationId", "CAPABILITY_RECEIPT_INVALID");
+  assertOpaqueToken(receipt.invocationId, "receipt.invocationId", "CAPABILITY_RECEIPT_INVALID");
   assertScopeIds(receipt.tenantId, receipt.branchId, "receipt");
-  assertOpaqueId(receipt.correlationId, "receipt.correlationId", "CAPABILITY_CORRELATION_REQUIRED");
+  if (admitted.definition.branchScope === "BRANCH" && receipt.branchId === null) {
+    fail("CAPABILITY_SCOPE_WIDENING", "a branch-scoped capability's receipt names its branch");
+  }
+  assertOpaqueToken(receipt.correlationId, "receipt.correlationId", "CAPABILITY_CORRELATION_REQUIRED");
   assertInstant(receipt.recordedAt, "receipt.recordedAt");
   if (!isOneOf(INVOCATION_OUTCOMES, receipt.outcome) || !isOneOf(RECEIPT_VERIFICATIONS, receipt.verification)) {
     fail("CAPABILITY_RECEIPT_INVALID", "receipt outcome or verification is not recognised");
@@ -714,5 +778,11 @@ export function validateReceipt(admitted: AdmittedCapability, receipt: Invocatio
   }
   if (receipt.verification === "PENDING_RECONCILIATION") {
     fail("CAPABILITY_RECEIPT_INVALID", "only an unknown external outcome is pending reconciliation");
+  }
+  if (receipt.outcome === "DENIED" && receipt.verification !== "UNVERIFIED") {
+    fail("CAPABILITY_RECEIPT_INVALID", "a denied invocation executed nothing, so there is nothing to verify");
+  }
+  if (receipt.verification === "VERIFIED" && admitted.definition.verification.method === "NONE_READ_ONLY") {
+    fail("CAPABILITY_RECEIPT_INVALID", "a capability without a verification method cannot report VERIFIED");
   }
 }

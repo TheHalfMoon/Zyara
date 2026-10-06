@@ -469,3 +469,167 @@ describe("AIF-01A invocation and receipt shape", () => {
     assert.equal(code(() => validateReceipt(send, { ...base, definitionDigest: `cap_${"2".repeat(64)}` })), "CAPABILITY_DIGEST_MISMATCH");
   });
 });
+
+describe("AIF-01A review-panel hardening", () => {
+  it("validates one snapshot, so a getter cannot pass the checks and change the copy", async () => {
+    let reads = 0;
+    const tricky = { ...readDefinition() } as Record<string, unknown>;
+    Object.defineProperty(tricky, "id", {
+      enumerable: true,
+      get: () => (reads++ === 0 ? "reporting.metrics.read" : "reporting.*"),
+    });
+    const registry = new CapabilityContractRegistry();
+    const admitted = await registry.register(tricky, RELEASE);
+    assert.equal(admitted.definition.id, "reporting.metrics.read");
+    assert.equal(reads, 1);
+  });
+
+  it("ignores inherited fields instead of accepting them", () => {
+    const inherited = Object.create(readDefinition()) as CapabilityDefinition;
+    assert.equal(code(() => validateCapabilityDefinition(inherited)), "CAPABILITY_FIELD_MISSING");
+  });
+
+  it("applies the N5/C1 reserved-namespace match, including underscore separators", async () => {
+    const registry = new CapabilityContractRegistry();
+    const sign = await registry.register(
+      writeDefinition({ id: "clinical_note.sign.submit", authorityClass: "A4_EXECUTE_MED", consentPurpose: "care" }),
+      RELEASE,
+    );
+    assert.equal(
+      code(() => validateGrant(sign, agentGrant({ capabilityId: "clinical_note.sign.submit" }))),
+      "CAPABILITY_AGENT_RESERVED_NAMESPACE",
+    );
+  });
+
+  it("never grants A5 to a workflow either", async () => {
+    const registry = new CapabilityContractRegistry();
+    const signing = await registry.register(
+      writeDefinition({
+        id: "prescription.order.sign",
+        dataClasses: ["PHI", "CLINICAL_SIGNING_REQUIRED"],
+        consentPurpose: "care",
+        authorityClass: "A5_HUMAN_ONLY",
+        riskClass: "critical",
+      }),
+      RELEASE,
+    );
+    assert.equal(
+      code(() =>
+        validateGrant(signing, agentGrant({ capabilityId: "prescription.order.sign", grantee: { kind: "workflow", id: "wf-refill" } })),
+      ),
+      "CAPABILITY_HUMAN_ONLY",
+    );
+  });
+
+  it("digests the same set of data classes identically whatever their order", async () => {
+    assert.equal(
+      await digestCapabilityDefinition(writeDefinition({ dataClasses: ["PHI", "PII"] })),
+      await digestCapabilityDefinition(writeDefinition({ dataClasses: ["PII", "PHI", "PII"] })),
+    );
+  });
+
+  it("requires a branch on invocations and receipts of branch-scoped capabilities", async () => {
+    const registry = new CapabilityContractRegistry();
+    const send = await registry.register(writeDefinition(), RELEASE);
+    assert.equal(code(() => validateInvocation(send, invocation(send.digest, { branchId: null }))), "CAPABILITY_SCOPE_WIDENING");
+    const receipt: InvocationReceipt = {
+      invocationId: "inv-0002",
+      capabilityId: send.definition.id,
+      version: send.definition.version,
+      definitionDigest: send.digest,
+      tenantId: "tenant-a",
+      branchId: null,
+      correlationId: "corr-0002",
+      outcome: "SUCCEEDED",
+      verification: "VERIFIED",
+      recordedAt: "2026-10-06T12:00:05.000Z",
+    };
+    assert.equal(code(() => validateReceipt(send, receipt)), "CAPABILITY_SCOPE_WIDENING");
+  });
+
+  it("ties receipt verification to what actually happened", async () => {
+    const registry = new CapabilityContractRegistry();
+    const read = await registry.register(readDefinition(), RELEASE);
+    const receipt: InvocationReceipt = {
+      invocationId: "inv-0003",
+      capabilityId: read.definition.id,
+      version: read.definition.version,
+      definitionDigest: read.digest,
+      tenantId: "tenant-a",
+      branchId: null,
+      correlationId: "corr-0003",
+      outcome: "DENIED",
+      verification: "UNVERIFIED",
+      recordedAt: "2026-10-06T12:00:05.000Z",
+    };
+    validateReceipt(read, receipt);
+    assert.equal(code(() => validateReceipt(read, { ...receipt, verification: "VERIFIED" })), "CAPABILITY_RECEIPT_INVALID");
+    assert.equal(
+      code(() => validateReceipt(read, { ...receipt, outcome: "SUCCEEDED", verification: "VERIFIED" })),
+      "CAPABILITY_RECEIPT_INVALID",
+    );
+    validateReceipt(read, { ...receipt, outcome: "SUCCEEDED", verification: "UNVERIFIED" });
+  });
+});
+
+describe("AIF-01A security-judge hardening", () => {
+  it("caps scanned strings so a hostile value cannot stall the secret scan", () => {
+    const started = performance.now();
+    assert.equal(
+      code(() => validateCapabilityDefinition(readDefinition({ ownerDomain: "eyJ-".repeat(20_000) }))),
+      "CAPABILITY_VALUE_TOO_LARGE",
+    );
+    const boundary = "eyJ-".repeat(128);
+    assert.equal(code(() => validateCapabilityDefinition(readDefinition({ ownerDomain: boundary }))), "CAPABILITY_OWNER_INVALID");
+    assert.ok(performance.now() - started < 500, "secret scan must stay linear");
+  });
+
+  it("refuses more credential shapes, in values and in keys, without echoing them", () => {
+    const shapes = [
+      "sk_live_51HabcDEFghiJKLmnoPQR",
+      "rk_live_51HabcDEFghiJKLmnoPQR",
+      "AIzaSyA1234567890abcdefghijklmnopqrstu",
+      "https://user:pass@example.com/x",
+      "AKIAIOSFODNN7EXAMPLE",
+    ];
+    for (const shape of shapes) {
+      const refused = (() => {
+        try {
+          validateCapabilityDefinition(readDefinition({ ownerDomain: shape }));
+        } catch (error) {
+          return error as CapabilityContractError;
+        }
+        return null;
+      })();
+      assert.ok(refused, `${shape} must be refused`);
+      assert.ok(!refused.message.includes(shape), "the refused value is not echoed");
+    }
+    const withSecretKey = { ...readDefinition(), AKIAIOSFODNN7EXAMPLE: "x" } as unknown as CapabilityDefinition;
+    const refused = (() => {
+      try {
+        validateCapabilityDefinition(withSecretKey);
+      } catch (error) {
+        return error as CapabilityContractError;
+      }
+      return null;
+    })();
+    assert.ok(refused && !refused.message.includes("AKIAIOSFODNN7EXAMPLE"));
+    assert.equal(
+      code(() => validateCapabilityDefinition(writeDefinition({ credentialBinding: { kind: "ref", ref: `credref_k${"a".repeat(40)}` } }))),
+      "CAPABILITY_CREDENTIAL_PLAINTEXT",
+    );
+  });
+
+  it("keeps credentials and direct identifiers out of invocation tokens", async () => {
+    const registry = new CapabilityContractRegistry();
+    const send = await registry.register(writeDefinition(), RELEASE);
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { idempotencyKey: "ghp_abcdefghijklmnopqrstuvwxyz0123456789" }))),
+      "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED",
+    );
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { correlationId: "patient-1012345678" }))),
+      "CAPABILITY_CORRELATION_REQUIRED",
+    );
+  });
+});

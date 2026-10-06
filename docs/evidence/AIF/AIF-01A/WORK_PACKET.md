@@ -27,7 +27,7 @@ Non-goals (handoff §4): no external provider call, no model, no browser, no sec
 - `consentPurpose` — reuses `ConsentPurpose` from `@zyara/consent-boundaries` (`care` | `recall` | `analytics`) or `NOT_REQUIRED`, which is only legal when every data class is `PUBLIC` or `INTERNAL`.
 - `credentialBinding` — `{ kind: "none" }` or `{ kind: "ref", ref: "credref_<opaque>" }`. Any other shape or any secret-looking value anywhere in the definition is rejected.
 - `egressPolicy` — opaque reference `egress_<id>`; AIF-02 owns the policy content.
-- `idempotency` — `NOT_APPLICABLE` (reads only), `CALLER_KEY` or `NATURAL_KEY`.
+- `idempotency` — `mode` (`NOT_APPLICABLE` for reads only, `CALLER_KEY` or `NATURAL_KEY`) plus `enforcedBy` (`NONE`, `ZYARA_LEDGER`, `PROVIDER`). Added after the Jev design challenge named write safety as the weakest area: Zyara-side input dedup is not external-action idempotency, so a write may retry only when the provider itself enforces the key.
 - `timeoutMs` (1..300000) and `retry` (`maxAttempts` 1..5, `retryOn: TRANSIENT_ONLY`); a write without an idempotency contract cannot retry.
 - `dryRunSupport` — boolean.
 - `verification` (`VerificationContract`) — `receiptKind`, `method` (`PROVIDER_RECEIPT` | `READ_BACK` | `RECONCILIATION` | `NONE_READ_ONLY`), and `onUnknownOutcome: RECONCILE`. A write cannot use `NONE_READ_ONLY`.
@@ -52,7 +52,7 @@ Cross-field rules:
 
 ## Lookup and invocation shape
 
-`resolveDefinition(ref)` takes `{ capabilityId, version, definitionDigest }`:
+`CapabilityContractRegistry.resolve(ref)` takes `{ capabilityId, version, definitionDigest }`:
 
 - an unknown id is denied (`CAPABILITY_UNKNOWN`);
 - a known id at an unregistered version is denied (`CAPABILITY_VERSION_MISMATCH`);
@@ -62,8 +62,8 @@ Cross-field rules:
 
 `validateGrant(definition, grant)` (structure only; durable grants are AIF-01B):
 
-- `A5_HUMAN_ONLY` can never be granted to an agent principal;
-- an agent cannot be granted any capability above `A1_DRAFT` inside a namespace reserved by `AGENT_RESERVED_CAPABILITY_PREFIXES` (`@zyara/collaboration`);
+- `A5_HUMAN_ONLY` can only be granted to a human role, never to an agent or a workflow;
+- an agent cannot be granted any capability above `A1_DRAFT` inside a namespace reserved by N5/C1 (`isReservedCapability` from `@zyara/collaboration`, now exported so both use one matcher). Workflows are typed Zyara operations, which own those namespaces, so the namespace limit does not apply to them;
 - a `BRANCH` capability requires a branch-scoped grant.
 
 `checkInvocationScope(grant, invocation)` rejects:
@@ -79,7 +79,7 @@ Cross-field rules:
 - a correlation id;
 - an idempotency key, which is required when the contract is `CALLER_KEY`.
 
-`InvocationReceipt` is typed here. An `UNKNOWN_EXTERNAL_OUTCOME` receipt can never be `VERIFIED`; it is always `PENDING_RECONCILIATION`.
+`InvocationReceipt` is typed here. Invocations and receipts of a `BRANCH` capability must name their branch; a `DENIED` receipt is always `UNVERIFIED`; a capability with `NONE_READ_ONLY` can never report `VERIFIED`. An `UNKNOWN_EXTERNAL_OUTCOME` receipt can never be `VERIFIED`; it is always `PENDING_RECONCILIATION`.
 
 ## Required tests (handoff §4 plus hardening)
 
@@ -98,3 +98,11 @@ Cross-field rules:
 - a write without idempotency rejected;
 - a write without verification rejected;
 - an unknown outcome cannot be verified.
+
+## Composition with `adapter-harness`
+
+AIF-01A defines contracts only and calls no adapter, so it does not import `@zyara/adapter-harness`. Adapter certification (`certifyAdapter`, `requireCapability`) is consumed by the AIF-01B resolver, which must deny a capability whose provider adapter is uncertified (handoff §5).
+
+## Carried into AIF-01B
+
+The registrar and the grantee `kind` are declared by the caller at this contract level. AIF-01B must bind both to an authenticated principal (server-derived identity, never body-supplied), so a forged `platform_admin` registrar or an agent presenting itself as a `workflow` is refused there. AIF-01A tests prove the contract rules given an honest principal; they do not prove authentication.
