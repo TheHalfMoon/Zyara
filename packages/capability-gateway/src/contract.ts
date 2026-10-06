@@ -124,9 +124,12 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
 // Direct identifiers (national ids, phone numbers, MRNs) are runs of digits; opaque tokens
 // that travel with an invocation must not carry them. The patterns are the N5/C3 ones
 // (APPROVAL_DIRECT_IDENTIFIER_PATTERNS), so a token accepted there is accepted here.
-// A canonical lowercase UUID is random hex by construction. Digit-run heuristics would
-// refuse about 3% of random UUIDs, so this shape is accepted as opaque without them.
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+// A canonical lowercase UUID (version 1-8, RFC variant) is random or time-based hex by
+// construction. Digit-run heuristics would refuse about 3% of random UUIDs, so this shape
+// is accepted as opaque without them. The version and variant nibbles refuse hand-made
+// zero-padded shapes such as 00000000-0000-0000-0000-966501234567. These heuristics catch
+// accidental leaks only; a caller set on hiding an identifier could still hex-encode it.
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 // A long hex run inside a credential reference is a key, not a name.
 const LONG_HEX_PATTERN = /[0-9a-f]{32}/;
 

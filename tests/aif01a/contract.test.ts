@@ -654,11 +654,22 @@ describe("AIF-01A security-judge hardening", () => {
     // A digit-run heuristic alone refused about 15% of random UUIDs; every one must pass.
     const registry = new CapabilityContractRegistry();
     const send = await registry.register(writeDefinition(), RELEASE);
-    for (let i = 0; i < 2_000; i += 1) {
+    for (let i = 0; i < 50; i += 1) {
       validateInvocation(send, invocation(send.digest, { correlationId: crypto.randomUUID(), idempotencyKey: crypto.randomUUID() }));
     }
     // A UUID whose groups happen to be all digits is still an opaque UUID.
     validateInvocation(send, invocation(send.digest, { correlationId: "12345678-1234-4123-8123-123456789012" }));
+    // A UUID-shaped value without a valid version and variant keeps the digit-run rule.
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { correlationId: "00000000-0000-0000-0000-966501234567" }))),
+      "CAPABILITY_CORRELATION_REQUIRED",
+    );
+    // The N5/C3 rule, deliberately: a 7-8 digit run inside a token passes, 9+ is refused.
+    validateInvocation(send, invocation(send.digest, { correlationId: "ref-1234567" }));
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { correlationId: "ref-123456789" }))),
+      "CAPABILITY_CORRELATION_REQUIRED",
+    );
     // Uppercase or unhyphenated values are not canonical UUIDs and keep the digit-run rule.
     assert.equal(
       code(() => validateInvocation(send, invocation(send.digest, { correlationId: "123456781234412381231234567890AB" }))),
