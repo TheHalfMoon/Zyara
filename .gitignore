@@ -7,3 +7,6 @@ dist/
 sbom.cdx.json
 postgres-data/
 coverage/
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
