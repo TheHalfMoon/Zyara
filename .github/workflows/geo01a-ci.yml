@@ -1,0 +1,49 @@
+name: geo01a-ci
+on:
+  push:
+    branches:
+      - "feat/zyara-network-geo01a-assertion-contract"
+  pull_request:
+    paths:
+      - "packages/geospatial/**"
+      - "db/migrations/047_geo_location_assertions.sql"
+      - "apps/api/scripts/geo01a-assertion-postgis-smoke.mjs"
+      - "tests/geo01a/**"
+      - "docs/evidence/GEO/**"
+      - ".github/workflows/geo01a-ci.yml"
+
+jobs:
+  geo-assertion-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: zyara_dev
+          POSTGRES_PASSWORD: zyara_dev_only
+          POSTGRES_DB: zyara_dev
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U zyara_dev"
+          --health-interval=5s --health-timeout=5s --health-retries=10
+    env:
+      DATABASE_URL: postgresql://zyara_dev:zyara_dev_only@localhost:5432/zyara_dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/geospatial typecheck
+      - run: pnpm --filter @zyara/geo01a-tests test
+      - run: pnpm --filter @zyara/geospatial lint
+      - run: pnpm --filter @zyara/geo01a-tests lint
+      - run: node scripts/check-boundaries.mjs
+      - run: pnpm --filter @zyara/api exec node scripts/geo01a-assertion-postgis-smoke.mjs
