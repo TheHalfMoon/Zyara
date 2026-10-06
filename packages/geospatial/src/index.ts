@@ -55,3 +55,6 @@ export type DiscoveryEvent = "profile_view" | "directions_click" | "phone_click"
 export function discoveryEvent(name: DiscoveryEvent, branchId: string): { event: DiscoveryEvent; branchId: string; at: string } {
   return { event: name, branchId, at: new Date().toISOString() };
 }
+
+// GEO-01A: geo assertion and precision contract.
+export * from "./assertion.js";

@@ -543,6 +543,19 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  tests/geo01a:
+    dependencies:
+      '@zyara/geospatial':
+        specifier: workspace:*
+        version: link:../../packages/geospatial
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
   tests/graph:
     dependencies:
       '@zyara/graph':

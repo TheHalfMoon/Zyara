@@ -1,0 +1,13 @@
+{
+  "description": "GEO-01A geo assertion and precision contract: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "approximate_as_exact": {"type": "noul", "instructions": "An approximate, external, disputed, hidden or unverified location could be stored or displayed as a verified entrance or an exact pin.", "criteria": {"true": "Some low-precision or unverified point can claim verified precision or render as an exact pin", "false": "Precision, verification and display rules prevent every such case"}},
+    "invalid_coordinates": {"type": "noul", "instructions": "A non-finite, out-of-range, swapped or wrong-SRID coordinate could be accepted.", "criteria": {"true": "Some invalid coordinate passes", "false": "All are rejected in code and database"}},
+    "provenance_optional": {"type": "noul", "instructions": "An assertion could be stored without its source, source reference, revision or observed time.", "criteria": {"true": "Provenance can be missing", "false": "Provenance is mandatory"}},
+    "history_rewritable": {"type": "noul", "instructions": "A location assertion could be updated or deleted in place, or a supersession chain could fork or cross into another branch or tenant.", "criteria": {"true": "History can be rewritten or chains corrupted", "false": "Append-only with single-successor same-branch chains"}},
+    "tenant_or_patient_leak": {"type": "noul", "instructions": "A tenant could read or write another tenant's assertions, or patient location data could be stored or exposed.", "criteria": {"true": "Cross-tenant access or patient location is possible", "false": "RLS isolates tenants and only facility points exist"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"precision": "Precision and display rules", "coordinates": "Coordinate validation and swap detection", "provenance": "Source and evidence", "history": "Supersession and append-only", "isolation": "Tenant and public scope", "completeness": "Missing rules or tests"}}
+  }
+}
