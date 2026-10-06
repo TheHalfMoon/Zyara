@@ -87,20 +87,21 @@ Normalized names are compared for equality only. There is no fuzzy score that co
 
 - A `PRESENT` observation of a linked id whose point lies more than `max(150 m, assertion.accuracyM)` from the current Zyara point opens a `COORDINATE_MISMATCH` conflict with `distance_m`.
 - An `ABSENT` observation opens `EXTERNAL_ABSENT`.
-- **Conflicts never overwrite.** They stay open (`geo_open_coordinate_conflicts` view) until a `RESOLVE` row references them. Each conflict can be resolved once.
+- **Conflicts never overwrite.** They stay open (`geo_open_coordinate_conflicts` view) until a row in `geo_coordinate_conflict_resolutions` references them (`resolves_id`, unique). Each conflict can be resolved once.
 - Resolution values:
   - `KEEP_ZYARA`;
   - `CORRECTED` (references the superseding assertion);
   - `EXTERNAL_ERROR`.
-- Resolution needs a `PROVIDER` or `ZYARA_ADMIN` actor with evidence.
+- Resolution needs a `PROVIDER` or `ZYARA_ADMIN` actor with evidence. `CORRECTED` must name an assertion whose correction record corrects the conflicted assertion.
 
 ## Coordinate corrections (`geo_coordinate_corrections`, append-only)
 
 - A correction is a GEO-01A superseding assertion (`to_assertion_id` supersedes `from_assertion_id`, in the same tenant and branch) plus one correction record.
 - The record holds actor kind and ref, an optional `reviewer_ref`, `evidence_ref` (mandatory), a `reason_code`, and `moved_m`.
-- The database computes `moved_m` from the two stored points (geography distance). It is never supplied by the client. A move to or from a null point records null.
+- The database computes `moved_m` (geography distance). It is never supplied by the client.
+- **Audited anchor.** Every move is measured from the anchor: the nearest assertion at or before the corrected one that is the chain root or the target of a correction record, and has a point (`geo_anchor_point`; `anchorPoint` in TypeScript). A detour through `UNKNOWN` or a series of small unaudited steps therefore cannot walk a facility away: once the drift from the anchor exceeds 50 m, a correction record is required. A move to a null point records null.
 - `validateCoordinateCorrection(from, to, meta, recentCorrections, now)` enforces the same rules in TypeScript:
-  1. **Authority.** Source rank is `EXTERNAL_DATASET` = 1, `PROVIDER_ATTESTATION` = 2, `REGULATOR_REGISTRY` = 2 and `ZYARA_VERIFICATION` = 3. A head that is `VERIFIED` needs rank 3, and a head that is `PROVIDER_ATTESTED` needs rank ≥ 2. A low-authority external feed cannot supersede a verified or attested assertion (`GEO_CORRECTION_AUTHORITY_TOO_LOW`). A provider relocation of a verified site goes through Zyara verification (§23, separate admin command).
+  1. **Authority.** Source rank is `EXTERNAL_DATASET` = 1, `PROVIDER_ATTESTATION` = 2, `REGULATOR_REGISTRY` = 2 and `ZYARA_VERIFICATION` = 3. A head that is `VERIFIED` or `DISPUTED` needs rank 3, and a head that is `PROVIDER_ATTESTED` needs rank ≥ 2. A low-authority external feed cannot supersede a verified or attested assertion (`GEO_CORRECTION_AUTHORITY_TOO_LOW`). A provider or regulator may dispute any head, but a dispute may not move the point more than 50 m from the anchor. A disputed head is resolved only by Zyara verification, so a dispute cannot be a step to replace a verified point. A provider relocation of a verified site goes through Zyara verification (§23, separate admin command). The database enforces the same rule with a trigger on `geo_location_assertions`, and every superseding assertion more than 50 m from the anchor commits only together with its correction record (deferred constraint trigger).
   2. **Material move.** A move of more than 50 m needs a `PROVIDER` or `ZYARA_ADMIN` actor, and the evidence and actor are recorded. `SYSTEM` cannot correct coordinates.
   3. **Large move.** A move of more than 1 000 m needs a `reviewer_ref` that differs from `actor_ref` (`GEO_CORRECTION_REVIEW_REQUIRED`).
   4. **Bulk control.** In any 24-hour window an actor may record at most 10 corrections in a tenant without a reviewer. Beyond that, every further correction needs a distinct reviewer (`GEO_CORRECTION_RATE_LIMITED`). The database enforces the same rule with a trigger that counts the actor's recent rows, using database time, under a per-actor advisory lock.
@@ -108,14 +109,21 @@ Normalized names are compared for equality only. There is no fuzzy score that co
 
 ## Database (`049_geo_conflation.sql`, additive)
 
-- Five tables:
+- Six tables:
   - `geo_external_namespaces` (reference data; `SELECT` for the application);
-  - `geo_external_observations`, `geo_external_links`, `geo_coordinate_conflicts` and `geo_coordinate_corrections` (append-only; `SELECT` plus column-level `INSERT`).
-- FORCE RLS on `app.current_tenant` for the four tenant tables.
+  - `geo_external_observations`, `geo_external_links`, `geo_coordinate_corrections`, `geo_coordinate_conflicts` and `geo_coordinate_conflict_resolutions` (append-only; `SELECT` plus column-level `INSERT`).
+- FORCE RLS on `app.current_tenant` for the five tenant tables.
+- Two new triggers on the GEO-01A `geo_location_assertions` table (additive; migration 047 is unchanged): supersession authority (`BEFORE INSERT`) and move audit (deferred constraint trigger).
 - Composite tenant and branch FKs, and CHECKs mirroring the rules.
 - Guard triggers with pinned `search_path`.
 - `security_invoker` views `geo_active_external_links` and `geo_open_coordinate_conflicts`.
 - No patient, account or session location.
+
+## Enforcement boundaries (recorded, not hidden)
+
+- **Provider-declared ids.** The database lets the `SYSTEM` actor link only with basis `DETERMINISTIC_ID` and a mandatory `evidence_ref`. Checking that the id was declared by the provider for that branch is enforced in the application (`assessLinkCandidates` / `validateLinkEvent`), because Provider Graph has no declared-external-id store yet. Forward requirement: when Provider Graph records declared external ids, the link guard checks them.
+- **Reviewer identity.** `reviewer_ref` must be present and differ from `actor_ref`, which the database enforces. Proving that the reviewer is a real, authorized second person is not yet possible in the database. Forward requirement: when the GEO coordinate-correction admin command is built, `reviewer_ref` must bind to an approved `approval_requests` row (new approvals action type, requester ≠ approver), as AIF-01B binds approval claims.
+- **Actor identity.** `actor_ref` is supplied by the trusted service, which must derive it from the authenticated principal. The per-actor bulk count is only as strong as that binding.
 
 ## Required tests (handoff)
 
@@ -131,7 +139,8 @@ Plus:
 
 - distance alone and name alone never produce a link;
 - external disappearance does not delete the link or the assertion;
-- the database computes `moved_m`;
+- the database computes `moved_m`, measured from the audited anchor (UNKNOWN detour and small-step walk);
+- a dispute cannot move a point or be a step to replace a verified point;
 - `SYSTEM` cannot correct or unlink;
 - one active link per id (concurrent-safe);
 - RLS isolation and append-only (smoke).

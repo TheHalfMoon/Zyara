@@ -12,6 +12,7 @@ import {
   GeoContractError,
   SEEDED_EXTERNAL_NAMESPACES,
   activeLinks,
+  anchorPoint,
   assessLinkCandidates,
   detectCoordinateConflict,
   normalizeFacilityName,
@@ -285,11 +286,24 @@ describe("GEO-01C supersession authority and corrections", () => {
     assert.strictEqual(validateCoordinateCorrection(verified, far, { ...ADMIN, reviewerRef: "admin-2" }, [], NOW).reviewed, true);
   });
 
-  it("a detour through UNKNOWN is measured from the last known point", () => {
+  it("a detour through UNKNOWN is measured from the audited anchor", () => {
     const unknown = assertion({ id: "geo-2", supersedesId: "geo-1", point: null, accuracyM: null, precision: "UNKNOWN", verificationState: "UNVERIFIED", verificationMethod: null, evidenceRef: null });
     const far = assertion({ id: "geo-3", supersedesId: "geo-2", point: FAR });
-    expectCode(() => validateCoordinateCorrection(unknown, far, ADMIN, [], NOW, RIYADH), "GEO_CORRECTION_REVIEW_REQUIRED");
-    expectCode(() => validateSupersession(verified, assertion({ id: "geo-2", supersedesId: "geo-1" }), FAR), "GEO_CHAIN_INVALID");
+    const anchor = anchorPoint([verified, unknown], new Set());
+    assert.deepStrictEqual(anchor, RIYADH);
+    expectCode(() => validateCoordinateCorrection(unknown, far, ADMIN, [], NOW, anchor), "GEO_CORRECTION_REVIEW_REQUIRED");
+  });
+
+  it("small unaudited steps accumulate from the audited anchor", () => {
+    // Two 45 m steps: the first needs no correction, the second is 91 m from the anchor.
+    const step1 = assertion({ id: "geo-2", supersedesId: "geo-1", point: { lon: 46.67575, lat: 24.7136 } });
+    const step2 = assertion({ id: "geo-3", supersedesId: "geo-2", point: { lon: 46.6762, lat: 24.7136 } });
+    assert.strictEqual(validateSupersession(verified, step1, anchorPoint([verified], new Set())).correctionRequired, false);
+    const anchor = anchorPoint([verified, step1], new Set());
+    assert.deepStrictEqual(anchor, RIYADH);
+    assert.strictEqual(validateSupersession(step1, step2, anchor).correctionRequired, true);
+    // Once a correction records step2, it becomes the new anchor.
+    assert.deepStrictEqual(anchorPoint([verified, step1, step2], new Set(["geo-3"])), step2.point);
   });
 
   it("bulk malicious edits are rate-limited and reviewable", () => {

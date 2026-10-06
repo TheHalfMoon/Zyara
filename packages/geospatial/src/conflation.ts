@@ -384,23 +384,32 @@ const REQUIRED_RANK: Record<GeoVerificationState, number> = {
   VERIFIED: 3,
 };
 
+// The audited anchor of a chain (ordered root first, as currentGeoAssertion returns it): the
+// point of the latest assertion that is the root or the target of a correction record and has a
+// point. Mirrors geo_anchor_point in migration 049.
+export function anchorPoint(chain: readonly GeoLocationAssertion[], correctedIds: ReadonlySet<string>): GeoPoint | null {
+  for (let index = chain.length - 1; index >= 0; index -= 1) {
+    const item = chain[index];
+    if (item.point !== null && (item.supersedesId === null || correctedIds.has(item.id))) return item.point;
+  }
+  return null;
+}
+
 // The authority rule for any superseding assertion (migration 049 enforces it with a trigger
 // on geo_location_assertions). A weaker source cannot supersede a stronger head; a provider or
 // regulator may still dispute any head without materially moving it, which only hides it from
-// the public directory until Zyara verification resolves it. Returns
-// the move distance and whether a correction record is required. The move is measured from the
-// last known point in the chain (fromLastKnownPoint, as geo_last_known_point does in 049), so a
-// detour through UNKNOWN cannot hide a move.
+// the public directory until Zyara verification resolves it. Returns the move distance and
+// whether a correction record is required. The move is measured from the audited anchor (see
+// anchorPoint), so neither a detour through UNKNOWN nor small unaudited steps can hide a move.
 export function validateSupersession(
   from: GeoLocationAssertion,
   to: GeoLocationAssertion,
-  fromLastKnownPoint: GeoPoint | null = from.point,
+  anchor: GeoPoint | null = from.point,
 ): { movedM: number | null; correctionRequired: boolean } {
   if (to.supersedesId !== from.id || to.tenantId !== from.tenantId || to.branchId !== from.branchId) {
     fail("GEO_CHAIN_INVALID", "the new assertion must directly supersede the head in the same tenant and branch");
   }
-  if (from.point !== null && (fromLastKnownPoint === null || fromLastKnownPoint.lon !== from.point.lon || fromLastKnownPoint.lat !== from.point.lat)) fail("GEO_CHAIN_INVALID", "the last known point of a head with a point is its own point");
-  const movedM = fromLastKnownPoint !== null && to.point !== null ? haversineMeters(fromLastKnownPoint, to.point) : null;
+  const movedM = anchor !== null && to.point !== null ? haversineMeters(anchor, to.point) : null;
   const rank = SOURCE_RANK[to.source.kind];
   const dispute = to.verificationState === "DISPUTED" && rank >= 2 && (movedM === null || movedM <= MATERIAL_MOVE_M);
   if (!dispute && rank < REQUIRED_RANK[from.verificationState]) {
@@ -418,9 +427,9 @@ export function validateCoordinateCorrection(
   request: GeoCorrectionRequest,
   recent: readonly GeoRecentCorrection[],
   nowIso: string,
-  fromLastKnownPoint: GeoPoint | null = from.point,
+  anchor: GeoPoint | null = from.point,
 ): { movedM: number | null; reviewed: boolean } {
-  const { movedM } = validateSupersession(from, to, fromLastKnownPoint);
+  const { movedM } = validateSupersession(from, to, anchor);
   if (request.actorKind !== "PROVIDER" && request.actorKind !== "ZYARA_ADMIN") fail("GEO_CORRECTION_INVALID", "coordinates are corrected by a provider or Zyara admin");
   const actorRef = opaque(request.actorRef, "actorRef", "GEO_CORRECTION_INVALID");
   opaque(request.evidenceRef, "evidenceRef", "GEO_CORRECTION_INVALID");

@@ -365,7 +365,7 @@ if (activeAfterAbsent.rows[0].n !== 1) fail("external disappearance must not del
 // Unlink preserves history.
 await client.query(LINK("unlink-1", { action: "UNLINK", unlinks: "'link-1'" }));
 await expectDbError(() => client.query(LINK("unlink-again", { action: "UNLINK", unlinks: "'link-1'" })), "23505", "a link is ended once");
-await expectDbError(() => client.query(LINK("unlink-mismatch", { branch: "b1b", ns: "osm-way", ext: "777", action: "UNLINK", unlinks: "'link-1'" })), "23503", "an unlink must match the link it ends");
+await expectDbError(() => client.query(LINK("unlink-mismatch", { action: "UNLINK", unlinks: "'link-sys'" })), "23503", "an unlink must match the link it ends");
 const linkHistory = await client.query(`SELECT count(*)::int AS n FROM geo_external_links WHERE namespace='osm-node' AND external_id='123456789'`);
 const linkActive = await client.query(`SELECT count(*)::int AS n FROM geo_active_external_links WHERE namespace='osm-node' AND external_id='123456789'`);
 if (linkHistory.rows[0].n !== 2 || linkActive.rows[0].n !== 0) fail("unlink must end the link and keep its history");
@@ -416,6 +416,15 @@ await expectDbError(
 await client.query(A("geo-9", { ...PROVIDER_POINT, state: "DISPUTED", visibility: "TENANT_INTERNAL", supersedes: "'geo-8'" }));
 await expectDbError(() => client.query(A("geo-10", { ...PROVIDER_POINT, state: "PROVIDER_ATTESTED", supersedes: "'geo-9'" })), "23514", "a provider cannot resolve a dispute of a verified point");
 await client.query(A("geo-10", { supersedes: "'geo-9'" }));
+
+// Small unaudited steps accumulate from the audited anchor (geo-8, a correction target).
+const STEP_45 = "ST_SetSRID(ST_MakePoint(46.67575, 24.7136), 4326)";
+const STEP_91 = "ST_SetSRID(ST_MakePoint(46.6762, 24.7136), 4326)";
+await client.query(A("geo-11", { supersedes: "'geo-10'", point: STEP_45 }));
+await expectDbError(() => client.query(A("geo-12", { supersedes: "'geo-11'", point: STEP_91 })), "23514", "small steps must not walk a facility without a correction", "correction record");
+await tx(A("geo-12", { supersedes: "'geo-11'", point: STEP_91 }), CORR("corr-12", "geo-11", "geo-12"));
+const corr12 = await client.query(`SELECT moved_m FROM geo_coordinate_corrections WHERE id='corr-12'`);
+if (!(corr12.rows[0]?.moved_m > 85 && corr12.rows[0].moved_m < 100)) fail(`the correction must measure from the audited anchor, got ${JSON.stringify(corr12.rows)}`);
 
 // Conflict resolution: reviewed, once, CORRECTED only with an audited correction.
 await expectDbError(() => client.query(RESOLVE("res-sys", "conflict-1", "KEEP_ZYARA", "NULL", "SYSTEM")), "23514", "the automated actor cannot close a conflict");

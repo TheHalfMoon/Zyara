@@ -178,23 +178,33 @@ CREATE TRIGGER geo_external_links_guard
   BEFORE INSERT ON geo_external_links
   FOR EACH ROW EXECUTE FUNCTION geo_external_links_guard();
 
--- The most recent non-null point at or before an assertion in its chain. Moves are measured
--- from it, so a detour through UNKNOWN (no point) cannot hide a move from the audit.
-CREATE OR REPLACE FUNCTION geo_last_known_point(start_id TEXT, tenant TEXT) RETURNS geometry
+-- The audited anchor point at or before an assertion: the point of the nearest assertion in
+-- its chain that is the chain root or the target of a correction record and has a point. Every
+-- move is measured from it, so neither a detour through UNKNOWN (no point) nor a series of
+-- small unaudited steps can walk a facility away without a correction record.
+CREATE OR REPLACE FUNCTION geo_anchor_point(start_id TEXT, tenant TEXT) RETURNS geometry
 LANGUAGE sql STABLE
 SET search_path = pg_catalog, public
 AS $$
-  WITH RECURSIVE chain(id, point, supersedes_id, depth) AS (
-    SELECT a.id, a.point, a.supersedes_id, 0
+  WITH RECURSIVE chain(id, point, supersedes_id, anchored, depth) AS (
+    SELECT a.id, a.point, a.supersedes_id,
+      a.supersedes_id IS NULL OR EXISTS (
+        SELECT 1 FROM public.geo_coordinate_corrections c WHERE c.to_assertion_id = a.id AND c.tenant_id = a.tenant_id
+      ),
+      0
     FROM public.geo_location_assertions a
     WHERE a.id = start_id AND a.tenant_id = tenant
     UNION ALL
-    SELECT p.id, p.point, p.supersedes_id, c.depth + 1
+    SELECT p.id, p.point, p.supersedes_id,
+      p.supersedes_id IS NULL OR EXISTS (
+        SELECT 1 FROM public.geo_coordinate_corrections c WHERE c.to_assertion_id = p.id AND c.tenant_id = p.tenant_id
+      ),
+      c.depth + 1
     FROM chain c
     JOIN public.geo_location_assertions p ON p.id = c.supersedes_id AND p.tenant_id = tenant
-    WHERE c.point IS NULL
+    WHERE NOT (c.anchored AND c.point IS NOT NULL)
   )
-  SELECT point FROM chain WHERE point IS NOT NULL ORDER BY depth LIMIT 1
+  SELECT point FROM chain WHERE anchored AND point IS NOT NULL ORDER BY depth LIMIT 1
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -238,7 +248,7 @@ DECLARE
   to_supersedes TEXT;
   recent INTEGER;
 BEGIN
-  from_point := public.geo_last_known_point(NEW.from_assertion_id, NEW.tenant_id);
+  from_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id);
   SELECT a.supersedes_id INTO to_supersedes FROM public.geo_location_assertions a
   WHERE a.id = NEW.to_assertion_id AND a.tenant_id = NEW.tenant_id;
   SELECT a.point INTO to_point FROM public.geo_location_assertions a
@@ -297,7 +307,7 @@ BEGIN
   END IF;
   source_rank := CASE NEW.source_kind WHEN 'EXTERNAL_DATASET' THEN 1 WHEN 'ZYARA_VERIFICATION' THEN 3 ELSE 2 END;
   required_rank := CASE head_state WHEN 'UNVERIFIED' THEN 1 WHEN 'PROVIDER_ATTESTED' THEN 2 ELSE 3 END;
-  head_point := public.geo_last_known_point(NEW.supersedes_id, NEW.tenant_id);
+  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id);
   dispute := NEW.verification_state = 'DISPUTED' AND source_rank >= 2
     AND (NEW.point IS NULL OR head_point IS NULL OR ST_Distance(head_point::geography, NEW.point::geography) <= 50);
   IF NOT dispute AND source_rank < required_rank THEN
@@ -312,7 +322,7 @@ CREATE TRIGGER geo_location_assertions_authority_guard
   BEFORE INSERT ON geo_location_assertions
   FOR EACH ROW EXECUTE FUNCTION geo_location_assertions_authority_guard();
 
--- A superseding assertion that moves the point by more than 50 m commits only together with
+-- A superseding assertion more than 50 m from the audited anchor commits only together with
 -- its correction record (actor and evidence). Checked at commit, fail-closed.
 CREATE OR REPLACE FUNCTION geo_location_assertions_move_audit() RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -330,7 +340,7 @@ BEGIN
   IF head_found IS NOT TRUE THEN
     RAISE EXCEPTION 'the superseded assertion is not visible; cannot audit the move' USING ERRCODE = '23514';
   END IF;
-  head_point := public.geo_last_known_point(NEW.supersedes_id, NEW.tenant_id);
+  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id);
   IF head_point IS NOT NULL
      AND ST_Distance(head_point::geography, NEW.point::geography) > 50
      AND NOT EXISTS (
@@ -533,4 +543,4 @@ GRANT INSERT (id, tenant_id, branch_id, resolves_id, resolution, corrected_asser
 -- DROP FUNCTION IF EXISTS geo_conflict_resolutions_guard(), geo_coordinate_conflicts_guard(),
 --   geo_location_assertions_move_audit(), geo_location_assertions_authority_guard(),
 --   geo_coordinate_corrections_guard(), geo_external_links_guard(), geo_external_observations_guard(),
---   geo_last_known_point(TEXT, TEXT), geo_external_id_ok(TEXT, TEXT, BOOLEAN);
+--   geo_anchor_point(TEXT, TEXT), geo_external_id_ok(TEXT, TEXT, BOOLEAN);
