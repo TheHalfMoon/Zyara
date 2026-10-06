@@ -279,7 +279,9 @@ function time(value: string): number {
   return parsed;
 }
 
-function isReservedCapability(capability: string): boolean {
+// Exported so the AIF capability gateway applies exactly the same reserved-namespace match
+// (dot, colon, underscore and hyphen separators, case-insensitive) instead of a second copy.
+export function isReservedCapability(capability: string): boolean {
   const lower = capability.toLowerCase();
   return AGENT_RESERVED_CAPABILITY_PREFIXES.some(
     (prefix) => lower === prefix || lower.startsWith(`${prefix}.`) || lower.startsWith(`${prefix}:`) ||

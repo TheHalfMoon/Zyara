@@ -331,7 +331,8 @@ export const APPROVAL_EVIDENCE_REF_PATTERN = /^[A-Za-z0-9_.:-]{1,128}$/;
 // own shape because a hex digest may legitimately contain a long run of digits.
 export const APPROVAL_PARAMETERS_DIGEST_PATTERN = /^params_[0-9a-f]{64}$/;
 
-const DIRECT_IDENTIFIER_PATTERNS = [/^[0-9]{7,}$/, /[0-9]{9,}/];
+// Exported so the AIF capability gateway refuses exactly the same direct identifiers.
+export const APPROVAL_DIRECT_IDENTIFIER_PATTERNS: readonly RegExp[] = [/^[0-9]{7,}$/, /[0-9]{9,}/];
 
 const SECRET_PATTERNS = [
   /secret:\/\//i,
@@ -353,7 +354,7 @@ const SECRET_PATTERNS = [
 export function isApprovalToken(value: unknown): boolean {
   if (typeof value !== "string" || value.length === 0) return false;
   if (!APPROVAL_ID_PATTERN.test(value)) return false;
-  if (DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) return false;
+  if (APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) return false;
   if (SECRET_PATTERNS.some((pattern) => pattern.test(value))) return false;
   return true;
 }
@@ -834,7 +835,7 @@ function requireRequestToken(
   if (!APPROVAL_ID_PATTERN.test(value)) {
     throw new ApprovalError(code, `${label} must be a bounded identifier token`);
   }
-  if (DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) {
+  if (APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) {
     throw new ApprovalError(
       code,
       `${label} must not be an unqualified direct identifier`,
@@ -858,7 +859,7 @@ function optionalEvidenceRef(
   if (!APPROVAL_EVIDENCE_REF_PATTERN.test(value)) {
     throw new ApprovalError(code, `${label} must be a bounded reference token`);
   }
-  if (DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) {
+  if (APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(value))) {
     throw new ApprovalError(
       code,
       `${label} must not be an unqualified direct identifier`,
