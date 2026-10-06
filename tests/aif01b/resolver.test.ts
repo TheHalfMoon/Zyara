@@ -786,3 +786,29 @@ describe("AIF-01B fix cycle 3", () => {
     assert.deepEqual([both.decision, both.grantId], ["ALLOW", "g-clin-chart"]);
   });
 });
+
+describe("AIF-01B fix cycle 3 (final)", () => {
+  it("lets an admin make an approval-gated PHI read only with its approval, but never a PHI write", async () => {
+    const w = await world();
+    const registry = new CapabilityContractRegistry();
+    const exportRead = await registry.register(definition({ id: "data.export.patient_records", riskClass: "critical", dataClasses: ["PHI"], consentPurpose: "care", branchScope: "BRANCH" }), RELEASE);
+    w.state.admit(exportRead);
+    w.state.grant(grant({ grantId: "g-admin-export", grantee: { kind: "human_role", id: "branch_admin" }, capabilityId: "data.export.patient_records", expiresAt: null }));
+    const admin = human([{ role: "branch_admin" }]);
+    const ask = await resolveCapability(admin, request(exportRead, { idempotencyKey: "export-1" }), w.deps);
+    assert.deepEqual([ask.decision, ask.reasons], ["ASK", ["APPROVAL_REQUIRED"]]);
+    w.approvals.set("appr-e", approval({ id: "appr-e", actionType: "data.export.patient_records", requesterKind: "human", requesterAccountId: "acct-doc-1", requesterRef: null }));
+    const allowed = await resolveCapability(admin, request(exportRead, { idempotencyKey: "export-1", approvalRequestId: "appr-e" }), w.deps);
+    assert.deepEqual([allowed.decision, allowed.grantId], ["ALLOW", "g-admin-export"]);
+
+    const phiWrite = await registry.register(
+      definition({ id: "communications.outbound.broadcast", version: "2.0.0", ...WRITE, riskClass: "high", dataClasses: ["PHI"], consentPurpose: "care" }),
+      RELEASE,
+    );
+    w.state.admit(phiWrite);
+    w.state.grant(grant({ grantId: "g-admin-phi-write", grantee: { kind: "human_role", id: "branch_admin" }, capabilityId: "communications.outbound.broadcast", version: "2.0.0", expiresAt: null }));
+    w.approvals.set("appr-w", approval({ id: "appr-w", requesterKind: "human", requesterAccountId: "acct-doc-1", requesterRef: null }));
+    const write = await resolveCapability(admin, request(phiWrite, { approvalRequestId: "appr-w" }), w.deps);
+    assert.deepEqual([write.decision, write.reasons], ["DENY", ["AUTHZ_ADMIN_CLINICAL_SEPARATION"]]);
+  });
+});
