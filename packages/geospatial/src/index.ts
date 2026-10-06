@@ -61,3 +61,6 @@ export * from "./assertion.js";
 
 // GEO-01B: entrances and service-area geometry.
 export * from "./access.js";
+
+// GEO-01C: external spatial identity and conflation.
+export * from "./conflation.js";
