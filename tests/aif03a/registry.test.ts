@@ -265,17 +265,17 @@ describe("AIF-03A kill switches", () => {
 describe("AIF-03A panel hardening", () => {
   it("refuses floating aliases in any position and revisions without a digit", async () => {
     const r = new ModelPromptRegistry();
-    for (const alias of ["model@latest", "latest-2", "stable-v2", "main", "HEAD", "nightly", "next", "edge", "canary", "dev-build", "release"]) {
+    for (const alias of ["model@latest", "latest-2", "stable-v2", "main", "HEAD", "nightly", "next", "edge", "canary", "dev-build", "release", "gpt4+latest", "gpt-4o", "model-3-5", "2026-09-01-latest"]) {
       assert.equal(await asyncCode(() => r.registerModel(profile({ id: "m-alias", modelRevision: alias }), RELEASE, NOW)), "REGISTRY_FLOATING_IDENTITY", alias);
     }
-    for (const pinned of ["2026-09-01", "rev-20260915", "sha256-3f1c9a7e", "v1.4.2"]) {
+    for (const pinned of ["2026-09-01", "rev-20260915", "sha256-3f1c9a7e", "v1.4.2", "gpt-4o-2024-08-06", "weights-9f2c1a7b3e4d"]) {
       await r.registerModel(profile({ id: `m-${pinned.replace(/[^a-z0-9]/g, "")}`, modelRevision: pinned }), RELEASE, NOW);
     }
   });
 
   it("refuses any fallback to another egress provider, and honours a runtime constraint", async () => {
     const r = await world();
-    await r.registerModel(profile({ id: "ksa-llm-b", provider: "ksa-cloud-b", modelId: "b", modelRevision: "rev-2026-1", runtimeClass: "REMOTE", deploymentLocation: "PROVIDER_KSA", egressProviderId: "llm-ksa-b" }), RELEASE, NOW);
+    await r.registerModel(profile({ id: "ksa-llm-b", provider: "ksa-cloud-b", modelId: "b", modelRevision: "rev-20260902", runtimeClass: "REMOTE", deploymentLocation: "PROVIDER_KSA", egressProviderId: "llm-ksa-b" }), RELEASE, NOW);
     r.setModelState({ id: "ksa-llm-b", version: "1.0.0" }, "ADMITTED", RELEASE, NOW, "qualified");
     r.reportHealth({ id: "ksa-llm-b", version: "1.0.0" }, "HEALTHY", NOW);
     r.reportHealth({ id: "ksa-llm", version: "1.0.0" }, "DOWN", NOW);
@@ -295,7 +295,7 @@ describe("AIF-03A panel hardening", () => {
 
   it("binds only schema- and tool-compatible pairs and refuses a forged binding", async () => {
     const r = await world();
-    await r.registerModel(profile({ id: "no-tools", modelRevision: "rev-1", toolUseAllowed: false }), RELEASE, NOW);
+    await r.registerModel(profile({ id: "no-tools", modelRevision: "rev-20260901", toolUseAllowed: false }), RELEASE, NOW);
     r.setModelState({ id: "no-tools", version: "1.0.0" }, "ADMITTED", RELEASE, NOW, "qualified");
     await r.registerPrompt(prompt({ version: "4.0.0", compatibleModels: ["no-tools", "laya-local"], outputSchema: { id: "other.schema", version: "9.0.0" } }), RELEASE, NOW);
     r.setPromptState({ id: "intent.router", version: "4.0.0" }, "CANARY", RELEASE, NOW, "canary");
@@ -306,6 +306,8 @@ describe("AIF-03A panel hardening", () => {
     const real = await r.bindInvocation({ id: "laya-local", version: "1.0.0" }, { id: "intent.router", version: "1.0.0" });
     assert.match(real.profileDigest, /^mdl_[0-9a-f]{64}$/);
     assert.equal(code(() => r.assertBindingLive({ ...real, instructionDigest: `ins_${"f".repeat(64)}` })), "REGISTRY_INVALID");
+    assert.equal(code(() => r.assertBindingLive({ ...real, agentClass: "CLINIC_OPERATIONS" })), "REGISTRY_INVALID");
+    assert.equal(code(() => r.assertBindingLive({ ...real, safetyPolicyVersion: "9.9.9" })), "REGISTRY_INVALID");
   });
 
   it("allows clinician-assist only preparatory verbs and never clinical-signing data", () => {

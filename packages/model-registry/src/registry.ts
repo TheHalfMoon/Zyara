@@ -41,10 +41,12 @@ const FLOATING_WORDS = new Set([
   "latest", "stable", "default", "preview", "current", "beta", "alpha", "newest", "auto", "main", "master",
   "head", "nightly", "next", "edge", "canary", "dev", "trunk", "tip",
 ]);
-// A floating alias appears as any word of the revision (split on - _ . : / @), and a pinned
-// revision always carries a digit (a version, a date, or a digest).
+// A pinned revision carries a date (YYYYMMDD or YYYY-MM-DD), a semantic version, or a digest
+// (sha256- prefix or a hex run of 12+). A provider alias with a number in it (gpt-4o,
+// model-3-5) is not a pin. A floating alias in any word (split on - _ . : / @ +) is refused too.
+const PIN = /(\d{4}-?\d{2}-?\d{2})|(\d+\.\d+\.\d+)|(sha256[-:_]?[0-9a-f]{7,})|([0-9a-f]{12,})/i;
 function isFloatingRevision(revision: string): boolean {
-  return !/[0-9]/.test(revision) || revision.split(/[-_.:/@]/).some((word) => FLOATING_WORDS.has(word.toLowerCase()));
+  return !PIN.test(revision) || revision.split(/[-_.:/@+]/).some((word) => FLOATING_WORDS.has(word.toLowerCase()));
 }
 const ID = /^[a-z][a-z0-9_.-]{1,63}$/;
 const VERSION = /^(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})$/;
@@ -246,7 +248,7 @@ function validateProfile(p: ModelProfile): void {
 
 const MODEL_TRANSITIONS: Readonly<Record<AdmissionState, readonly AdmissionState[]>> = {
   CANDIDATE: ["SHADOW", "ADMITTED", "REVOKED"],
-  SHADOW: ["ADMITTED", "SUSPENDED", "REVOKED"],
+  SHADOW: ["ADMITTED", "REVOKED"],
   ADMITTED: ["SUSPENDED", "REVOKED"],
   SUSPENDED: ["ADMITTED", "REVOKED"],
   REVOKED: [],
@@ -555,7 +557,12 @@ export class ModelPromptRegistry {
     if (
       binding.modelRevision !== profile.modelRevision ||
       binding.instructionDigest !== prompt.instructionDigest ||
-      binding.profileDigest !== this.#profileDigests.get(`${profile.id}@${profile.version}`)
+      binding.profileDigest !== this.#profileDigests.get(`${profile.id}@${profile.version}`) ||
+      binding.agentClass !== prompt.agentClass ||
+      binding.safetyPolicyVersion !== prompt.safetyPolicyVersion ||
+      binding.evaluationBundleDigest !== prompt.evaluationBundleDigest ||
+      binding.outputSchema.id !== prompt.outputSchema.id ||
+      binding.outputSchema.version !== prompt.outputSchema.version
     ) {
       fail("REGISTRY_INVALID", "binding does not match the registered versions");
     }
