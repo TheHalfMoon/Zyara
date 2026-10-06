@@ -67,3 +67,6 @@ export * from "./conflation.js";
 
 // GEO-09: spatial insights (aggregated views only).
 export * from "./insights.js";
+
+// GEO-10: AI and voice geo capabilities (AIF-01 typed tools).
+export * from "./ai-tools.js";
