@@ -28,7 +28,9 @@ import {
   GEO_CAPABILITY_SCHEMAS,
   GeoContractError,
   GeoResultLedger,
+  PUBLIC_SHARE_LAYERS,
   RESULT_SET_MAX_TTL_MS,
+  VOICE_CAPABILITIES,
   assertNoModelCoordinates,
   assertOriginAllowed,
   buildPublicShareState,
@@ -159,7 +161,11 @@ describe("GEO-10 typed capabilities and authorization", () => {
       assert.deepStrictEqual(definition.outputSchema, { id: schemas.output.id, version: schemas.output.version, digest: schemas.output.digest });
       assert.strictEqual(schemas.input.digest, schemaDigest(schemas.input.schema));
       assert.strictEqual(schemas.output.digest, schemaDigest(schemas.output.schema));
+      assert.ok(Object.isFrozen(schemas.input.schema));
+      assert.ok(Object.isFrozen(schemas.output.schema));
     }
+    assert.ok(Object.isFrozen(PUBLIC_SHARE_LAYERS));
+    assert.ok(Object.isFrozen(VOICE_CAPABILITIES));
     const correct = GEO_CAPABILITY_DEFINITIONS.find((definition) => definition.id === GEO_CAPABILITY_IDS.correct);
     assert.strictEqual(correct?.authorityClass, "A5_HUMAN_ONLY");
     // Every other write only prepares; nothing but the admin command changes facts.
@@ -197,6 +203,7 @@ describe("GEO-10 model coordinates are untrusted", () => {
     assert.deepStrictEqual(hint, { center: { lon: 46.6753, lat: 24.7136 }, zoom: 18, trust: "UNTRUSTED_VIEW_HINT" });
     expectCode(() => parseModelViewport({ center: { lon: 200, lat: 24 }, zoom: 10 }), "GEO_LONGITUDE_OUT_OF_RANGE");
     expectCode(() => parseModelViewport({ center: { lon: 46.6, lat: 24.7 }, zoom: Number.NaN }), "GEO_AI_ARGUMENT_INVALID");
+    expectCode(() => parseModelViewport({ center: { lon: 46.6, lat: 24.7 }, zoom: 10, branchId: "b1" }), "GEO_AI_ARGUMENT_INVALID");
   });
 
   it("a search origin is a current result entity or a device-location reference, never model coordinates", () => {
@@ -219,6 +226,8 @@ describe("GEO-10 result ids", () => {
   it("stale result ids rejected", () => {
     const ledger = new GeoResultLedger();
     const first = ledger.issue({ tenantId: "t1", sessionRef: "s1", entityIds: ["b1", "b2"], issuedAt: NOW, ttlMs: 600_000 });
+    assert.ok(!first.includes("s1"), "result-set ids must not disclose the session reference");
+    assert.match(first, new RegExp(GEO_CAPABILITY_SCHEMAS.searchNearby.output.schema.properties.resultSetId.pattern));
     assert.strictEqual(ledger.resolveEntity({ tenantId: "t1", sessionRef: "s1", resultSetId: first, entityId: "b1", now: NOW }), "b1");
     // Never returned, another session, another tenant, unknown set.
     assert.throws(() => ledger.resolveEntity({ tenantId: "t1", sessionRef: "s1", resultSetId: first, entityId: "b9", now: NOW }), (e: unknown) => e instanceof GeoContractError && e.code === "GEO_AI_RESULT_STALE");

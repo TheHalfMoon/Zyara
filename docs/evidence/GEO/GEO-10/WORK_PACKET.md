@@ -33,7 +33,7 @@ There is no other geo write capability. An agent or workflow cannot be granted `
    - A search origin must be either a current result-entity reference or a client device-location reference (an opaque token issued by the client after consent), never model-supplied coordinates.
    - Write-capability arguments never accept coordinates (`GEO_AI_MODEL_COORDINATE_UNTRUSTED`).
 3. **Stale result ids are rejected.**
-   - `GeoResultLedger.issue` binds a result set to tenant, session, the entity ids returned and an expiry (at most 15 minutes).
+   - `GeoResultLedger.issue` binds an opaque result-set id (which contains no tenant/session identifier) to tenant, session, the entity ids returned and an expiry (at most 15 minutes).
    - `resolveEntity` accepts an entity only from the session's **current** result set. Unknown, expired, superseded, other-session, other-tenant and never-returned ids are all refused (`GEO_AI_RESULT_STALE`).
 4. **Public share state strips private fields.**
    - `buildPublicShareState` emits only:

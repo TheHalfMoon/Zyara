@@ -22,11 +22,20 @@ const GEO_POINT_SCHEMA = {
   required: ["lon", "lat"],
 } as const;
 
+function deepFreeze<T>(value: T): Readonly<T> {
+  if (typeof value === "object" && value !== null && !Object.isFrozen(value)) {
+    for (const child of Object.values(value as Record<string, unknown>)) deepFreeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
 // Exact JSON-compatible AIF-01 schema references. The digest is SHA-256 over canonical JSON
 // (recursively sorted object keys, array order preserved) of the adjacent schema body.
 // Write-capability inputs deliberately carry opaque refs only; resolved coordinates never
-// originate in a model-produced write payload.
-export const GEO_CAPABILITY_SCHEMAS = Object.freeze({
+// originate in a model-produced write payload. Deep-freezing keeps the admitted schema body
+// immutable at runtime, matching the immutable definition version.
+export const GEO_CAPABILITY_SCHEMAS = deepFreeze({
   searchNearby: {
     input: {
       id: "geo.directory.search_nearby.input",
@@ -286,7 +295,11 @@ export interface UntrustedViewHint {
 // never a fact, a search origin or a patient location.
 export function parseModelViewport(args: unknown): UntrustedViewHint {
   if (typeof args !== "object" || args === null) fail("GEO_AI_ARGUMENT_INVALID", "view arguments must be an object");
-  const { center, zoom } = args as Record<string, unknown>;
+  const record = args as Record<string, unknown>;
+  for (const key of Object.keys(record)) {
+    if (key !== "center" && key !== "zoom") fail(COORDINATE_KEYS.test(key) ? "GEO_AI_MODEL_COORDINATE_UNTRUSTED" : "GEO_AI_ARGUMENT_INVALID", `view argument ${key} is not accepted`);
+  }
+  const { center, zoom } = record;
   const point = validateGeoPoint(center);
   if (typeof zoom !== "number" || !Number.isFinite(zoom)) fail("GEO_AI_ARGUMENT_INVALID", "zoom must be a finite number");
   return Object.freeze({ center: Object.freeze(point), zoom: Math.min(VIEW_ZOOM_MAX, Math.max(VIEW_ZOOM_MIN, Math.round(zoom))), trust: "UNTRUSTED_VIEW_HINT" as const });
@@ -365,7 +378,7 @@ export class GeoResultLedger {
     if (!Number.isInteger(input.ttlMs) || input.ttlMs <= 0 || input.ttlMs > RESULT_SET_MAX_TTL_MS) fail("GEO_AI_ARGUMENT_INVALID", `ttlMs must be in (0, ${RESULT_SET_MAX_TTL_MS}]`);
     const entityIds = new Set(input.entityIds.map((id) => opaque(id, "entityId")));
     this.#counter += 1;
-    const id = `rs-${sessionRef}-${this.#counter}`;
+    const id = `rs_${this.#counter.toString(36)}`;
     this.#sets.set(id, { id, tenantId, sessionRef, entityIds, expiresAt: issuedAt + input.ttlMs });
     this.#current.set(`${tenantId}\u0000${sessionRef}`, id);
     return id;
@@ -388,7 +401,7 @@ export class GeoResultLedger {
 // ---------------------------------------------------------------------------
 
 export const SHARE_MAX_ZOOM = 14;
-export const PUBLIC_SHARE_LAYERS: ReadonlySet<string> = new Set(["providers", "entrances", "accessibility", "parking"]);
+export const PUBLIC_SHARE_LAYERS: readonly string[] = Object.freeze(["providers", "entrances", "accessibility", "parking"]);
 
 export interface PublicShareState {
   viewport: { center: GeoPoint; zoom: number };
@@ -410,7 +423,7 @@ export function buildPublicShareState(scene: unknown, publicBranchIds: ReadonlyS
   if (typeof viewport !== "object" || viewport === null) fail("GEO_AI_ARGUMENT_INVALID", "scene needs a viewport");
   const center = validateGeoPoint(viewport.center);
   const zoom = typeof viewport.zoom === "number" && Number.isFinite(viewport.zoom) ? viewport.zoom : SHARE_MAX_ZOOM;
-  const layers = Array.isArray(record.layers) ? [...new Set(record.layers.filter((layer): layer is string => typeof layer === "string" && PUBLIC_SHARE_LAYERS.has(layer)))].sort() : [];
+  const layers = Array.isArray(record.layers) ? [...new Set(record.layers.filter((layer): layer is string => typeof layer === "string" && PUBLIC_SHARE_LAYERS.includes(layer)))].sort() : [];
   const branchIds = Array.isArray(record.branchIds)
     ? [...new Set(record.branchIds.filter((id): id is string => typeof id === "string" && publicBranchIds.has(id)))].sort()
     : [];
@@ -426,13 +439,13 @@ export function buildPublicShareState(scene: unknown, publicBranchIds: ReadonlyS
 // ---------------------------------------------------------------------------
 
 export type InvocationOrigin = "VOICE" | "CHAT" | "UI";
-export const VOICE_CAPABILITIES: ReadonlySet<string> = new Set([GEO_CAPABILITY_IDS.setView, GEO_CAPABILITY_IDS.searchNearby]);
+export const VOICE_CAPABILITIES: readonly string[] = Object.freeze([GEO_CAPABILITY_IDS.setView, GEO_CAPABILITY_IDS.searchNearby]);
 
 // Checked before resolution: a voice-originated call may only change the view or retrieve public
 // results. It can never prepare, propose or perform a write, so voice never changes provider truth.
 export function assertOriginAllowed(origin: InvocationOrigin, capabilityId: string): void {
   if (origin !== "VOICE" && origin !== "CHAT" && origin !== "UI") fail("GEO_AI_ARGUMENT_INVALID", "unknown invocation origin");
-  if (origin === "VOICE" && !VOICE_CAPABILITIES.has(capabilityId)) fail("GEO_AI_VOICE_VIEW_ONLY", "voice may only change the map view or search public results");
+  if (origin === "VOICE" && !VOICE_CAPABILITIES.includes(capabilityId)) fail("GEO_AI_VOICE_VIEW_ONLY", "voice may only change the map view or search public results");
 }
 
 // ---------------------------------------------------------------------------
