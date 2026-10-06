@@ -274,6 +274,7 @@ await client.query(
 );
 await client.query(readFileSync(new URL("049_geo_conflation.sql", migrations), "utf8"));
 await client.query(readFileSync(new URL("049_geo_conflation.sql", migrations), "utf8"));
+await client.query(`INSERT INTO branch_locations(id,tenant_id,organization_id) VALUES ('b1c','t1','org-1') ON CONFLICT DO NOTHING`);
 
 // Reference data: geocoder namespaces are never linkable; patterns are anchored.
 await client.query(`INSERT INTO geo_external_namespaces VALUES ('geocoder-x', 'GEOCODER', '^[a-z0-9]{6,40}$', FALSE)`);
@@ -425,6 +426,23 @@ await expectDbError(() => client.query(A("geo-12", { supersedes: "'geo-11'", poi
 await tx(A("geo-12", { supersedes: "'geo-11'", point: STEP_91 }), CORR("corr-12", "geo-11", "geo-12"));
 const corr12 = await client.query(`SELECT moved_m FROM geo_coordinate_corrections WHERE id='corr-12'`);
 if (!(corr12.rows[0]?.moved_m > 85 && corr12.rows[0].moved_m < 100)) fail(`the correction must measure from the audited anchor, got ${JSON.stringify(corr12.rows)}`);
+
+// Without any audited point (UNKNOWN root), the oldest point is the anchor; and audited moves
+// without review cannot add up past 1 000 m from the last reviewed point.
+const STEP_900 = "ST_SetSRID(ST_MakePoint(46.6842, 24.7136), 4326)";
+const STEP_1800 = "ST_SetSRID(ST_MakePoint(46.6931, 24.7136), 4326)";
+const B1C = { branch: "b1c" };
+await client.query(A("geo-c-root", { ...UNVERIFIED, ...B1C, point: "NULL", accuracy: "NULL", precision: "UNKNOWN", visibility: "TENANT_INTERNAL" }));
+await client.query(A("geo-c-1", { ...B1C, supersedes: "'geo-c-root'" }));
+await expectDbError(() => client.query(A("geo-c-far", { ...B1C, supersedes: "'geo-c-1'", point: FAR_PT })), "23514", "a move after an UNKNOWN root needs a correction", "correction record");
+await tx(A("geo-c-2", { ...B1C, supersedes: "'geo-c-1'", point: STEP_900 }), CORR("corr-c-2", "geo-c-1", "geo-c-2", { branch: "b1c", actor: "admin-3" }));
+await expectDbError(
+  () => tx(A("geo-c-3", { ...B1C, supersedes: "'geo-c-2'", point: STEP_1800 }), CORR("corr-c-3", "geo-c-2", "geo-c-3", { branch: "b1c", actor: "admin-3" })),
+  "23514",
+  "unreviewed audited moves cannot add up past 1 000 m",
+  "independent reviewer",
+);
+await tx(A("geo-c-3", { ...B1C, supersedes: "'geo-c-2'", point: STEP_1800 }), CORR("corr-c-3", "geo-c-2", "geo-c-3", { branch: "b1c", actor: "admin-3", reviewer: "'admin-2'" }));
 
 // Conflict resolution: reviewed, once, CORRECTED only with an audited correction.
 await expectDbError(() => client.query(RESOLVE("res-sys", "conflict-1", "KEEP_ZYARA", "NULL", "SYSTEM")), "23514", "the automated actor cannot close a conflict");

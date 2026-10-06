@@ -244,6 +244,8 @@ describe("GEO-01C coordinate conflicts", () => {
 
 describe("GEO-01C supersession authority and corrections", () => {
   const verified = assertion();
+  // For a chain whose root is `verified`, both anchors are its point.
+  const ROOT = { anchor: RIYADH, reviewedAnchor: RIYADH };
   const externalArea = (overrides: Partial<GeoLocationAssertion> = {}): GeoLocationAssertion =>
     assertion({
       id: "geo-2", supersedesId: "geo-1", precision: "APPROXIMATE_AREA", accuracyM: 500, verificationState: "UNVERIFIED", verificationMethod: null, evidenceRef: null,
@@ -251,39 +253,39 @@ describe("GEO-01C supersession authority and corrections", () => {
     });
 
   it("a low-authority external feed cannot overwrite a verified or attested assertion", () => {
-    expectCode(() => validateSupersession(verified, externalArea()), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    expectCode(() => validateSupersession(verified, externalArea(), RIYADH), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
     const attested = assertion({ precision: "PROVIDER_ATTESTED_POINT", verificationState: "PROVIDER_ATTESTED", verificationMethod: null, evidenceRef: null, source: { kind: "PROVIDER_ATTESTATION", ref: "p", revision: "r" } });
-    expectCode(() => validateSupersession(attested, externalArea()), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    expectCode(() => validateSupersession(attested, externalArea(), RIYADH), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
     // A provider cannot replace a Zyara-verified point, but may dispute it.
     const providerPoint = assertion({ id: "geo-2", supersedesId: "geo-1", precision: "PROVIDER_ATTESTED_POINT", verificationState: "PROVIDER_ATTESTED", verificationMethod: null, evidenceRef: null, source: { kind: "PROVIDER_ATTESTATION", ref: "p", revision: "r" } });
-    expectCode(() => validateSupersession(verified, providerPoint), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
-    assert.strictEqual(validateSupersession(verified, { ...providerPoint, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }).correctionRequired, false);
+    expectCode(() => validateSupersession(verified, providerPoint, RIYADH), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    assert.strictEqual(validateSupersession(verified, { ...providerPoint, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }, RIYADH).correctionRequired, false);
     // A dispute cannot move the point, and a disputed head needs Zyara verification: a dispute
     // is never a step to replace a verified point with a weaker one.
-    expectCode(() => validateSupersession(verified, { ...providerPoint, point: FAR, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    expectCode(() => validateSupersession(verified, { ...providerPoint, point: FAR, verificationState: "DISPUTED", visibility: "TENANT_INTERNAL" }, RIYADH), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
     const disputed = { ...providerPoint, verificationState: "DISPUTED" as const, visibility: "TENANT_INTERNAL" as const };
-    expectCode(() => validateSupersession(disputed, { ...providerPoint, id: "geo-3", supersedesId: "geo-2" }), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
-    assert.strictEqual(validateSupersession(disputed, assertion({ id: "geo-3", supersedesId: "geo-2" })).movedM, 0);
+    expectCode(() => validateSupersession(disputed, { ...providerPoint, id: "geo-3", supersedesId: "geo-2" }, RIYADH), "GEO_CORRECTION_AUTHORITY_TOO_LOW");
+    assert.strictEqual(validateSupersession(disputed, assertion({ id: "geo-3", supersedesId: "geo-2" }), RIYADH).movedM, 0);
     // An external dataset may refine an unverified head.
     const unverified = assertion({ precision: "APPROXIMATE_AREA", accuracyM: 800, verificationState: "UNVERIFIED", verificationMethod: null, evidenceRef: null });
-    assert.strictEqual(validateSupersession(unverified, externalArea()).movedM, 0);
+    assert.strictEqual(validateSupersession(unverified, externalArea(), RIYADH).movedM, 0);
   });
 
   it("a material coordinate move records evidence and actor", () => {
     const moved = assertion({ id: "geo-2", supersedesId: "geo-1", point: NEAR });
-    assert.strictEqual(validateSupersession(verified, moved).correctionRequired, true);
-    const result = validateCoordinateCorrection(verified, moved, ADMIN, [], NOW);
+    assert.strictEqual(validateSupersession(verified, moved, RIYADH).correctionRequired, true);
+    const result = validateCoordinateCorrection(verified, moved, ADMIN, [], NOW, ROOT);
     assert.ok(result.movedM !== null && result.movedM > 50 && result.movedM < 100);
-    expectCode(() => validateCoordinateCorrection(verified, moved, { ...ADMIN, actorKind: "SYSTEM" }, [], NOW), "GEO_CORRECTION_INVALID");
-    expectCode(() => validateCoordinateCorrection(verified, moved, { ...ADMIN, evidenceRef: "" }, [], NOW), "GEO_CORRECTION_INVALID");
-    expectCode(() => validateCoordinateCorrection(verified, assertion({ id: "geo-3", supersedesId: "geo-x", point: NEAR }), ADMIN, [], NOW), "GEO_CHAIN_INVALID");
+    expectCode(() => validateCoordinateCorrection(verified, moved, { ...ADMIN, actorKind: "SYSTEM" }, [], NOW, ROOT), "GEO_CORRECTION_INVALID");
+    expectCode(() => validateCoordinateCorrection(verified, moved, { ...ADMIN, evidenceRef: "" }, [], NOW, ROOT), "GEO_CORRECTION_INVALID");
+    expectCode(() => validateCoordinateCorrection(verified, assertion({ id: "geo-3", supersedesId: "geo-x", point: NEAR }), ADMIN, [], NOW, ROOT), "GEO_CHAIN_INVALID");
   });
 
   it("a large move needs an independent reviewer", () => {
     const far = assertion({ id: "geo-2", supersedesId: "geo-1", point: FAR });
-    expectCode(() => validateCoordinateCorrection(verified, far, ADMIN, [], NOW), "GEO_CORRECTION_REVIEW_REQUIRED");
-    expectCode(() => validateCoordinateCorrection(verified, far, { ...ADMIN, reviewerRef: "admin-1" }, [], NOW), "GEO_CORRECTION_INVALID");
-    assert.strictEqual(validateCoordinateCorrection(verified, far, { ...ADMIN, reviewerRef: "admin-2" }, [], NOW).reviewed, true);
+    expectCode(() => validateCoordinateCorrection(verified, far, ADMIN, [], NOW, ROOT), "GEO_CORRECTION_REVIEW_REQUIRED");
+    expectCode(() => validateCoordinateCorrection(verified, far, { ...ADMIN, reviewerRef: "admin-1" }, [], NOW, ROOT), "GEO_CORRECTION_INVALID");
+    assert.strictEqual(validateCoordinateCorrection(verified, far, { ...ADMIN, reviewerRef: "admin-2" }, [], NOW, ROOT).reviewed, true);
   });
 
   it("a detour through UNKNOWN is measured from the audited anchor", () => {
@@ -291,7 +293,7 @@ describe("GEO-01C supersession authority and corrections", () => {
     const far = assertion({ id: "geo-3", supersedesId: "geo-2", point: FAR });
     const anchor = anchorPoint([verified, unknown], new Set());
     assert.deepStrictEqual(anchor, RIYADH);
-    expectCode(() => validateCoordinateCorrection(unknown, far, ADMIN, [], NOW, anchor), "GEO_CORRECTION_REVIEW_REQUIRED");
+    expectCode(() => validateCoordinateCorrection(unknown, far, ADMIN, [], NOW, { anchor, reviewedAnchor: anchor }), "GEO_CORRECTION_REVIEW_REQUIRED");
   });
 
   it("small unaudited steps accumulate from the audited anchor", () => {
@@ -306,14 +308,38 @@ describe("GEO-01C supersession authority and corrections", () => {
     assert.deepStrictEqual(anchorPoint([verified, step1, step2], new Set(["geo-3"])), step2.point);
   });
 
+  it("without any audited point, the oldest point is the anchor", () => {
+    const unknownRoot = assertion({ point: null, accuracyM: null, precision: "UNKNOWN", verificationState: "UNVERIFIED", verificationMethod: null, evidenceRef: null, visibility: "TENANT_INTERNAL" });
+    const first = assertion({ id: "geo-2", supersedesId: "geo-1", point: RIYADH });
+    const far = assertion({ id: "geo-3", supersedesId: "geo-2", point: FAR });
+    assert.strictEqual(anchorPoint([unknownRoot], new Set()), null);
+    const anchor = anchorPoint([unknownRoot, first], new Set());
+    assert.deepStrictEqual(anchor, RIYADH);
+    assert.strictEqual(validateSupersession(first, far, anchor).correctionRequired, true);
+  });
+
+  it("audited moves without review cannot add up beyond the large-move limit", () => {
+    // 900 m audited steps: each one is under 1 000 m from the last audited point, but the drift
+    // from the last reviewed point is what the reviewer rule measures.
+    const step900: GeoPoint = { lon: 46.6842, lat: 24.7136 };
+    const step1800: GeoPoint = { lon: 46.6931, lat: 24.7136 };
+    const first = assertion({ id: "geo-2", supersedesId: "geo-1", point: step900 });
+    const second = assertion({ id: "geo-3", supersedesId: "geo-2", point: step1800 });
+    assert.ok(validateCoordinateCorrection(verified, first, ADMIN, [], NOW, ROOT).movedM! < 1_000);
+    const anchors = { anchor: anchorPoint([verified, first], new Set(["geo-2"])), reviewedAnchor: anchorPoint([verified, first], new Set()) };
+    assert.deepStrictEqual(anchors, { anchor: step900, reviewedAnchor: RIYADH });
+    expectCode(() => validateCoordinateCorrection(first, second, ADMIN, [], NOW, anchors), "GEO_CORRECTION_REVIEW_REQUIRED");
+    assert.strictEqual(validateCoordinateCorrection(first, second, { ...ADMIN, reviewerRef: "admin-2" }, [], NOW, anchors).reviewed, true);
+  });
+
   it("bulk malicious edits are rate-limited and reviewable", () => {
     const moved = assertion({ id: "geo-2", supersedesId: "geo-1", point: NEAR });
     const burst = Array.from({ length: BULK_CORRECTION_LIMIT }, (_, i) => ({ actorRef: "admin-1", recordedAt: `2026-10-06T0${i % 10}:00:00.000Z` }));
-    expectCode(() => validateCoordinateCorrection(verified, moved, ADMIN, burst, NOW), "GEO_CORRECTION_RATE_LIMITED");
-    assert.strictEqual(validateCoordinateCorrection(verified, moved, { ...ADMIN, reviewerRef: "admin-2" }, burst, NOW).reviewed, true);
+    expectCode(() => validateCoordinateCorrection(verified, moved, ADMIN, burst, NOW, ROOT), "GEO_CORRECTION_RATE_LIMITED");
+    assert.strictEqual(validateCoordinateCorrection(verified, moved, { ...ADMIN, reviewerRef: "admin-2" }, burst, NOW, ROOT).reviewed, true);
     // Another actor's history and corrections older than 24 hours do not count.
-    assert.strictEqual(validateCoordinateCorrection(verified, moved, { ...ADMIN, actorRef: "admin-3" }, burst, NOW).reviewed, false);
+    assert.strictEqual(validateCoordinateCorrection(verified, moved, { ...ADMIN, actorRef: "admin-3" }, burst, NOW, ROOT).reviewed, false);
     const old = burst.map((item) => ({ ...item, recordedAt: "2026-10-04T00:00:00.000Z" }));
-    assert.strictEqual(validateCoordinateCorrection(verified, moved, ADMIN, old, NOW).reviewed, false);
+    assert.strictEqual(validateCoordinateCorrection(verified, moved, ADMIN, old, NOW, ROOT).reviewed, false);
   });
 });

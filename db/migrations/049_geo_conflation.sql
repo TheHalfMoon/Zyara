@@ -178,35 +178,6 @@ CREATE TRIGGER geo_external_links_guard
   BEFORE INSERT ON geo_external_links
   FOR EACH ROW EXECUTE FUNCTION geo_external_links_guard();
 
--- The audited anchor point at or before an assertion: the point of the nearest assertion in
--- its chain that is the chain root or the target of a correction record and has a point. Every
--- move is measured from it, so neither a detour through UNKNOWN (no point) nor a series of
--- small unaudited steps can walk a facility away without a correction record.
-CREATE OR REPLACE FUNCTION geo_anchor_point(start_id TEXT, tenant TEXT) RETURNS geometry
-LANGUAGE sql STABLE
-SET search_path = pg_catalog, public
-AS $$
-  WITH RECURSIVE chain(id, point, supersedes_id, anchored, depth) AS (
-    SELECT a.id, a.point, a.supersedes_id,
-      a.supersedes_id IS NULL OR EXISTS (
-        SELECT 1 FROM public.geo_coordinate_corrections c WHERE c.to_assertion_id = a.id AND c.tenant_id = a.tenant_id
-      ),
-      0
-    FROM public.geo_location_assertions a
-    WHERE a.id = start_id AND a.tenant_id = tenant
-    UNION ALL
-    SELECT p.id, p.point, p.supersedes_id,
-      p.supersedes_id IS NULL OR EXISTS (
-        SELECT 1 FROM public.geo_coordinate_corrections c WHERE c.to_assertion_id = p.id AND c.tenant_id = p.tenant_id
-      ),
-      c.depth + 1
-    FROM chain c
-    JOIN public.geo_location_assertions p ON p.id = c.supersedes_id AND p.tenant_id = tenant
-    WHERE NOT (c.anchored AND c.point IS NOT NULL)
-  )
-  SELECT point FROM chain WHERE anchored AND point IS NOT NULL ORDER BY depth LIMIT 1
-$$;
-
 -- ---------------------------------------------------------------------------
 -- Coordinate corrections: append-only, distance measured by the database.
 -- ---------------------------------------------------------------------------
@@ -235,20 +206,61 @@ CREATE TABLE IF NOT EXISTS geo_coordinate_corrections (
 CREATE INDEX IF NOT EXISTS geo_coordinate_corrections_actor_idx
   ON geo_coordinate_corrections(tenant_id, actor_ref, recorded_at);
 
--- The correcting assertion directly supersedes the corrected one. A move of more than 1 000 m,
--- and any correction beyond 10 by one actor in 24 hours, needs a distinct reviewer. A
--- per-actor advisory lock keeps the count exact under concurrency.
+-- The anchor point at or before an assertion. Anchored assertions are the chain root and the
+-- targets of correction records (with reviewed_only, only corrections that carry a reviewer).
+-- The anchor is the point of the nearest anchored assertion that has one; when none has a point
+-- (an UNKNOWN root with no correction yet), it is the oldest point in the chain. Every move is
+-- measured from the anchor, so neither a detour through UNKNOWN nor a series of small unaudited
+-- steps can walk a facility away; the reviewer rule is measured from the reviewed anchor, so
+-- audited steps without review cannot add up past the large-move limit either.
+CREATE OR REPLACE FUNCTION geo_anchor_point(start_id TEXT, tenant TEXT, reviewed_only BOOLEAN) RETURNS geometry
+LANGUAGE sql STABLE
+SET search_path = pg_catalog, public
+AS $$
+  WITH RECURSIVE chain(id, point, supersedes_id, anchored, depth) AS (
+    SELECT a.id, a.point, a.supersedes_id,
+      a.supersedes_id IS NULL OR EXISTS (
+        SELECT 1 FROM public.geo_coordinate_corrections k
+        WHERE k.to_assertion_id = a.id AND k.tenant_id = a.tenant_id AND (NOT reviewed_only OR k.reviewer_ref IS NOT NULL)
+      ),
+      0
+    FROM public.geo_location_assertions a
+    WHERE a.id = start_id AND a.tenant_id = tenant
+    UNION ALL
+    SELECT p.id, p.point, p.supersedes_id,
+      p.supersedes_id IS NULL OR EXISTS (
+        SELECT 1 FROM public.geo_coordinate_corrections k
+        WHERE k.to_assertion_id = p.id AND k.tenant_id = p.tenant_id AND (NOT reviewed_only OR k.reviewer_ref IS NOT NULL)
+      ),
+      c.depth + 1
+    FROM chain c
+    JOIN public.geo_location_assertions p ON p.id = c.supersedes_id AND p.tenant_id = tenant
+    WHERE NOT (c.anchored AND c.point IS NOT NULL)
+  )
+  SELECT point FROM chain
+  WHERE point IS NOT NULL
+  ORDER BY anchored DESC, CASE WHEN anchored THEN depth ELSE -depth END
+  LIMIT 1
+$$;
+
+-- The correcting assertion directly supersedes the corrected one. A move of more than 1 000 m
+-- (from the anchor, or in total from the reviewed anchor), and any correction beyond 10 by one
+-- actor in 24 hours, needs a distinct reviewer. A per-actor advisory lock keeps the count exact
+-- under concurrency.
 CREATE OR REPLACE FUNCTION geo_coordinate_corrections_guard() RETURNS TRIGGER
 LANGUAGE plpgsql
 SET search_path = pg_catalog, public
 AS $$
 DECLARE
   from_point geometry;
+  reviewed_point geometry;
   to_point geometry;
   to_supersedes TEXT;
+  drift DOUBLE PRECISION;
   recent INTEGER;
 BEGIN
-  from_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id);
+  from_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id, FALSE);
+  reviewed_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id, TRUE);
   SELECT a.supersedes_id INTO to_supersedes FROM public.geo_location_assertions a
   WHERE a.id = NEW.to_assertion_id AND a.tenant_id = NEW.tenant_id;
   SELECT a.point INTO to_point FROM public.geo_location_assertions a
@@ -258,8 +270,10 @@ BEGIN
   END IF;
   NEW.moved_m := CASE WHEN from_point IS NULL OR to_point IS NULL THEN NULL
                       ELSE ST_Distance(from_point::geography, to_point::geography) END;
-  IF NEW.moved_m > 1000 AND NEW.reviewer_ref IS NULL THEN
-    RAISE EXCEPTION 'a move of % m needs an independent reviewer', round(NEW.moved_m::numeric) USING ERRCODE = '23514';
+  drift := CASE WHEN reviewed_point IS NULL OR to_point IS NULL THEN NULL
+                 ELSE ST_Distance(reviewed_point::geography, to_point::geography) END;
+  IF GREATEST(NEW.moved_m, drift) > 1000 AND NEW.reviewer_ref IS NULL THEN
+    RAISE EXCEPTION 'a move of % m needs an independent reviewer', round(GREATEST(NEW.moved_m, drift)::numeric) USING ERRCODE = '23514';
   END IF;
   PERFORM pg_advisory_xact_lock(hashtextextended('geo_correction_actor:' || NEW.tenant_id || ':' || NEW.actor_ref, 0));
   SELECT count(*) INTO recent FROM public.geo_coordinate_corrections c
@@ -307,7 +321,7 @@ BEGIN
   END IF;
   source_rank := CASE NEW.source_kind WHEN 'EXTERNAL_DATASET' THEN 1 WHEN 'ZYARA_VERIFICATION' THEN 3 ELSE 2 END;
   required_rank := CASE head_state WHEN 'UNVERIFIED' THEN 1 WHEN 'PROVIDER_ATTESTED' THEN 2 ELSE 3 END;
-  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id);
+  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id, FALSE);
   dispute := NEW.verification_state = 'DISPUTED' AND source_rank >= 2
     AND (NEW.point IS NULL OR head_point IS NULL OR ST_Distance(head_point::geography, NEW.point::geography) <= 50);
   IF NOT dispute AND source_rank < required_rank THEN
@@ -340,7 +354,7 @@ BEGIN
   IF head_found IS NOT TRUE THEN
     RAISE EXCEPTION 'the superseded assertion is not visible; cannot audit the move' USING ERRCODE = '23514';
   END IF;
-  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id);
+  head_point := public.geo_anchor_point(NEW.supersedes_id, NEW.tenant_id, FALSE);
   IF head_point IS NOT NULL
      AND ST_Distance(head_point::geography, NEW.point::geography) > 50
      AND NOT EXISTS (
@@ -543,4 +557,4 @@ GRANT INSERT (id, tenant_id, branch_id, resolves_id, resolution, corrected_asser
 -- DROP FUNCTION IF EXISTS geo_conflict_resolutions_guard(), geo_coordinate_conflicts_guard(),
 --   geo_location_assertions_move_audit(), geo_location_assertions_authority_guard(),
 --   geo_coordinate_corrections_guard(), geo_external_links_guard(), geo_external_observations_guard(),
---   geo_anchor_point(TEXT, TEXT), geo_external_id_ok(TEXT, TEXT, BOOLEAN);
+--   geo_anchor_point(TEXT, TEXT, BOOLEAN), geo_external_id_ok(TEXT, TEXT, BOOLEAN);

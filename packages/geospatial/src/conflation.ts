@@ -384,15 +384,24 @@ const REQUIRED_RANK: Record<GeoVerificationState, number> = {
   VERIFIED: 3,
 };
 
-// The audited anchor of a chain (ordered root first, as currentGeoAssertion returns it): the
-// point of the latest assertion that is the root or the target of a correction record and has a
-// point. Mirrors geo_anchor_point in migration 049.
-export function anchorPoint(chain: readonly GeoLocationAssertion[], correctedIds: ReadonlySet<string>): GeoPoint | null {
+// The anchor of a chain (ordered root first, as currentGeoAssertion returns it). Anchored
+// assertions are the root and the ids in anchoredIds: the targets of correction records for the
+// audit anchor, or only of reviewed corrections for the reviewed anchor. The anchor is the point
+// of the latest anchored assertion that has one, else the oldest point in the chain. Mirrors
+// geo_anchor_point in migration 049.
+export function anchorPoint(chain: readonly GeoLocationAssertion[], anchoredIds: ReadonlySet<string>): GeoPoint | null {
   for (let index = chain.length - 1; index >= 0; index -= 1) {
     const item = chain[index];
-    if (item.point !== null && (item.supersedesId === null || correctedIds.has(item.id))) return item.point;
+    if (item.point !== null && (item.supersedesId === null || anchoredIds.has(item.id))) return item.point;
   }
-  return null;
+  return chain.find((item) => item.point !== null)?.point ?? null;
+}
+
+export interface GeoCorrectionAnchors {
+  // anchorPoint over correction targets.
+  anchor: GeoPoint | null;
+  // anchorPoint over reviewed correction targets only.
+  reviewedAnchor: GeoPoint | null;
 }
 
 // The authority rule for any superseding assertion (migration 049 enforces it with a trigger
@@ -404,7 +413,7 @@ export function anchorPoint(chain: readonly GeoLocationAssertion[], correctedIds
 export function validateSupersession(
   from: GeoLocationAssertion,
   to: GeoLocationAssertion,
-  anchor: GeoPoint | null = from.point,
+  anchor: GeoPoint | null,
 ): { movedM: number | null; correctionRequired: boolean } {
   if (to.supersedesId !== from.id || to.tenantId !== from.tenantId || to.branchId !== from.branchId) {
     fail("GEO_CHAIN_INVALID", "the new assertion must directly supersede the head in the same tenant and branch");
@@ -419,17 +428,18 @@ export function validateSupersession(
 }
 
 // Validates the correction record that accompanies a superseding assertion. Coordinates are
-// corrected only by a provider or Zyara admin with evidence; large and bulk moves need an
-// independent reviewer.
+// corrected only by a provider or Zyara admin with evidence; large moves (from the anchor, or in
+// total from the reviewed anchor) and bulk moves need an independent reviewer.
 export function validateCoordinateCorrection(
   from: GeoLocationAssertion,
   to: GeoLocationAssertion,
   request: GeoCorrectionRequest,
   recent: readonly GeoRecentCorrection[],
   nowIso: string,
-  anchor: GeoPoint | null = from.point,
+  anchors: GeoCorrectionAnchors,
 ): { movedM: number | null; reviewed: boolean } {
-  const { movedM } = validateSupersession(from, to, anchor);
+  const { movedM } = validateSupersession(from, to, anchors.anchor);
+  const driftM = anchors.reviewedAnchor !== null && to.point !== null ? haversineMeters(anchors.reviewedAnchor, to.point) : null;
   if (request.actorKind !== "PROVIDER" && request.actorKind !== "ZYARA_ADMIN") fail("GEO_CORRECTION_INVALID", "coordinates are corrected by a provider or Zyara admin");
   const actorRef = opaque(request.actorRef, "actorRef", "GEO_CORRECTION_INVALID");
   opaque(request.evidenceRef, "evidenceRef", "GEO_CORRECTION_INVALID");
@@ -437,7 +447,7 @@ export function validateCoordinateCorrection(
   const reviewerRef = request.reviewerRef === null ? null : opaque(request.reviewerRef, "reviewerRef", "GEO_CORRECTION_INVALID");
   if (reviewerRef !== null && reviewerRef === actorRef) fail("GEO_CORRECTION_INVALID", "the reviewer must differ from the actor");
 
-  if (movedM !== null && movedM > LARGE_MOVE_M && reviewerRef === null) {
+  if (Math.max(movedM ?? 0, driftM ?? 0) > LARGE_MOVE_M && reviewerRef === null) {
     fail("GEO_CORRECTION_REVIEW_REQUIRED", `a move of more than ${LARGE_MOVE_M} m needs an independent reviewer`);
   }
   const now = instant(nowIso, "now", "GEO_TIME_INVALID");
