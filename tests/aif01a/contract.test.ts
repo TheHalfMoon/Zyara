@@ -631,5 +631,25 @@ describe("AIF-01A security-judge hardening", () => {
       code(() => validateInvocation(send, invocation(send.digest, { correlationId: "patient-1012345678" }))),
       "CAPABILITY_CORRELATION_REQUIRED",
     );
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { idempotencyKey: "0501234567" }))),
+      "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED",
+    );
+  });
+
+  it("accepts random UUIDs as correlation, idempotency and invocation ids", async () => {
+    // A digit-run heuristic alone refused about 15% of random UUIDs; every one must pass.
+    const registry = new CapabilityContractRegistry();
+    const send = await registry.register(writeDefinition(), RELEASE);
+    for (let i = 0; i < 2_000; i += 1) {
+      validateInvocation(send, invocation(send.digest, { correlationId: crypto.randomUUID(), idempotencyKey: crypto.randomUUID() }));
+    }
+    // A UUID whose groups happen to be all digits is still an opaque UUID.
+    validateInvocation(send, invocation(send.digest, { correlationId: "12345678-1234-4123-8123-123456789012" }));
+    // Uppercase or unhyphenated values are not canonical UUIDs and keep the digit-run rule.
+    assert.equal(
+      code(() => validateInvocation(send, invocation(send.digest, { correlationId: "123456781234412381231234567890AB" }))),
+      "CAPABILITY_CORRELATION_REQUIRED",
+    );
   });
 });

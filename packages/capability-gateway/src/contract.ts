@@ -121,8 +121,12 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
 ];
 
 // Direct identifiers (national ids, phone numbers, MRNs) are runs of digits; opaque tokens
-// that travel with an invocation must not carry them.
-const DIRECT_IDENTIFIER_PATTERN = /[0-9]{7}/;
+// that travel with an invocation must not carry them. This is the N5 rule (approvals,
+// activity, audit chain and migration 045), so a token accepted there is accepted here.
+const DIRECT_IDENTIFIER_PATTERNS: readonly RegExp[] = [/^[0-9]{7,}$/, /[0-9]{9,}/];
+// A canonical lowercase UUID is random hex by construction. Digit-run heuristics would
+// refuse about 3% of random UUIDs, so this shape is accepted as opaque without them.
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 // A long hex run inside a credential reference is a key, not a name.
 const LONG_HEX_PATTERN = /[0-9a-f]{32}/;
 
@@ -405,7 +409,11 @@ function assertOpaqueId(value: unknown, label: string, code: CapabilityContractE
 // ids) are opaque: no credential shape and no direct identifier may ride inside them.
 function assertOpaqueToken(value: unknown, label: string, code: CapabilityContractErrorCode): string {
   const token = assertOpaqueId(value, label, code);
-  if (SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) || DIRECT_IDENTIFIER_PATTERN.test(token)) {
+  if (UUID_PATTERN.test(token)) return token;
+  if (
+    SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) ||
+    DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(token))
+  ) {
     fail(code, `${label} must be opaque and carry no credential or direct identifier`);
   }
   return token;
