@@ -44,7 +44,7 @@ const FLOATING_WORDS = new Set([
 // A pinned revision carries a date (YYYYMMDD or YYYY-MM-DD), a semantic version, or a digest
 // (sha256- prefix or a hex run of 12+). A provider alias with a number in it (gpt-4o,
 // model-3-5) is not a pin. A floating alias in any word (split on - _ . : / @ +) is refused too.
-const PIN = /(\d{4}-?\d{2}-?\d{2})|(\d+\.\d+\.\d+)|(sha256[-:_]?[0-9a-f]{7,})|([0-9a-f]{12,})/i;
+const PIN = /((19|20)\d{2}-?(0[1-9]|1[0-2])-?(0[1-9]|[12]\d|3[01]))|(\d+\.\d+\.\d+)|(sha256[-:_]?[0-9a-f]{7,})|([0-9a-f]{12,})/i;
 function isFloatingRevision(revision: string): boolean {
   return !PIN.test(revision) || revision.split(/[-_.:/@+]/).some((word) => FLOATING_WORDS.has(word.toLowerCase()));
 }
@@ -61,6 +61,12 @@ const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 // finalize: its capabilities must end in one of these preparatory verbs (an allowlist, so a new
 // authority verb such as cosign or esign is refused by default).
 const CLINICIAN_ASSIST_VERBS = new Set(["read", "draft", "summarize", "suggest", "prepare", "propose", "explain", "search", "list", "view", "translate"]);
+
+// Agent classes that may never share a capability (plan §12A.5).
+const SEPARATED_CLASSES: Partial<Record<AgentClass, AgentClass>> = {
+  PATIENT_NAVIGATION: "CLINIC_OPERATIONS",
+  CLINIC_OPERATIONS: "PATIENT_NAVIGATION",
+};
 
 export interface VersionRef {
   id: string;
@@ -328,8 +334,7 @@ export class ModelPromptRegistry {
       fail("REGISTRY_CLINICAL_AUTHORITY", "a clinician-assist agent may prepare clinical material but never sign, prescribe, order or finalize");
     }
     // A patient-facing agent and a clinic-operations agent never share a capability.
-    const counterpart: AgentClass | null =
-      p.agentClass === "PATIENT_NAVIGATION" ? "CLINIC_OPERATIONS" : p.agentClass === "CLINIC_OPERATIONS" ? "PATIENT_NAVIGATION" : null;
+    const counterpart = SEPARATED_CLASSES[p.agentClass] ?? null;
     const other = counterpart === null ? undefined : this.#agentClasses.get(counterpart);
     if (other && p.capabilities.some((c) => other.capabilities.includes(c))) {
       fail("REGISTRY_AGENT_CLASS_OVERLAP", "patient-navigation and clinic-operations agents cannot share capabilities");

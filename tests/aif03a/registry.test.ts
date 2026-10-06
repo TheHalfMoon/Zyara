@@ -265,7 +265,7 @@ describe("AIF-03A kill switches", () => {
 describe("AIF-03A panel hardening", () => {
   it("refuses floating aliases in any position and revisions without a digit", async () => {
     const r = new ModelPromptRegistry();
-    for (const alias of ["model@latest", "latest-2", "stable-v2", "main", "HEAD", "nightly", "next", "edge", "canary", "dev-build", "release", "gpt4+latest", "gpt-4o", "model-3-5", "2026-09-01-latest"]) {
+    for (const alias of ["model@latest", "latest-2", "stable-v2", "main", "HEAD", "nightly", "next", "edge", "canary", "dev-build", "release", "gpt4+latest", "gpt-4o", "model-3-5", "2026-09-01-latest", "gpt-4o-0000-99-99", "model-12345678"]) {
       assert.equal(await asyncCode(() => r.registerModel(profile({ id: "m-alias", modelRevision: alias }), RELEASE, NOW)), "REGISTRY_FLOATING_IDENTITY", alias);
     }
     for (const pinned of ["2026-09-01", "rev-20260915", "sha256-3f1c9a7e", "v1.4.2", "gpt-4o-2024-08-06", "weights-9f2c1a7b3e4d"]) {
@@ -308,6 +308,9 @@ describe("AIF-03A panel hardening", () => {
     assert.equal(code(() => r.assertBindingLive({ ...real, instructionDigest: `ins_${"f".repeat(64)}` })), "REGISTRY_INVALID");
     assert.equal(code(() => r.assertBindingLive({ ...real, agentClass: "CLINIC_OPERATIONS" })), "REGISTRY_INVALID");
     assert.equal(code(() => r.assertBindingLive({ ...real, safetyPolicyVersion: "9.9.9" })), "REGISTRY_INVALID");
+    assert.equal(code(() => r.assertBindingLive({ ...real, evaluationBundleDigest: `evb_${"b".repeat(64)}` })), "REGISTRY_INVALID");
+    assert.equal(code(() => r.assertBindingLive({ ...real, outputSchema: { id: "other.schema", version: "1.0.0" } })), "REGISTRY_INVALID");
+    assert.equal(code(() => r.assertBindingLive({ ...real, outputSchema: { id: "intent.label", version: "2.0.0" } })), "REGISTRY_INVALID");
   });
 
   it("allows clinician-assist only preparatory verbs and never clinical-signing data", () => {
@@ -324,6 +327,9 @@ describe("AIF-03A panel hardening", () => {
     assert.equal(code(() => r.setPromptState({ id: "intent.router", version: "5.0.0" }, "ACTIVE", RELEASE, NOW, "skip canary")), "REGISTRY_INVALID");
     assert.equal(code(() => r.setPromptState({ id: "intent.router", version: "5.0.0" }, "CANARY", RELEASE, NOW, " ")), "REGISTRY_INVALID");
     assert.equal(code(() => r.setModelState({ id: "laya-local", version: "1.0.0" }, "SUSPENDED", RELEASE, "2026-10-06T11:00:00.000Z", "backdated")), "REGISTRY_INVALID");
+    await r.registerModel(profile({ id: "shadow-only", modelRevision: "rev-20260903" }), RELEASE, NOW);
+    r.setModelState({ id: "shadow-only", version: "1.0.0" }, "SHADOW", RELEASE, NOW, "shadow run");
+    assert.equal(code(() => r.setModelState({ id: "shadow-only", version: "1.0.0" }, "SUSPENDED", RELEASE, NOW, "detour")), "REGISTRY_INVALID");
     r.setKillSwitch("MODEL", "laya-local", true, RELEASE, "2026-10-06T12:05:00.000Z", "incident");
     assert.equal(code(() => r.setKillSwitch("MODEL", "laya-local", false, RELEASE, "2026-10-06T11:00:00.000Z", "stale lift")), "REGISTRY_INVALID");
     assert.equal(r.isDisabled({ model: "laya-local" }), true);
