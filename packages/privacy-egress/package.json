@@ -1,0 +1,19 @@
+{
+  "name": "@zyara/privacy-egress",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "echo ok"
+  },
+  "dependencies": {
+    "@zyara/capability-gateway": "workspace:*",
+    "@zyara/collaboration": "workspace:*",
+    "@zyara/consent-boundaries": "workspace:*"
+  }
+}

@@ -424,6 +424,20 @@ export function isOpaqueId(value: unknown): value is string {
   return typeof value === "string" && OPAQUE_ID_PATTERN.test(value);
 }
 
+// True when a string carries a credential shape (keys, tokens, bearer headers, private keys,
+// "password=" assignments), using the definition scan's patterns. Used by the AIF-02A egress
+// gate on payload values. Free text such as "reset your password" is not a credential shape;
+// the bare-word list for opaque ids is deliberately not applied here. The value is scanned in
+// overlapping windows so every pattern stays on a bounded input.
+export function containsCredentialShape(value: string): boolean {
+  const step = CAPABILITY_STRING_MAX_LENGTH / 2;
+  for (let start = 0; start === 0 || start < value.length - step; start += step) {
+    const window = value.slice(start, start + CAPABILITY_STRING_MAX_LENGTH);
+    if (SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(window))) return true;
+  }
+  return false;
+}
+
 export function isOpaqueToken(value: unknown): value is string {
   try {
     assertOpaqueToken(value, "token", "CAPABILITY_CORRELATION_REQUIRED");
