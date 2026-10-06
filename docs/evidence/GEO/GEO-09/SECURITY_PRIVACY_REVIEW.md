@@ -20,9 +20,9 @@
   - Only `SUPPLY_BY_CELL` is facility-derived, and it is pinned to the branch-location count.
 - **Scope.**
   - Foreign tenant or branch events make aggregation fail closed.
-  - FORCE RLS; the application has no SELECT on the base tables and reads tenant-filtered, retention-filtered `security_barrier` views.
+  - FORCE RLS; the application reads only tenant-filtered, retention- and purge-filtered `security_barrier` views.
   - The purge is scoped to `app.current_tenant`.
-- **Integrity.** Append-only for the application (column-level INSERT; `computed_at` and `purged_at` are not insertable), and the purge is the only removal path.
+- **Integrity.** The application has no table privileges: it writes only through `geo_publish_insight()` (atomic header and cells, database-controlled `computed_at`) and removes only through the tombstoning purge.
 
 Residual risks:
 

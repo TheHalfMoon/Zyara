@@ -60,6 +60,7 @@ Each `SpatialMetricDefinition` has:
 - A window starts at UTC midnight on a multiple of `windowDays` days since the epoch, and its UTC length is exact, independent of the session time zone. This is enforced in TypeScript (`validateWindow`) and in the database.
 - In the database, sources are migrator-managed reference data (`geo_insight_sources`). Each source maps to a **population**, and a subset source (such as sensitive care requests) shares its parent's population. **One person-derived release per population covers any overlapping time span**, whatever the source, window length, grid, scope, metric id or numerator (`EXCLUDE USING gist`, `btree_gist`). An unregistered (for example renamed) source cannot be released.
 - Accepted product cost: disjoint branch scopes, or weekly and monthly views over one population, cannot coexist for the same span. Per-branch dashboards need a later, reviewed rule.
+
 ## Release (`releaseSpatialCells`)
 
 - **Small cells.** A cell below `minCohort` is suppressed: its value is null and its reason is `SUPPRESSED_LOW_COUNT`. A missing count with 0 < missing < k is suppressed too.
@@ -103,9 +104,9 @@ Only released **counts** are stored. Ratios are never stored, and there is no va
 - **One write path.** `geo_publish_insight(release, cells)` (`SECURITY DEFINER`, pinned `search_path`) writes the header and all cells in one call for `app.current_tenant`. It copies the grid, subject kind and cohort from the header into every cell, resolves the population from the registry, and checks complementary suppression inline: a released total must leave a hidden mass (total − visible cells − released missing) of 0 or at least the cohort. No constraint deferral and no later cell write can bypass it.
 - **Access.**
   - FORCE RLS on both tables. The application has **no INSERT, SELECT, UPDATE or DELETE** on the base tables, only EXECUTE on the publish and purge functions.
-  - `computed_at` and `purged_at` are database-controlled. It reads the `geo_insight_*_live` views, which filter by `app.current_tenant`, retention and purge state (`security_barrier`).
+  - `computed_at` and `purged_at` are database-controlled. The application reads the `geo_insight_*_live` views, which filter by `app.current_tenant`, retention and purge state (`security_barrier`).
 - **Retention.** `geo_purge_expired_insights()` (`SECURITY DEFINER`, pinned `search_path`, current tenant only) deletes expired cells and **tombstones** the header (counts cleared, key kept). A purged slot can never be re-released.
-- **No location columns.** Neither table has a geometry, coordinate, patient, subject, account or session column.
+- **No location columns.** No insight table has a geometry, coordinate, patient, subject, account or session column.
 ## Required tests (handoff)
 
 - low-count suppression, including the complementary (multi-cell) and missingness cases in TypeScript, and the database refusing unsuppressed small cells, totals and missing counts;
