@@ -427,6 +427,21 @@ function assertOpaqueToken(value: unknown, label: string, code: CapabilityContra
   return token;
 }
 
+// Non-throwing forms for callers that must echo a value only when it is safe (AIF-01B
+// receipts): an opaque id, and an opaque token free of credential shapes and direct ids.
+export function isOpaqueId(value: unknown): value is string {
+  return typeof value === "string" && OPAQUE_ID_PATTERN.test(value);
+}
+
+export function isOpaqueToken(value: unknown): value is string {
+  try {
+    assertOpaqueToken(value, "token", "CAPABILITY_CORRELATION_REQUIRED");
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function assertInstant(value: unknown, label: string): string {
   if (typeof value !== "string" || !ISO_INSTANT_PATTERN.test(value) || Number.isNaN(Date.parse(value))) {
     fail("CAPABILITY_TIME_INVALID", `${label} must be an ISO-8601 UTC instant`);

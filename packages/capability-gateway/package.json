@@ -12,7 +12,10 @@
     "test": "echo ok"
   },
   "dependencies": {
+    "@zyara/adapter-harness": "workspace:*",
+    "@zyara/authorization": "workspace:*",
     "@zyara/collaboration": "workspace:*",
-    "@zyara/consent-boundaries": "workspace:*"
+    "@zyara/consent-boundaries": "workspace:*",
+    "@zyara/identity": "workspace:*"
   }
 }
