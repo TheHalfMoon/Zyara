@@ -13,7 +13,7 @@ Invariant: **AI may interpret, retrieve, navigate, explain, draft and propose. S
 
 ## Typed geo capabilities (`GEO_CAPABILITY_DEFINITIONS`)
 
-All five are validated by `validateCapabilityDefinition` and admitted through `CapabilityContractRegistry`.
+All five are validated by `validateCapabilityDefinition` and admitted through `CapabilityContractRegistry`. `GEO_CAPABILITY_SCHEMAS` carries the exact JSON-compatible input/output schema bodies and their canonical SHA-256 `schema_...` digests; qualification recomputes every digest and checks every capability reference. Write schemas accept opaque references only, never model-supplied coordinates.
 
 | id | read/write | authority | data | scope | purpose |
 | --- | --- | --- | --- | --- | --- |
@@ -27,7 +27,7 @@ There is no other geo write capability. An agent or workflow cannot be granted `
 
 ## Rules
 
-1. **Unauthorized is denied.** Every invocation goes through the AIF-01B resolver. A capability without a grant is `DENY`, and a grant for one capability never authorizes another.
+1. **Unauthorized is denied.** Every invocation goes through the AIF-01B resolver. A capability without a grant is `DENY`, and a grant for one capability never authorizes another. `geo.location.correct` is additionally A5/HUMAN_ONLY: an active human-role grant, AAL2 and an exact confirmation are required before `ALLOW`.
 2. **Model coordinates are untrusted.**
    - `parseModelViewport` accepts a model-proposed centre and zoom only as an untrusted view hint: validated (`validateGeoPoint`), zoom clamped to 3–18, and marked `trust: "UNTRUSTED_VIEW_HINT"`.
    - A search origin must be either a current result-entity reference or a client device-location reference (an opaque token issued by the client after consent), never model-supplied coordinates.
@@ -44,7 +44,7 @@ There is no other geo write capability. An agent or workflow cannot be granted `
 5. **Voice changes the view only.** Voice-originated invocations may use only read capabilities that change view or retrieve public results (`geo.map.set_view`, `geo.directory.search_nearby`). Any other capability is refused before resolution (`GEO_AI_VOICE_VIEW_ONLY`). Voice never changes provider truth.
 6. **Geocoder output cannot update a branch coordinate without the admin command.**
    - `proposeCorrectionFromGeocoder` turns a geocoder result into a draft proposal for review. It is never a location assertion, it carries `requiresCapability: "geo.location.correct"`, and its source kind is `EXTERNAL_DATASET`.
-   - `assertCoordinateWriteAuthorized` allows a coordinate write only with `geo.location.correct` by a human principal.
+   - There is no parallel geo authorization helper. The admin command is authorized by AIF-01B itself: workflows/agents are denied, a human without the exact grant is denied, an eligible granted admin is asked for exact confirmation, and only the confirmed invocation is `ALLOW`.
    - In GEO-01C, an `EXTERNAL_DATASET` source cannot supersede a verified or attested head, and every material move needs a correction record by a provider or Zyara admin.
 
 ## Required tests (handoff)

@@ -8,13 +8,204 @@
 // coarse public allowlist, voice changes the view only, and a branch coordinate changes only
 // through the human-only admin command (GEO-01C correction).
 
-import type { CapabilityDefinition, CapabilityGrantee } from "@zyara/capability-gateway";
+import type { CapabilityDefinition } from "@zyara/capability-gateway";
 import { GeoContractError, type GeoContractErrorCode, type GeoPoint, validateGeoPoint } from "./assertion.js";
 
-const SCHEMA_DIGEST = `schema_${"0".repeat(64)}`;
+const OPAQUE_ID_SCHEMA = { type: "string", pattern: "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$" } as const;
+const GEO_POINT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    lon: { type: "number", minimum: -180, maximum: 180 },
+    lat: { type: "number", minimum: -90, maximum: 90 },
+  },
+  required: ["lon", "lat"],
+} as const;
+
+// Exact JSON-compatible AIF-01 schema references. The digest is SHA-256 over canonical JSON
+// (recursively sorted object keys, array order preserved) of the adjacent schema body.
+// Write-capability inputs deliberately carry opaque refs only; resolved coordinates never
+// originate in a model-produced write payload.
+export const GEO_CAPABILITY_SCHEMAS = Object.freeze({
+  searchNearby: {
+    input: {
+      id: "geo.directory.search_nearby.input",
+      version: "1.0.0",
+      digest: "schema_875c00ca849070d62bb2b5094ac13c229bfd99acbfc2f985dd47c2483cfd5e93",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          origin: {
+            oneOf: [
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: {
+                  kind: { const: "RESULT_ENTITY" },
+                  resultSetId: OPAQUE_ID_SCHEMA,
+                  entityId: OPAQUE_ID_SCHEMA,
+                },
+                required: ["kind", "resultSetId", "entityId"],
+              },
+              {
+                type: "object",
+                additionalProperties: false,
+                properties: { kind: { const: "DEVICE_LOCATION_REF" }, ref: OPAQUE_ID_SCHEMA },
+                required: ["kind", "ref"],
+              },
+            ],
+          },
+          specialtyCode: {
+            oneOf: [{ type: "null" }, { type: "string", pattern: "^[a-z][a-z0-9_]{1,63}$" }],
+          },
+        },
+        required: ["origin"],
+      },
+    },
+    output: {
+      id: "geo.directory.search_nearby.output",
+      version: "1.0.0",
+      digest: "schema_b54e1584052d3f3291ea352207664253a46e5320334ee85c733e85858a08a75e",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          resultSetId: OPAQUE_ID_SCHEMA,
+          entityIds: { type: "array", items: OPAQUE_ID_SCHEMA, uniqueItems: true },
+          expiresAt: { type: "string", format: "date-time" },
+        },
+        required: ["resultSetId", "entityIds", "expiresAt"],
+      },
+    },
+  },
+  setView: {
+    input: {
+      id: "geo.map.set_view.input",
+      version: "1.0.0",
+      digest: "schema_4287aca4cd923753882d1de2d45df8178c68736c92d9562ee5f99e20cbee0b2b",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { center: GEO_POINT_SCHEMA, zoom: { type: "number" } },
+        required: ["center", "zoom"],
+      },
+    },
+    output: {
+      id: "geo.map.set_view.output",
+      version: "1.0.0",
+      digest: "schema_bb8831e978872d3616155856d95ee556da770b3d1d6345322670845283797b9f",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          center: GEO_POINT_SCHEMA,
+          zoom: { type: "integer", minimum: 3, maximum: 18 },
+          trust: { const: "UNTRUSTED_VIEW_HINT" },
+        },
+        required: ["center", "zoom", "trust"],
+      },
+    },
+  },
+  shareScene: {
+    input: {
+      id: "geo.scene.share.input",
+      version: "1.0.0",
+      digest: "schema_baa3a4fea5451ba4d3eaab1d94a28091a433aec31b741d19cb639b88c212d567",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { sceneRef: OPAQUE_ID_SCHEMA },
+        required: ["sceneRef"],
+      },
+    },
+    output: {
+      id: "geo.scene.share.output",
+      version: "1.0.0",
+      digest: "schema_9b9e6f9b241a30b7943b90cfa9e8786c5b7518b6c6d5dd6ccef5410608fad363",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          viewport: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              center: GEO_POINT_SCHEMA,
+              zoom: { type: "integer", minimum: 3, maximum: 14 },
+            },
+            required: ["center", "zoom"],
+          },
+          layers: {
+            type: "array",
+            items: { type: "string", enum: ["providers", "entrances", "accessibility", "parking"] },
+            uniqueItems: true,
+          },
+          branchIds: { type: "array", items: OPAQUE_ID_SCHEMA, uniqueItems: true },
+        },
+        required: ["viewport", "layers", "branchIds"],
+      },
+    },
+  },
+  proposeCorrection: {
+    input: {
+      id: "geo.location.propose_correction.input",
+      version: "1.0.0",
+      digest: "schema_5c7252faf738252f1e24a2e4199b89f4a0730258208162673ea9600a3c516056",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { branchId: OPAQUE_ID_SCHEMA, geocoderResultRef: OPAQUE_ID_SCHEMA },
+        required: ["branchId", "geocoderResultRef"],
+      },
+    },
+    output: {
+      id: "geo.location.propose_correction.output",
+      version: "1.0.0",
+      digest: "schema_adcbe2ea0518c19ba33dfa9104bb26b0ca736b202a1a83d68be0b208a4c719d9",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          proposalRef: OPAQUE_ID_SCHEMA,
+          status: { const: "PENDING_REVIEW" },
+          requiresCapability: { const: "geo.location.correct" },
+        },
+        required: ["proposalRef", "status", "requiresCapability"],
+      },
+    },
+  },
+  correct: {
+    input: {
+      id: "geo.location.correct.input",
+      version: "1.0.0",
+      digest: "schema_af6b91c1a0516e6b1082bd06dd9409e50ac01e633e7a4634fad365902c132c31",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { branchId: OPAQUE_ID_SCHEMA, proposalRef: OPAQUE_ID_SCHEMA },
+        required: ["branchId", "proposalRef"],
+      },
+    },
+    output: {
+      id: "geo.location.correct.output",
+      version: "1.0.0",
+      digest: "schema_38392fb7c0f688666cc77153625be70c18e49e767af308ea61156722651ae420",
+      schema: {
+        type: "object",
+        additionalProperties: false,
+        properties: { correctionRef: OPAQUE_ID_SCHEMA, status: { const: "RECORDED" } },
+        required: ["correctionRef", "status"],
+      },
+    },
+  },
+} as const);
+
+type GeoCapabilitySchemaPair = (typeof GEO_CAPABILITY_SCHEMAS)[keyof typeof GEO_CAPABILITY_SCHEMAS];
 
 function geoCapability(
   id: string,
+  schemas: GeoCapabilitySchemaPair,
   overrides: Pick<CapabilityDefinition, "readOrWrite" | "authorityClass" | "dataClasses" | "branchScope" | "riskClass"> &
     Partial<CapabilityDefinition>,
 ): CapabilityDefinition {
@@ -23,8 +214,8 @@ function geoCapability(
     id,
     version: "1.0.0",
     ownerDomain: "geo",
-    inputSchema: { id: `${id}.input`, version: "1.0.0", digest: SCHEMA_DIGEST },
-    outputSchema: { id: `${id}.output`, version: "1.0.0", digest: SCHEMA_DIGEST },
+    inputSchema: { id: schemas.input.id, version: schemas.input.version, digest: schemas.input.digest },
+    outputSchema: { id: schemas.output.id, version: schemas.output.version, digest: schemas.output.digest },
     tenantScope: "SINGLE_TENANT",
     consentPurpose: "NOT_REQUIRED",
     credentialBinding: { kind: "none" },
@@ -52,11 +243,11 @@ export const GEO_CAPABILITY_IDS = {
 // The complete set of geo capabilities. There is no other geo write: the only path that changes
 // a branch coordinate is geo.location.correct, which is A5_HUMAN_ONLY.
 export const GEO_CAPABILITY_DEFINITIONS: readonly CapabilityDefinition[] = Object.freeze([
-  geoCapability(GEO_CAPABILITY_IDS.searchNearby, { readOrWrite: "read", authorityClass: "A0_OBSERVE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
-  geoCapability(GEO_CAPABILITY_IDS.setView, { readOrWrite: "read", authorityClass: "A0_OBSERVE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
-  geoCapability(GEO_CAPABILITY_IDS.shareScene, { readOrWrite: "write", authorityClass: "A2_PREPARE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
-  geoCapability(GEO_CAPABILITY_IDS.proposeCorrection, { readOrWrite: "write", authorityClass: "A2_PREPARE", dataClasses: ["INTERNAL"], branchScope: "BRANCH", riskClass: "routine" }),
-  geoCapability(GEO_CAPABILITY_IDS.correct, { readOrWrite: "write", authorityClass: "A5_HUMAN_ONLY", dataClasses: ["INTERNAL"], branchScope: "BRANCH", riskClass: "elevated" }),
+  geoCapability(GEO_CAPABILITY_IDS.searchNearby, GEO_CAPABILITY_SCHEMAS.searchNearby, { readOrWrite: "read", authorityClass: "A0_OBSERVE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
+  geoCapability(GEO_CAPABILITY_IDS.setView, GEO_CAPABILITY_SCHEMAS.setView, { readOrWrite: "read", authorityClass: "A0_OBSERVE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
+  geoCapability(GEO_CAPABILITY_IDS.shareScene, GEO_CAPABILITY_SCHEMAS.shareScene, { readOrWrite: "write", authorityClass: "A2_PREPARE", dataClasses: ["PUBLIC"], branchScope: "TENANT_WIDE", riskClass: "routine" }),
+  geoCapability(GEO_CAPABILITY_IDS.proposeCorrection, GEO_CAPABILITY_SCHEMAS.proposeCorrection, { readOrWrite: "write", authorityClass: "A2_PREPARE", dataClasses: ["INTERNAL"], branchScope: "BRANCH", riskClass: "routine" }),
+  geoCapability(GEO_CAPABILITY_IDS.correct, GEO_CAPABILITY_SCHEMAS.correct, { readOrWrite: "write", authorityClass: "A5_HUMAN_ONLY", dataClasses: ["INTERNAL"], branchScope: "BRANCH", riskClass: "elevated" }),
 ]);
 
 function fail(code: GeoContractErrorCode, message: string): never {
@@ -289,8 +480,3 @@ export function proposeCorrectionFromGeocoder(input: { tenantId: string; branchI
   });
 }
 
-// A coordinate write is authorized only as the human-only admin command.
-export function assertCoordinateWriteAuthorized(capabilityId: string, actor: CapabilityGrantee): void {
-  if (capabilityId !== GEO_CAPABILITY_IDS.correct) fail("GEO_AI_AUTHORITY_DENIED", "only geo.location.correct changes a branch coordinate");
-  if (actor.kind !== "human_role") fail("GEO_AI_AUTHORITY_DENIED", "a branch coordinate is corrected by an authorized human only");
-}

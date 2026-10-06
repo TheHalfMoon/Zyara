@@ -6,6 +6,7 @@
 // public allowlist, that voice changes the view only, and that a geocoder result can never move
 // a branch coordinate without the human-only admin command.
 import assert from "node:assert";
+import { createHash } from "node:crypto";
 import { describe, it } from "node:test";
 import {
   CapabilityContractError,
@@ -15,16 +16,19 @@ import {
   validateCapabilityDefinition,
   validateGrant,
   type AdmittedCapability,
+  type AuthenticatedPrincipal,
   type CapabilityGrantRecord,
+  type CapabilityResolutionRequest,
+  type ConfirmationQuery,
   type ResolverDependencies,
 } from "@zyara/capability-gateway";
 import {
   GEO_CAPABILITY_DEFINITIONS,
   GEO_CAPABILITY_IDS,
+  GEO_CAPABILITY_SCHEMAS,
   GeoContractError,
   GeoResultLedger,
   RESULT_SET_MAX_TTL_MS,
-  assertCoordinateWriteAuthorized,
   assertNoModelCoordinates,
   assertOriginAllowed,
   buildPublicShareState,
@@ -40,11 +44,52 @@ const NOW = "2026-10-06T12:00:00.000Z";
 const RELEASE = { kind: "system", principal: "release_pipeline", id: "ci-release" } as const;
 const PARAMS = `params_${"b".repeat(64)}`;
 
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (typeof value === "object" && value !== null) {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(",")}}`;
+  }
+  const encoded = JSON.stringify(value);
+  if (encoded === undefined) throw new Error("schema must be JSON-compatible");
+  return encoded;
+}
+
+function schemaDigest(schema: unknown): string {
+  return `schema_${createHash("sha256").update(canonicalJson(schema)).digest("hex")}`;
+}
+
+function human(role: "branch_admin" | "clinician"): AuthenticatedPrincipal {
+  return {
+    kind: "human",
+    context: {
+      claims: {
+        sub: "acct-geo-admin",
+        iss: "https://idp.test",
+        aud: "zyara",
+        exp: 0,
+        iat: 0,
+        sid: "sess-geo-10",
+        tenant: "t1",
+        assurance: "aal2",
+      },
+      memberships: [{
+        accountId: "acct-geo-admin",
+        tenantId: "t1",
+        branchId: "b1",
+        role,
+        revoked: false,
+        patientId: null,
+      }],
+    },
+  };
+}
+
 function expectCode(run: () => unknown, code: GeoContractErrorCode): void {
   assert.throws(run, (error: unknown) => error instanceof GeoContractError && error.code === code, `expected ${code}`);
 }
 
-async function geoWorld(): Promise<{ admitted: Map<string, AdmittedCapability>; state: CapabilityRegistryState; deps: ResolverDependencies }> {
+async function geoWorld(): Promise<{ admitted: Map<string, AdmittedCapability>; state: CapabilityRegistryState; deps: ResolverDependencies; confirmations: ConfirmationQuery[] }> {
   const registry = new CapabilityContractRegistry();
   const state = new CapabilityRegistryState({ now: () => NOW });
   const admitted = new Map<string, AdmittedCapability>();
@@ -53,6 +98,7 @@ async function geoWorld(): Promise<{ admitted: Map<string, AdmittedCapability>; 
     state.admit(capability);
     admitted.set(definition.id, capability);
   }
+  const confirmations: ConfirmationQuery[] = [];
   const deps: ResolverDependencies = {
     clock: { now: () => NOW },
     registry: state.registryPort(),
@@ -60,9 +106,11 @@ async function geoWorld(): Promise<{ admitted: Map<string, AdmittedCapability>; 
     agents: { resolveAuthority: () => ({ allowed: false, reason: "AGENT_NOT_GRANTED" }) as never },
     approvals: { getRequest: () => null, claimant: state.claimantPort() },
     adapters: { certified: () => null },
-    confirmations: { isConfirmed: () => false },
+    confirmations: {
+      isConfirmed: (query) => confirmations.some((item) => JSON.stringify(item) === JSON.stringify(query)),
+    },
   };
-  return { admitted, state, deps };
+  return { admitted, state, deps, confirmations };
 }
 
 function grant(capabilityId: string, workflowId: string): CapabilityGrantRecord {
@@ -79,16 +127,17 @@ function grant(capabilityId: string, workflowId: string): CapabilityGrantRecord 
   };
 }
 
-function resolveRequest(capability: AdmittedCapability) {
+function resolveRequest(capability: AdmittedCapability, overrides: Partial<CapabilityResolutionRequest> = {}): CapabilityResolutionRequest {
   return {
     capability: { capabilityId: capability.definition.id, version: capability.definition.version, definitionDigest: capability.digest },
     requestedTenantId: null,
     branchId: null,
     parametersDigest: PARAMS,
     correlationId: "corr-geo-10",
-    idempotencyKey: null,
+    idempotencyKey: capability.definition.readOrWrite === "write" ? "idem-geo-10" : null,
     approvalRequestId: null,
     confirmationReceiptId: null,
+    ...overrides,
   };
 }
 
@@ -96,6 +145,21 @@ describe("GEO-10 typed capabilities and authorization", () => {
   it("every geo capability is a valid AIF-01 definition, and correction is human-only", () => {
     assert.deepStrictEqual(GEO_CAPABILITY_DEFINITIONS.map((definition) => definition.id).sort(), Object.values(GEO_CAPABILITY_IDS).sort());
     for (const definition of GEO_CAPABILITY_DEFINITIONS) validateCapabilityDefinition(definition);
+    const schemaPairs = [
+      [GEO_CAPABILITY_IDS.searchNearby, GEO_CAPABILITY_SCHEMAS.searchNearby],
+      [GEO_CAPABILITY_IDS.setView, GEO_CAPABILITY_SCHEMAS.setView],
+      [GEO_CAPABILITY_IDS.shareScene, GEO_CAPABILITY_SCHEMAS.shareScene],
+      [GEO_CAPABILITY_IDS.proposeCorrection, GEO_CAPABILITY_SCHEMAS.proposeCorrection],
+      [GEO_CAPABILITY_IDS.correct, GEO_CAPABILITY_SCHEMAS.correct],
+    ] as const;
+    for (const [id, schemas] of schemaPairs) {
+      const definition = GEO_CAPABILITY_DEFINITIONS.find((item) => item.id === id);
+      assert.ok(definition);
+      assert.deepStrictEqual(definition.inputSchema, { id: schemas.input.id, version: schemas.input.version, digest: schemas.input.digest });
+      assert.deepStrictEqual(definition.outputSchema, { id: schemas.output.id, version: schemas.output.version, digest: schemas.output.digest });
+      assert.strictEqual(schemas.input.digest, schemaDigest(schemas.input.schema));
+      assert.strictEqual(schemas.output.digest, schemaDigest(schemas.output.schema));
+    }
     const correct = GEO_CAPABILITY_DEFINITIONS.find((definition) => definition.id === GEO_CAPABILITY_IDS.correct);
     assert.strictEqual(correct?.authorityClass, "A5_HUMAN_ONLY");
     // Every other write only prepares; nothing but the admin command changes facts.
@@ -123,7 +187,7 @@ describe("GEO-10 typed capabilities and authorization", () => {
         (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_HUMAN_ONLY",
       );
     }
-    validateGrant(correct, { grantee: { kind: "human_role", id: "geo_admin" }, tenantId: "t1", branchId: "b1", capabilityId: correct.definition.id, version: "1.0.0" });
+    validateGrant(correct, { grantee: { kind: "human_role", id: "branch_admin" }, tenantId: "t1", branchId: "b1", capabilityId: correct.definition.id, version: "1.0.0" });
   });
 });
 
@@ -201,14 +265,51 @@ describe("GEO-10 voice and provider truth", () => {
     assertOriginAllowed("UI", GEO_CAPABILITY_IDS.shareScene);
   });
 
-  it("geocoder output cannot update a branch coordinate without the admin command", () => {
+  it("geocoder output cannot update a branch coordinate without the admin command", async () => {
     const proposal = proposeCorrectionFromGeocoder({ tenantId: "t1", branchId: "b1", result: { provider: "geocoder-x", resultRef: "abc123", point: { lon: 46.725, lat: 24.7136 }, observedAt: NOW } });
     assert.deepStrictEqual([proposal.kind, proposal.status, proposal.sourceKind, proposal.requiresCapability], ["CORRECTION_PROPOSAL", "PENDING_REVIEW", "EXTERNAL_DATASET", "geo.location.correct"]);
-    // Only the human-only admin command writes coordinates.
-    expectCode(() => assertCoordinateWriteAuthorized(GEO_CAPABILITY_IDS.proposeCorrection, { kind: "human_role", id: "geo_admin" }), "GEO_AI_AUTHORITY_DENIED");
-    expectCode(() => assertCoordinateWriteAuthorized(GEO_CAPABILITY_IDS.correct, { kind: "agent", id: "agent-geo" }), "GEO_AI_AUTHORITY_DENIED");
-    expectCode(() => assertCoordinateWriteAuthorized(GEO_CAPABILITY_IDS.correct, { kind: "workflow", id: "wf-geo" }), "GEO_AI_AUTHORITY_DENIED");
-    assertCoordinateWriteAuthorized(GEO_CAPABILITY_IDS.correct, { kind: "human_role", id: "geo_admin" });
+
+    // Authority comes from AIF-01B, never from a local actor-kind helper.
+    const { admitted, state, deps, confirmations } = await geoWorld();
+    const correct = admitted.get(GEO_CAPABILITY_IDS.correct)!;
+    const workflow = await resolveCapability(
+      { kind: "workflow", workflowId: "wf-geo", tenantId: "t1" },
+      resolveRequest(correct, { branchId: "b1" }),
+      deps,
+    );
+    assert.deepStrictEqual([workflow.decision, workflow.reasons], ["DENY", ["CAPABILITY_HUMAN_ONLY"]]);
+    const noGrant = await resolveCapability(human("clinician"), resolveRequest(correct, { branchId: "b1" }), deps);
+    assert.deepStrictEqual([noGrant.decision, noGrant.reasons], ["DENY", ["CAPABILITY_GRANT_MISSING"]]);
+
+    state.grant({
+      grantId: "g-geo-admin-correct",
+      grantee: { kind: "human_role", id: "branch_admin" },
+      tenantId: "t1",
+      branchId: "b1",
+      capabilityId: GEO_CAPABILITY_IDS.correct,
+      version: "1.0.0",
+      grantedAt: "2026-10-01T00:00:00.000Z",
+      expiresAt: "2026-11-01T00:00:00.000Z",
+      revokedAt: null,
+    });
+    const ask = await resolveCapability(human("branch_admin"), resolveRequest(correct, { branchId: "b1" }), deps);
+    assert.deepStrictEqual([ask.decision, ask.reasons, ask.grantId], ["ASK", ["CONFIRMATION_REQUIRED"], "g-geo-admin-correct"]);
+    confirmations.push({
+      confirmationReceiptId: "conf-geo-correct",
+      tenantId: "t1",
+      accountId: "acct-geo-admin",
+      capabilityId: GEO_CAPABILITY_IDS.correct,
+      version: "1.0.0",
+      parametersDigest: PARAMS,
+      idempotencyKey: "idem-geo-10",
+    });
+    const allowed = await resolveCapability(
+      human("branch_admin"),
+      resolveRequest(correct, { branchId: "b1", confirmationReceiptId: "conf-geo-correct" }),
+      deps,
+    );
+    assert.deepStrictEqual([allowed.decision, allowed.grantId, allowed.actorKind], ["ALLOW", "g-geo-admin-correct", "human"]);
+
     // Even then, the geocoder's EXTERNAL_DATASET source cannot supersede a verified head (GEO-01C).
     const verified: GeoLocationAssertion = {
       id: "geo-1", tenantId: "t1", branchId: "b1", point: { lon: 46.6753, lat: 24.7136 }, accuracyM: 10, precision: "VERIFIED_ENTRANCE", verificationState: "VERIFIED",
