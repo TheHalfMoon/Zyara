@@ -82,6 +82,8 @@ describe("GEO-09 metric governance", () => {
     // A person count cannot be relabelled as facility-derived to escape its cohort.
     expectCode(() => validateMetricDefinition(demandMetric({ subjectKind: "FACILITY", minCohort: 1 })), "GEO_INSIGHT_METRIC_INVALID");
     expectCode(() => validateMetricDefinition(demandMetric({ metricId: "SUPPLY_BY_CELL" })), "GEO_INSIGHT_METRIC_INVALID");
+    // Supply is pinned to the branch-location count, so a person count cannot ride under it.
+    expectCode(() => validateMetricDefinition(demandMetric({ metricId: "SUPPLY_BY_CELL", subjectKind: "FACILITY", minCohort: 1 })), "GEO_INSIGHT_METRIC_INVALID");
   });
 });
 
@@ -159,7 +161,7 @@ describe("GEO-09 low-count suppression", () => {
 
   it("capacity gap reports NO_SUPPLY instead of an infinite ratio", () => {
     const demand = releaseSpatialCells(demandMetric(), aggregateSpatialMetric(demandMetric(), [...people(30, OLAYA, "olaya"), ...people(25, MALAZ, "malaz")], WINDOW));
-    const supply = { metricId: "SUPPLY_BY_CELL", window: WINDOW, resolution: 0.05 as const, cells: [{ cellId: cellIdFor(OLAYA, 0.05), count: 3 }], missing: 0 };
+    const supply = { metricId: "SUPPLY_BY_CELL", branchId: null, window: WINDOW, resolution: 0.05 as const, cells: [{ cellId: cellIdFor(OLAYA, 0.05), count: 3 }], missing: 0 };
     const gap = releaseCapacityGap(demandMetric({ metricId: "CAPACITY_GAP_BY_CELL", valueKind: "RATIO", denominator: "current_branch_locations" }), demand, supply);
     assert.deepStrictEqual(gap.cells.find((cell) => cell.cellId === cellIdFor(MALAZ, 0.05)), { cellId: cellIdFor(MALAZ, 0.05), value: null, suppressed: false, reason: "NO_SUPPLY" });
     assert.strictEqual(gap.cells.find((cell) => cell.cellId === cellIdFor(OLAYA, 0.05))?.value, 10);
@@ -169,12 +171,13 @@ describe("GEO-09 low-count suppression", () => {
 describe("GEO-09 capacity gap guards", () => {
   const gapMetric = demandMetric({ metricId: "CAPACITY_GAP_BY_CELL", valueKind: "RATIO", denominator: "current_branch_locations" });
   const demand = releaseSpatialCells(demandMetric(), aggregateSpatialMetric(demandMetric(), people(30, OLAYA, "olaya"), WINDOW));
-  const supply = { metricId: "SUPPLY_BY_CELL", window: WINDOW, resolution: 0.05 as const, cells: [{ cellId: cellIdFor(OLAYA, 0.05), count: 3 }], missing: 0 };
+  const supply = { metricId: "SUPPLY_BY_CELL", branchId: null, window: WINDOW, resolution: 0.05 as const, cells: [{ cellId: cellIdFor(OLAYA, 0.05), count: 3 }], missing: 0 };
 
   it("refuses a demand release made under a weaker cohort or another window", () => {
     expectCode(() => releaseCapacityGap({ ...gapMetric, minCohort: 20 }, demand, supply), "GEO_INSIGHT_SUPPRESSION_TOO_WEAK");
     expectCode(() => releaseCapacityGap(gapMetric, demand, { ...supply, window: { start: "2026-08-05T00:00:00.000Z", end: "2026-09-04T00:00:00.000Z" } }), "GEO_INSIGHT_WINDOW_INVALID");
     expectCode(() => releaseCapacityGap(gapMetric, demand, { ...supply, metricId: "OTHER_SUPPLY" }), "GEO_INSIGHT_METRIC_INVALID");
+    expectCode(() => releaseCapacityGap(gapMetric, demand, { ...supply, branchId: "b1" }), "GEO_INSIGHT_SCOPE");
   });
 });
 
@@ -202,13 +205,16 @@ describe("GEO-09 export and stability", () => {
     const events = [...people(30, OLAYA, "olaya"), ...people(15, MALAZ, "malaz")];
     const exported = exportSpatialInsight(releaseSpatialCells(demandMetric(), aggregateSpatialMetric(demandMetric(), events, WINDOW)));
     expectNoLocation(exported);
-    assert.deepStrictEqual(Object.keys(exported).sort(), ["cells", "metricId", "minCohort", "missing", "resolution", "subjectKind", "total", "valueKind", "window"]);
+    assert.deepStrictEqual(Object.keys(exported).sort(), ["branchId", "cells", "metricId", "minCohort", "missing", "resolution", "subjectKind", "total", "valueKind", "window"]);
     assert.deepStrictEqual(Object.keys(exported.cells[0]).sort(), ["cellId", "reason", "suppressed", "value"]);
     expectCode(() => exportSpatialInsight({ ...exported, cells: [{ cellId: "24.7136,46.6753", value: 30, suppressed: false, reason: null }] }), "GEO_INSIGHT_CELL_INVALID");
     // A hand-built release cannot smuggle a small count or a weak cohort into an export.
     expectCode(() => exportSpatialInsight({ ...exported, cells: [{ cellId: cellIdFor(OLAYA, 0.05), value: 1, suppressed: false, reason: null }] }), "GEO_INSIGHT_SUPPRESSION_TOO_WEAK");
     expectCode(() => exportSpatialInsight({ ...exported, minCohort: 3 }), "GEO_INSIGHT_SUPPRESSION_TOO_WEAK");
     expectCode(() => exportSpatialInsight({ ...exported, missing: 2 }), "GEO_INSIGHT_SUPPRESSION_TOO_WEAK");
+    // A total that leaves a small hidden mass, or a facility label on a person metric, is refused.
+    expectCode(() => exportSpatialInsight({ ...exported, total: (exported.total ?? 0) + 3 }), "GEO_INSIGHT_SUPPRESSION_TOO_WEAK");
+    expectCode(() => exportSpatialInsight({ ...exported, subjectKind: "FACILITY" }), "GEO_INSIGHT_METRIC_INVALID");
   });
 
   it("stable aggregation: order and duplicates do not change the output", () => {

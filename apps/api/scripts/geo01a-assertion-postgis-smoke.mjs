@@ -546,7 +546,7 @@ console.log(
 );
 
 // ---------------------------------------------------------------------------
-// GEO-09: spatial insights released aggregates (migration 050), same GEO smoke.
+// GEO-09: spatial insights released counts (migration 050), same GEO smoke.
 // ---------------------------------------------------------------------------
 await client.query(`RESET ROLE`);
 await client.query(`DROP VIEW IF EXISTS geo_insight_cells_live, geo_insight_releases_live`);
@@ -554,80 +554,102 @@ await client.query(`DROP TABLE IF EXISTS geo_insight_cells, geo_insight_releases
 await client.query(readFileSync(new URL("050_geo_spatial_insights.sql", migrations), "utf8"));
 await client.query(readFileSync(new URL("050_geo_spatial_insights.sql", migrations), "utf8"));
 
-// 30-day windows on the fixed grid (multiples of 30 days since the epoch).
+// 30-day windows on the fixed grid (multiples of 30 days since the epoch); 2026-09-10 is on the
+// 7-day grid.
 const W_START = "'2026-09-04T00:00:00Z'";
 const W_END = "'2026-10-04T00:00:00Z'";
 const W_PREV = "'2026-08-05T00:00:00Z'";
 const REL = (metric, options = {}) => {
   const {
-    tenant = "t1", branch = "NULL", subject = "PERSON", valueKind = "COUNT", numerator = "distinct_people_with_care_request",
-    denominator = "NULL", source = "care_request_events", sensitive = "FALSE", minCohort = 11, res = 5, days = 30,
+    tenant = "t1", branch = "NULL", subject = "PERSON", numerator = "distinct_people_with_care_request",
+    source = "care_request_events", sensitive = "FALSE", minCohort = 11, res = 5, days = 30,
     start = W_START, end = W_END, total = "49", missing = "0", retention = 365, extraColumns = "", extraValues = "",
   } = options;
-  return `INSERT INTO geo_insight_releases(tenant_id,branch_id,metric_id,subject_kind,value_kind,numerator,denominator,source,purpose,
+  return `INSERT INTO geo_insight_releases(tenant_id,branch_id,metric_id,subject_kind,numerator,source,purpose,
      sensitive,min_cohort,resolution_cdeg,window_days,window_start,window_end,total,missing,retention_days${extraColumns})
-   VALUES ('${tenant}',${branch},'${metric}','${subject}','${valueKind}','${numerator}',${denominator},'${source}','network_planning',
+   VALUES ('${tenant}',${branch},'${metric}','${subject}','${numerator}','${source}','network_planning',
      ${sensitive},${minCohort},${res},${days},${start},${end},${total},${missing},${retention}${extraValues})`;
 };
 const CELL = (metric, cell, options = {}) => {
-  const {
-    tenant = "t1", subject = "PERSON", valueKind = "COUNT", minCohort = 11, res = 5, start = W_START, end = W_END,
-    value = "30", suppressed = "FALSE", reason = "NULL",
-  } = options;
-  return `INSERT INTO geo_insight_cells(tenant_id,metric_id,window_start,window_end,resolution_cdeg,subject_kind,value_kind,min_cohort,
-     cell_id,value,suppressed,reason)
-   VALUES ('${tenant}','${metric}',${start},${end},${res},'${subject}','${valueKind}',${minCohort},'${cell}',${value},${suppressed},${reason})`;
+  const { tenant = "t1", subject = "PERSON", minCohort = 11, res = 5, start = W_START, end = W_END, value = "30", suppressed = "FALSE", reason = "NULL" } = options;
+  return `INSERT INTO geo_insight_cells(tenant_id,metric_id,window_start,window_end,resolution_cdeg,subject_kind,min_cohort,cell_id,value,suppressed,reason)
+   VALUES ('${tenant}','${metric}',${start},${end},${res},'${subject}',${minCohort},'${cell}',${value},${suppressed},${reason})`;
 };
+const HIDDEN_LOW = { value: "NULL", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" };
+const HIDDEN_COMPLEMENT = { value: "NULL", suppressed: "TRUE", reason: "'SUPPRESSED_COMPLEMENTARY'" };
+// A throwaway release on its own source, rolled back by each failing probe.
+const PROBE = (total = "49") => REL("PROBE", { numerator: "n_probe", source: "probe_events", total });
 
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t1'`);
 
-// A demand release and its cells; low counts are refused as database facts.
-await client.query(REL("DEMAND_BY_CELL"));
-await client.query(CELL("DEMAND_BY_CELL", "g5:494:933"));
-await client.query(CELL("DEMAND_BY_CELL", "g5:493:934", { value: "NULL", suppressed: "TRUE", reason: "'SUPPRESSED_COMPLEMENTARY'" }));
-await client.query(CELL("DEMAND_BY_CELL", "g5:492:934", { value: "NULL", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" }));
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", { value: "5" })), "23514", "an unsuppressed person count below the cohort must be refused");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", { value: "5", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" })), "23514", "a suppressed cell carries no value");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", { value: "NULL", suppressed: "TRUE" })), "23514", "suppression is explicit with its reason");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", { value: "30.5" })), "23514", "a count is an integer");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", { subject: "FACILITY", minCohort: 1, value: "2" })), "23503", "a cell cannot relabel its release's governance");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g10:247:466", { res: 10 })), "23503", "a cell must use its release's grid");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g10:247:466")), "23514", "a cell id must match its resolution");
-await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "24.7136,46.6753")), "23514", "a coordinate is not a cell id");
+// A demand release is written with its cells in one transaction and re-checked at commit.
+await tx(
+  REL("DEMAND_BY_CELL"),
+  CELL("DEMAND_BY_CELL", "g5:494:933"),
+  CELL("DEMAND_BY_CELL", "g5:493:934", HIDDEN_COMPLEMENT),
+  CELL("DEMAND_BY_CELL", "g5:492:934", HIDDEN_LOW),
+);
+await expectDbError(() => client.query(CELL("DEMAND_BY_CELL", "g5:491:934", HIDDEN_LOW)), "23514", "a release is sealed: no cells added later", "one transaction");
+
+// Low counts are refused as database facts.
+for (const [cell, options, label, code] of [
+  ["g5:491:934", { value: "5" }, "an unsuppressed person count below the cohort must be refused", "23514"],
+  ["g5:491:934", { value: "5", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" }, "a suppressed cell carries no value", "23514"],
+  ["g5:491:934", { value: "NULL", suppressed: "TRUE" }, "suppression is explicit with its reason", "23514"],
+  ["g5:491:934", { value: "NULL", reason: "'NO_SUPPLY'" }, "ratios are never stored", "23514"],
+  ["g5:491:934", { subject: "FACILITY", minCohort: 1, value: "2" }, "a cell cannot relabel its release's governance", "23503"],
+  ["g10:247:466", { res: 10 }, "a cell must use its release's grid", "23503"],
+  ["g10:247:466", {}, "a cell id must match its resolution", "23514"],
+  ["24.7136,46.6753", {}, "a coordinate is not a cell id", "23514"],
+]) {
+  await expectDbError(() => tx(PROBE(), CELL("PROBE", cell, options)), code, label);
+}
+// Complementary suppression is re-checked at commit: total 35 with 30 visible hides only 5.
+await expectDbError(() => tx(PROBE("35"), CELL("PROBE", "g5:494:933"), CELL("PROBE", "g5:492:934", HIDDEN_LOW)), "23514", "a total exposing a small hidden mass must be refused", "hidden mass");
+await expectDbError(() => tx(PROBE("29"), CELL("PROBE", "g5:494:933")), "23514", "a total below its visible cells must be refused", "hidden mass");
 
 // Release governance.
-await expectDbError(() => client.query(REL("SMALL_TOTAL", { numerator: "n_small_total", total: "5" })), "23514", "a released total below the cohort must be refused");
-await expectDbError(() => client.query(REL("SMALL_MISSING", { numerator: "n_small_missing", missing: "3" })), "23514", "a released missing count below the cohort must be refused");
-await expectDbError(() => client.query(REL("WEAK_COHORT", { numerator: "n_weak", minCohort: 5 })), "23514", "a person metric needs a cohort of at least 11");
-await expectDbError(() => client.query(REL("SENSITIVE_DEMAND", { numerator: "n_sensitive", sensitive: "TRUE" })), "23514", "a sensitive metric needs a cohort of at least 20");
-await expectDbError(() => client.query(REL("SENSITIVE_DEMAND", { numerator: "n_sensitive", sensitive: "TRUE", minCohort: 20 })), "23514", "a sensitive metric needs a coarser grid");
-await expectDbError(() => client.query(REL("RELABELLED", { numerator: "n_relabelled", subject: "FACILITY", minCohort: 1 })), "23514", "only supply is facility-derived");
-await expectDbError(() => client.query(REL("SUPPLY_BY_CELL", { numerator: "n_supply_person" })), "23514", "supply is facility-derived");
-await expectDbError(() => client.query(REL("FINE_GRID", { numerator: "n_fine", res: 1 })), "23514", "nothing finer than 0.05 degrees exists");
+for (const [metric, options, label] of [
+  ["SMALL_TOTAL", { total: "5" }, "a released total below the cohort must be refused"],
+  ["SMALL_MISSING", { missing: "3" }, "a released missing count below the cohort must be refused"],
+  ["WEAK_COHORT", { minCohort: 5 }, "a person metric needs a cohort of at least 11"],
+  ["SENSITIVE_DEMAND", { sensitive: "TRUE" }, "a sensitive metric needs a cohort of at least 20"],
+  ["SENSITIVE_DEMAND", { sensitive: "TRUE", minCohort: 20 }, "a sensitive metric needs a coarser grid"],
+  ["RELABELLED", { subject: "FACILITY", minCohort: 1 }, "only supply is facility-derived"],
+  ["SUPPLY_BY_CELL", { subject: "FACILITY", minCohort: 1, numerator: "distinct_people_with_care_request" }, "supply is pinned to the branch-location count"],
+  ["FINE_GRID", { res: 1 }, "nothing finer than 0.05 degrees exists"],
+  ["SHIFTED", { start: "'2026-09-05T00:00:00Z'", end: "'2026-10-05T00:00:00Z'" }, "a shifted window must be refused"],
+  ["SIX_AM", { start: "'2026-09-04T06:00:00Z'", end: "'2026-10-04T06:00:00Z'" }, "a window starts at UTC midnight"],
+  ["LONG", { end: "'2026-10-05T00:00:00Z'" }, "a window has its declared length"],
+]) {
+  await expectDbError(() => client.query(REL(metric, { source: "governance_probe_events", ...options })), "23514", label);
+}
+await expectDbError(() => client.query(REL("RATIO_GAP", { source: "ratio_probe", extraColumns: ",value_kind", extraValues: ",'RATIO'" })), "42703", "ratios are never stored (no value kind column)");
 
-// Windows sit on a fixed grid, so releases cannot overlap and be differenced.
-await expectDbError(() => client.query(REL("SHIFTED", { numerator: "n_shifted", start: "'2026-09-05T00:00:00Z'", end: "'2026-10-05T00:00:00Z'" })), "23514", "a shifted window must be refused");
-await expectDbError(() => client.query(REL("SIX_AM", { numerator: "n_six", start: "'2026-09-04T06:00:00Z'", end: "'2026-10-04T06:00:00Z'" })), "23514", "a window starts at UTC midnight");
-await expectDbError(() => client.query(REL("LONG", { numerator: "n_long", end: "'2026-10-05T00:00:00Z'" })), "23514", "a window has its declared length");
+// One person-derived release per source over any overlapping span.
+for (const [metric, options, label] of [
+  ["DEMAND_BY_CELL_G10", { res: 10 }, "no second grid"],
+  ["DEMAND_BY_CELL_B1", { branch: "'b1'" }, "no second scope"],
+  ["DEMAND_V2", { numerator: "distinct_people_v2" }, "no second numerator over the same source"],
+  ["DEMAND_WEEK", { days: 7, start: "'2026-09-10T00:00:00Z'", end: "'2026-09-17T00:00:00Z'", total: "NULL" }, "no nested shorter window"],
+]) {
+  await expectDbError(() => client.query(REL(metric, options)), "23P01", `a person count cannot be re-released: ${label}`);
+}
 
-// One release of a person-count numerator per window: no second grid, scope or metric id.
-await expectDbError(() => client.query(REL("DEMAND_BY_CELL_G10", { res: 10 })), "23505", "a person count cannot be re-released at another grid");
-await expectDbError(() => client.query(REL("DEMAND_BY_CELL_B1", { branch: "'b1'" })), "23505", "a person count cannot be re-released at another scope");
-await expectDbError(() => client.query(REL("DEMAND_BY_CELL", { total: "50" })), "23505", "a release cannot be recomputed into a second value");
-
-// Sensitive, supply and capacity-gap releases.
-await client.query(REL("SENSITIVE_DEMAND", { numerator: "n_sensitive", sensitive: "TRUE", minCohort: 20, res: 10, total: "25" }));
-await client.query(CELL("SENSITIVE_DEMAND", "g10:247:466", { minCohort: 20, res: 10, value: "25" }));
-await client.query(REL("SUPPLY_BY_CELL", { subject: "FACILITY", numerator: "current_branch_locations", source: "geo_current_location_assertions", minCohort: 1, total: "2" }));
-await client.query(CELL("SUPPLY_BY_CELL", "g5:494:933", { subject: "FACILITY", minCohort: 1, value: "2" }));
-await expectDbError(() => client.query(REL("CAPACITY_GAP_BY_CELL", { valueKind: "RATIO", total: "NULL" })), "23514", "a ratio needs a denominator");
-await client.query(REL("CAPACITY_GAP_BY_CELL", { valueKind: "RATIO", denominator: "'current_branch_locations'", total: "NULL" }));
-await client.query(CELL("CAPACITY_GAP_BY_CELL", "g5:494:933", { valueKind: "RATIO", value: "15" }));
-await client.query(CELL("CAPACITY_GAP_BY_CELL", "g5:493:934", { valueKind: "RATIO", value: "NULL", reason: "'NO_SUPPLY'" }));
+// Sensitive and supply releases.
+await tx(
+  REL("SENSITIVE_DEMAND", { numerator: "n_sensitive", source: "sensitive_care_request_events", sensitive: "TRUE", minCohort: 20, res: 10, total: "25" }),
+  CELL("SENSITIVE_DEMAND", "g10:247:466", { minCohort: 20, res: 10, value: "25" }),
+);
+await tx(
+  REL("SUPPLY_BY_CELL", { subject: "FACILITY", numerator: "current_branch_locations", source: "geo_current_location_assertions", minCohort: 1, total: "2" }),
+  CELL("SUPPLY_BY_CELL", "g5:494:933", { subject: "FACILITY", minCohort: 1, value: "2" }),
+);
 
 // Append-only, database time, view-only reads.
-await expectDbError(() => client.query(REL("BACKDATED", { numerator: "n_backdated", extraColumns: ",computed_at", extraValues: ",'2020-01-01T00:00:00Z'" })), "42501", "computed_at is database time", "permission denied");
+await expectDbError(() => client.query(REL("BACKDATED", { source: "backdated_events", extraColumns: ",computed_at", extraValues: ",'2020-01-01T00:00:00Z'" })), "42501", "computed_at is database time", "permission denied");
+await expectDbError(() => client.query(REL("PRE_PURGED", { source: "pre_purged_events", total: "NULL", extraColumns: ",purged_at", extraValues: ",now()" })), "42501", "purged_at belongs to the purge", "permission denied");
 for (const [statement, label] of [
   [`UPDATE geo_insight_cells SET value = 3 WHERE cell_id = 'g5:494:933'`, "update cells"],
   [`DELETE FROM geo_insight_cells WHERE cell_id = 'g5:494:933'`, "delete cells"],
@@ -641,35 +663,36 @@ for (const [statement, label] of [
 
 // Tenant and branch isolation.
 await expectDbError(() => client.query(REL("DEMAND_BY_CELL", { tenant: "t2" })), "42501", "a cross-tenant release must be refused by RLS", "row-level security");
-await expectDbError(() => client.query(REL("BRANCH_DEMAND", { numerator: "n_branch", branch: "'b2'" })), "23503", "a release cannot reference another tenant's branch");
+await expectDbError(() => client.query(REL("BRANCH_DEMAND", { source: "branch_probe_events", branch: "'b2'" })), "23503", "a release cannot reference another tenant's branch");
 const liveReleases = await client.query(`SELECT count(*)::int AS n FROM geo_insight_releases_live`);
 const liveCells = await client.query(`SELECT count(*)::int AS n FROM geo_insight_cells_live`);
-if (liveReleases.rows[0].n !== 4 || liveCells.rows[0].n !== 7) fail(`expected 4 live releases and 7 live cells, got ${liveReleases.rows[0].n} and ${liveCells.rows[0].n}`);
+if (liveReleases.rows[0].n !== 3 || liveCells.rows[0].n !== 5) fail(`expected 3 live releases and 5 live cells, got ${liveReleases.rows[0].n} and ${liveCells.rows[0].n}`);
 
-// Retention is enforced: the purge removes only the current tenant's expired releases.
+// Retention: the purge tombstones only the current tenant's expired releases, and a tombstoned
+// slot cannot be re-released.
 await client.query(`RESET ROLE`);
 for (const tenant of ["t1", "t2"]) {
-  await client.query(REL("OLD_DEMAND", { tenant, numerator: "old_people", start: W_PREV, end: W_START, retention: 1, extraColumns: ",computed_at", extraValues: ",now() - interval '10 days'" }));
-  await client.query(CELL("OLD_DEMAND", "g5:494:933", { tenant, start: W_PREV, end: W_START }));
+  await client.query(REL("OLD_DEMAND", { tenant, numerator: "old_people", source: "old_events", start: W_PREV, end: W_START, total: "30", retention: 1, extraColumns: ",computed_at", extraValues: ",now() - interval '10 days'" }));
 }
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant=''`);
 await expectDbError(() => client.query(`SELECT geo_purge_expired_insights()`), "42501", "the purge needs a tenant");
 await client.query(`SET app.current_tenant='t1'`);
 const purged = await client.query(`SELECT geo_purge_expired_insights() AS n`);
-if (purged.rows[0].n !== 1) fail(`the purge must remove one expired release, got ${purged.rows[0].n}`);
+if (purged.rows[0].n !== 1) fail(`the purge must tombstone one expired release, got ${purged.rows[0].n}`);
+await expectDbError(() => client.query(REL("OLD_DEMAND_G10", { numerator: "old_people", source: "old_events", res: 10, start: W_PREV, end: W_START, total: "30" })), "23P01", "a purged slot cannot be re-released");
 await client.query(`RESET ROLE`);
 const remaining = await client.query(
-  `SELECT (SELECT count(*) FROM geo_insight_releases WHERE metric_id = 'OLD_DEMAND' AND tenant_id = 't1')::int AS t1_old,
-          (SELECT count(*) FROM geo_insight_releases WHERE metric_id = 'OLD_DEMAND' AND tenant_id = 't2')::int AS t2_old,
+  `SELECT (SELECT count(*) FROM geo_insight_releases WHERE metric_id = 'OLD_DEMAND' AND tenant_id = 't1' AND purged_at IS NOT NULL AND total IS NULL)::int AS t1_tombstone,
+          (SELECT count(*) FROM geo_insight_releases WHERE metric_id = 'OLD_DEMAND' AND tenant_id = 't2' AND purged_at IS NULL)::int AS t2_live,
           (SELECT count(*) FROM geo_insight_releases WHERE tenant_id = 't1')::int AS t1_all`,
 );
-if (remaining.rows[0].t1_old !== 0 || remaining.rows[0].t2_old !== 1 || remaining.rows[0].t1_all !== 4) fail(`purge scope wrong: ${JSON.stringify(remaining.rows[0])}`);
+if (remaining.rows[0].t1_tombstone !== 1 || remaining.rows[0].t2_live !== 1 || remaining.rows[0].t1_all !== 4) fail(`purge scope wrong: ${JSON.stringify(remaining.rows[0])}`);
 
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t2'`);
 const foreignInsights = await client.query(`SELECT (SELECT count(*) FROM geo_insight_releases_live) + (SELECT count(*) FROM geo_insight_cells_live) AS n`);
-if (Number(foreignInsights.rows[0].n) !== 0) fail("tenant read isolation failed for insights (t2 sees only its own, expired, rows)");
+if (Number(foreignInsights.rows[0].n) !== 0) fail("tenant read isolation failed for insights (t2 has only an expired release)");
 await client.query(`RESET ROLE`);
 const insightColumns = await client.query(
   `SELECT table_name, column_name FROM information_schema.columns
@@ -679,6 +702,6 @@ const insightColumns = await client.query(
 if (insightColumns.rows.length !== 0) fail(`insight tables must carry no location or person columns: ${JSON.stringify(insightColumns.rows)}`);
 
 console.log(
-  "GEO-09 spatial insights PostGIS smoke PASS: unsuppressed small person counts, totals and missing refused, explicit suppression, cohort 11 and sensitive 20 on coarse grid, fixed window grid, one release per person numerator and window, cells pinned to release governance, append-only view-only reads, scoped retention purge, tenant and branch isolation, no location or person columns",
+  "GEO-09 spatial insights PostGIS smoke PASS: unsuppressed small person counts, totals and missing refused, complementary suppression re-checked at commit, releases sealed, cohort 11 and sensitive 20 on coarse grid, fixed window grid, one person release per source over any overlapping span, ratios never stored, append-only view-only reads, tombstoning retention purge, tenant and branch isolation, no location or person columns",
 );
 await client.end();

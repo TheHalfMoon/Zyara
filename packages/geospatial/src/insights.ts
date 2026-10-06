@@ -19,6 +19,8 @@ export const INSIGHT_MAX_WINDOW_DAYS = 366;
 export const INSIGHT_MAX_RETENTION_DAYS = 400;
 // The only facility-derived metric; every other metric is person-derived.
 export const SUPPLY_METRIC_ID = "SUPPLY_BY_CELL";
+export const SUPPLY_NUMERATOR = "current_branch_locations";
+export const SUPPLY_SOURCE = "geo_current_location_assertions";
 
 export type InsightSubjectKind = "PERSON" | "FACILITY";
 export type InsightValueKind = "COUNT" | "RATIO";
@@ -65,6 +67,7 @@ export interface AggregatedCell {
 
 export interface SpatialAggregate {
   metricId: string;
+  branchId: string | null;
   window: SpatialWindow;
   resolution: InsightResolution;
   cells: AggregatedCell[];
@@ -85,6 +88,7 @@ export interface ReleasedCell {
 // once in missing.
 export interface SpatialRelease {
   metricId: string;
+  branchId: string | null;
   subjectKind: InsightSubjectKind;
   valueKind: InsightValueKind;
   minCohort: number;
@@ -112,6 +116,13 @@ function instant(value: unknown, label: string): number {
     fail("GEO_TIME_INVALID", `${label} must be an ISO-8601 UTC instant`);
   }
   return parsed;
+}
+
+// Code-unit order, so output order never depends on locale.
+function compareIds(a: string, b: string): number {
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
 }
 
 function integerIn(value: unknown, min: number, max: number, label: string): number {
@@ -162,6 +173,9 @@ export function validateMetricDefinition(input: SpatialMetricDefinition): Spatia
   // Only supply is facility-derived, so a person count cannot be relabelled to escape its cohort.
   if ((input.subjectKind === "FACILITY") !== (input.metricId === SUPPLY_METRIC_ID)) fail("GEO_INSIGHT_METRIC_INVALID", `only ${SUPPLY_METRIC_ID} is facility-derived`);
   if (input.valueKind !== "COUNT" && input.valueKind !== "RATIO") fail("GEO_INSIGHT_METRIC_INVALID", "valueKind is COUNT or RATIO");
+  if (input.metricId === SUPPLY_METRIC_ID && (input.numerator !== SUPPLY_NUMERATOR || input.source !== SUPPLY_SOURCE || input.valueKind !== "COUNT")) {
+    fail("GEO_INSIGHT_METRIC_INVALID", `${SUPPLY_METRIC_ID} counts ${SUPPLY_NUMERATOR} from ${SUPPLY_SOURCE}`);
+  }
   for (const [label, value] of [["numerator", input.numerator], ["source", input.source], ["purpose", input.purpose]] as const) {
     if (typeof value !== "string" || !CODE.test(value)) fail("GEO_INSIGHT_METRIC_INVALID", `${label} must be a code`);
   }
@@ -227,8 +241,8 @@ export function aggregateSpatialMetric(definition: SpatialMetricDefinition, even
   }
   const cells = [...subjectsByCell.entries()]
     .map(([cellId, subjects]) => ({ cellId, count: subjects.size }))
-    .sort((a, b) => (a.cellId < b.cellId ? -1 : a.cellId > b.cellId ? 1 : 0));
-  return { metricId: metric.metricId, window: { start: window.start, end: window.end }, resolution: metric.resolution, cells, missing: missingSubjects.size };
+    .sort((a, b) => compareIds(a.cellId, b.cellId));
+  return { metricId: metric.metricId, branchId: metric.branchId, window: { start: window.start, end: window.end }, resolution: metric.resolution, cells, missing: missingSubjects.size };
 }
 
 // ---------------------------------------------------------------------------
@@ -238,7 +252,7 @@ export function aggregateSpatialMetric(definition: SpatialMetricDefinition, even
 export function releaseSpatialCells(definition: SpatialMetricDefinition, aggregate: SpatialAggregate): SpatialRelease {
   const metric = validateMetricDefinition(definition);
   if (metric.valueKind !== "COUNT") fail("GEO_INSIGHT_METRIC_INVALID", "releaseSpatialCells releases counts; use releaseCapacityGap for ratios");
-  if (aggregate.metricId !== metric.metricId || aggregate.resolution !== metric.resolution) fail("GEO_INSIGHT_METRIC_INVALID", "the aggregate does not belong to this metric");
+  if (aggregate.metricId !== metric.metricId || aggregate.resolution !== metric.resolution || aggregate.branchId !== metric.branchId) fail("GEO_INSIGHT_METRIC_INVALID", "the aggregate does not belong to this metric");
   validateWindow(aggregate.window, metric.windowDays);
   const k = metric.minCohort;
   const person = metric.subjectKind === "PERSON";
@@ -257,7 +271,7 @@ export function releaseSpatialCells(definition: SpatialMetricDefinition, aggrega
       const smallest = released
         .map((cell, index) => ({ cell, index, count: aggregate.cells[index].count }))
         .filter((item) => !item.cell.suppressed)
-        .sort((a, b) => a.count - b.count || (a.cell.cellId < b.cell.cellId ? -1 : 1))[0];
+        .sort((a, b) => a.count - b.count || compareIds(a.cell.cellId, b.cell.cellId))[0];
       if (smallest === undefined) {
         totalReleased = false;
         break;
@@ -268,6 +282,7 @@ export function releaseSpatialCells(definition: SpatialMetricDefinition, aggrega
   }
   return {
     metricId: metric.metricId,
+    branchId: metric.branchId,
     subjectKind: metric.subjectKind,
     valueKind: metric.valueKind,
     minCohort: k,
@@ -279,7 +294,9 @@ export function releaseSpatialCells(definition: SpatialMetricDefinition, aggrega
   };
 }
 
-// Capacity gap: released demand ÷ supply per cell over the same window and grid. A suppressed
+// Capacity gap: released demand ÷ supply per cell over the same window, grid and scope. It is
+// computed on read from released demand and supply and is never stored (a stored ratio would be
+// another release of demand). A suppressed
 // demand cell stays suppressed, demand must have been released under at least the gap metric's
 // cohort, and zero supply is NO_SUPPLY rather than an infinite ratio.
 export function releaseCapacityGap(definition: SpatialMetricDefinition, demand: SpatialRelease, supply: SpatialAggregate): SpatialRelease {
@@ -288,6 +305,7 @@ export function releaseCapacityGap(definition: SpatialMetricDefinition, demand: 
   if (demand.subjectKind !== "PERSON" || demand.valueKind !== "COUNT") fail("GEO_INSIGHT_METRIC_INVALID", "demand must be a released person count");
   if (demand.minCohort < metric.minCohort) fail("GEO_INSIGHT_SUPPRESSION_TOO_WEAK", "demand was released under a weaker cohort than the gap metric requires");
   if (supply.metricId !== SUPPLY_METRIC_ID) fail("GEO_INSIGHT_METRIC_INVALID", `supply must be ${SUPPLY_METRIC_ID}`);
+  if (demand.branchId !== metric.branchId || supply.branchId !== metric.branchId) fail("GEO_INSIGHT_SCOPE", "demand, supply and the gap metric must share one scope");
   if (demand.resolution !== metric.resolution || supply.resolution !== metric.resolution) fail("GEO_INSIGHT_METRIC_INVALID", "demand and supply must share the metric's resolution");
   validateWindow(demand.window, metric.windowDays);
   if (demand.window.start !== supply.window.start || demand.window.end !== supply.window.end) fail("GEO_INSIGHT_WINDOW_INVALID", "demand and supply must share one window");
@@ -300,6 +318,7 @@ export function releaseCapacityGap(definition: SpatialMetricDefinition, demand: 
   });
   return {
     metricId: metric.metricId,
+    branchId: metric.branchId,
     subjectKind: "PERSON",
     valueKind: "RATIO",
     minCohort: demand.minCohort,
@@ -319,6 +338,7 @@ export function releaseCapacityGap(definition: SpatialMetricDefinition, demand: 
 // that could carry a coordinate, a subject or an event, and the cohort is re-checked, so neither
 // a patient-dot layer nor a hand-built small count can be exported.
 export function exportSpatialInsight(release: SpatialRelease): SpatialRelease {
+  if (release.subjectKind !== "PERSON" && release.metricId !== SUPPLY_METRIC_ID) fail("GEO_INSIGHT_METRIC_INVALID", `only ${SUPPLY_METRIC_ID} is facility-derived`);
   const person = release.subjectKind === "PERSON";
   if (person && release.minCohort < PERSON_MIN_COHORT) fail("GEO_INSIGHT_SUPPRESSION_TOO_WEAK", "a person-derived release needs a cohort of at least 11");
   const k = release.minCohort;
@@ -329,8 +349,14 @@ export function exportSpatialInsight(release: SpatialRelease): SpatialRelease {
   }
   if (person && release.total !== null && release.total < k) fail("GEO_INSIGHT_SUPPRESSION_TOO_WEAK", "a released total is below the cohort");
   if (person && release.missing !== null && release.missing > 0 && release.missing < k) fail("GEO_INSIGHT_SUPPRESSION_TOO_WEAK", "a released missing count is below the cohort");
+  if (person && release.valueKind === "COUNT" && release.total !== null) {
+    const visible = release.cells.reduce((acc, cell) => acc + (cell.value ?? 0), 0);
+    const hidden = release.total - visible - (release.missing ?? 0);
+    if (hidden < 0 || (hidden > 0 && hidden < k)) fail("GEO_INSIGHT_SUPPRESSION_TOO_WEAK", "the released total exposes a small hidden mass");
+  }
   return {
     metricId: release.metricId,
+    branchId: release.branchId,
     subjectKind: release.subjectKind,
     valueKind: release.valueKind,
     minCohort: release.minCohort,
