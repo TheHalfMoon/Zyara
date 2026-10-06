@@ -28,6 +28,7 @@ export type HealthState = "HEALTHY" | "DEGRADED" | "DOWN";
 export type Residency = "KSA_ONLY" | "GCC" | "ANY";
 
 export const HEALTH_MAX_AGE_MS = 5 * 60_000;
+export const HEALTH_CLOCK_SKEW_MS = 30_000;
 
 const RESIDENCY_LOCATIONS: Record<Residency, readonly DeploymentLocation[]> = {
   KSA_ONLY: ["TENANT_DEVICE", "ZYARA_KSA", "PROVIDER_KSA"],
@@ -36,7 +37,15 @@ const RESIDENCY_LOCATIONS: Record<Residency, readonly DeploymentLocation[]> = {
 };
 
 // Floating aliases that cannot be a production identity on their own.
-const FLOATING_ALIAS = /(^|[-_.:/])(latest|stable|default|preview|current|beta|newest|auto)$/i;
+const FLOATING_WORDS = new Set([
+  "latest", "stable", "default", "preview", "current", "beta", "alpha", "newest", "auto", "main", "master",
+  "head", "nightly", "next", "edge", "canary", "dev", "trunk", "tip",
+]);
+// A floating alias appears as any word of the revision (split on - _ . : / @), and a pinned
+// revision always carries a digit (a version, a date, or a digest).
+function isFloatingRevision(revision: string): boolean {
+  return !/[0-9]/.test(revision) || revision.split(/[-_.:/@]/).some((word) => FLOATING_WORDS.has(word.toLowerCase()));
+}
 const ID = /^[a-z][a-z0-9_.-]{1,63}$/;
 const VERSION = /^(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})\.(0|[1-9]\d{0,5})$/;
 const REVISION = /^[A-Za-z0-9][A-Za-z0-9._:@+-]{3,127}$/;
@@ -46,7 +55,10 @@ const LOCALE = /^[a-z]{2}(-[A-Z]{2})?$/;
 const ISO_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 // Capability ids a clinician-assist agent may never hold: signing, prescribing, ordering or
 // finalizing clinical truth.
-const CLINICAL_AUTHORITY = /\.(sign|signature|prescribe|prescription_issue|order\.place|result\.finalize|diagnose)(\.|$)/;
+// A clinician-assist agent may prepare clinical material but never sign, prescribe, order or
+// finalize: its capabilities must end in one of these preparatory verbs (an allowlist, so a new
+// authority verb such as cosign or esign is refused by default).
+const CLINICIAN_ASSIST_VERBS = new Set(["read", "draft", "summarize", "suggest", "prepare", "propose", "explain", "search", "list", "view", "translate"]);
 
 export interface VersionRef {
   id: string;
@@ -71,6 +83,8 @@ export interface ModelProfile {
   latencyClass: "INTERACTIVE" | "BATCH";
   evaluationBundleDigest: string;
   egressProviderId: string;
+  costPolicyRef: string;
+  updateStrategyRef: string;
 }
 
 export interface PromptTemplate {
@@ -92,6 +106,9 @@ export interface AgentClassProfile {
   agentClass: AgentClass;
   dataCeiling: readonly CapabilityDataClass[];
   capabilities: readonly string[];
+  retentionDays: number;
+  approvalPolicyRef: string;
+  disclosureRef: string;
 }
 
 export type Registrar =
@@ -103,6 +120,7 @@ export type KillSwitchScope = "GLOBAL" | "PROVIDER" | "MODEL" | "CAPABILITY" | "
 export interface InvocationBinding {
   profile: VersionRef;
   modelRevision: string;
+  profileDigest: string;
   prompt: VersionRef;
   instructionDigest: string;
   safetyPolicyVersion: string;
@@ -205,7 +223,7 @@ function isDataClasses(value: unknown): value is CapabilityDataClass[] {
 function validateProfile(p: ModelProfile): void {
   check(ID.test(p.id) && VERSION.test(p.version), "profile id and version");
   check(ID.test(p.provider) && typeof p.modelId === "string" && p.modelId.length > 0 && p.modelId.length <= 128, "provider and model id");
-  if (typeof p.modelRevision !== "string" || !REVISION.test(p.modelRevision) || FLOATING_ALIAS.test(p.modelRevision)) {
+  if (typeof p.modelRevision !== "string" || !REVISION.test(p.modelRevision) || isFloatingRevision(p.modelRevision)) {
     fail("REGISTRY_FLOATING_IDENTITY", "an exact model revision or weights digest is required; floating aliases are not an identity");
   }
   check(p.runtimeClass === "LOCAL" || p.runtimeClass === "REMOTE", "runtime class");
@@ -221,9 +239,34 @@ function validateProfile(p: ModelProfile): void {
   check(p.latencyClass === "INTERACTIVE" || p.latencyClass === "BATCH", "latency class");
   check(DIGEST.test(p.evaluationBundleDigest), "evaluation bundle digest");
   check(ID.test(p.egressProviderId), "egress provider id");
+  check(ID.test(p.costPolicyRef) && ID.test(p.updateStrategyRef), "cost policy and update strategy references");
 }
 
 // ---------------------------------------------------------------------------
+
+const MODEL_TRANSITIONS: Readonly<Record<AdmissionState, readonly AdmissionState[]>> = {
+  CANDIDATE: ["SHADOW", "ADMITTED", "REVOKED"],
+  SHADOW: ["ADMITTED", "SUSPENDED", "REVOKED"],
+  ADMITTED: ["SUSPENDED", "REVOKED"],
+  SUSPENDED: ["ADMITTED", "REVOKED"],
+  REVOKED: [],
+};
+
+// RETIRED -> ACTIVE is a rollback re-activation of an earlier version.
+const PROMPT_TRANSITIONS: Readonly<Record<RolloutState, readonly RolloutState[]>> = {
+  DRAFT: ["CANARY", "RETIRED", "REVOKED"],
+  CANARY: ["ACTIVE", "RETIRED", "REVOKED"],
+  ACTIVE: ["RETIRED", "REVOKED"],
+  RETIRED: ["ACTIVE", "REVOKED"],
+  REVOKED: [],
+};
+
+function transition<S extends string>(table: Readonly<Record<S, readonly S[]>>, log: { state: S; at: string }[], next: S, at: string, reason: string): void {
+  const last = log[log.length - 1];
+  if (!table[last.state].includes(next)) fail("REGISTRY_INVALID", `illegal transition ${last.state} -> ${next}`);
+  if (typeof reason !== "string" || reason.trim().length === 0) fail("REGISTRY_INVALID", "a status change needs a reason");
+  if (Date.parse(at) < Date.parse(last.at)) fail("REGISTRY_INVALID", "status changes are recorded in time order");
+}
 
 interface StatusEntry<S> {
   state: S;
@@ -243,6 +286,8 @@ export interface SelectionRequest {
   dataClasses: readonly CapabilityDataClass[];
   capabilityId: string;
   residency: Residency;
+  // LOCAL restricts every candidate, the primary included, to local runtimes.
+  runtimeClass?: "LOCAL" | "REMOTE";
   primary: VersionRef;
   fallbacks: readonly VersionRef[];
   now: string;
@@ -256,6 +301,7 @@ export interface SelectionResult {
 
 export class ModelPromptRegistry {
   readonly #profiles = new Map<string, Readonly<ModelProfile>>();
+  readonly #profileDigests = new Map<string, string>();
   readonly #profileStatus = new Map<string, StatusEntry<AdmissionState>[]>();
   readonly #health = new Map<string, HealthEntry>();
   readonly #prompts = new Map<string, Readonly<PromptTemplate & { instructionDigest: string }>>();
@@ -271,8 +317,12 @@ export class ModelPromptRegistry {
     check((AGENT_CLASSES as readonly unknown[]).includes(p.agentClass), "agent class");
     check(isDataClasses(p.dataCeiling), "data ceiling (CREDENTIAL is never allowed)");
     check(Array.isArray(p.capabilities) && p.capabilities.every((c) => CAPABILITY.test(c)), "capabilities");
+    check(Number.isInteger(p.retentionDays) && p.retentionDays >= 0 && ID.test(p.approvalPolicyRef) && ID.test(p.disclosureRef), "retention, approval policy and disclosure");
     if (this.#agentClasses.has(p.agentClass)) fail("REGISTRY_DUPLICATE_VERSION", "agent class already registered");
-    if (p.agentClass === "CLINICIAN_ASSIST" && p.capabilities.some((c) => CLINICAL_AUTHORITY.test(c))) {
+    if (
+      p.agentClass === "CLINICIAN_ASSIST" &&
+      (p.dataCeiling.includes("CLINICAL_SIGNING_REQUIRED") || p.capabilities.some((c) => !CLINICIAN_ASSIST_VERBS.has(c.split(".").pop() ?? "")))
+    ) {
       fail("REGISTRY_CLINICAL_AUTHORITY", "a clinician-assist agent may prepare clinical material but never sign, prescribe, order or finalize");
     }
     // A patient-facing agent and a clinic-operations agent never share a capability.
@@ -287,15 +337,18 @@ export class ModelPromptRegistry {
 
   // -- model profiles ------------------------------------------------------
 
-  async registerModel(profile: ModelProfile, registrar: Registrar): Promise<string> {
+  async registerModel(profile: ModelProfile, registrar: Registrar, at: string): Promise<string> {
     trusted(registrar);
+    check(ISO_INSTANT.test(at), "registration time");
     const p = snapshot(profile);
     validateProfile(p);
     const key = `${p.id}@${p.version}`;
     if (this.#profiles.has(key)) fail("REGISTRY_DUPLICATE_VERSION", "a model profile version is immutable");
+    const digest = `mdl_${await sha256Hex(canonicalJson(p))}`;
     this.#profiles.set(key, p);
-    this.#profileStatus.set(key, [{ state: "CANDIDATE", by: registrar.id, at: "registered", reason: "registered" }]);
-    return `mdl_${await sha256Hex(canonicalJson(p))}`;
+    this.#profileDigests.set(key, digest);
+    this.#profileStatus.set(key, [{ state: "CANDIDATE", by: registrar.id, at, reason: "registered" }]);
+    return digest;
   }
 
   setModelState(ref: VersionRef, state: AdmissionState, registrar: Registrar, at: string, reason: string): void {
@@ -305,6 +358,7 @@ export class ModelPromptRegistry {
     if (!log) fail("REGISTRY_UNKNOWN", "unknown model profile");
     check((ADMISSION_STATES as readonly unknown[]).includes(state) && ISO_INSTANT.test(at), "state and time");
     if (log[log.length - 1].state === "REVOKED") fail("REGISTRY_NOT_EXECUTABLE", "a revoked profile stays revoked; register a new version");
+    transition(MODEL_TRANSITIONS, log, state, at, reason);
     log.push({ state, by: registrar.id, at, reason });
   }
 
@@ -312,6 +366,8 @@ export class ModelPromptRegistry {
     const key = `${ref.id}@${ref.version}`;
     if (!this.#profiles.has(key)) fail("REGISTRY_UNKNOWN", "unknown model profile");
     check(["HEALTHY", "DEGRADED", "DOWN"].includes(state) && ISO_INSTANT.test(observedAt), "health report");
+    const previous = this.#health.get(key);
+    if (previous && Date.parse(previous.observedAt) > Date.parse(observedAt)) return; // an older report never overwrites a newer one
     this.#health.set(key, { state, observedAt });
   }
 
@@ -324,14 +380,15 @@ export class ModelPromptRegistry {
     const entry = this.#health.get(key);
     if (!entry) return "DOWN";
     const observed = Date.parse(entry.observedAt);
-    if (Number.isNaN(observed) || now - observed > HEALTH_MAX_AGE_MS || observed > now) return "DOWN";
+    if (Number.isNaN(observed) || now - observed > HEALTH_MAX_AGE_MS || observed - now > HEALTH_CLOCK_SKEW_MS) return "DOWN";
     return entry.state;
   }
 
   // -- prompts -------------------------------------------------------------
 
-  async registerPrompt(prompt: PromptTemplate, registrar: Registrar): Promise<string> {
+  async registerPrompt(prompt: PromptTemplate, registrar: Registrar, at: string): Promise<string> {
     trusted(registrar);
+    check(ISO_INSTANT.test(at), "registration time");
     const p = snapshot(prompt);
     check(ID.test(p.id) && VERSION.test(p.version) && ID.test(p.taskClass), "prompt id, version and task class");
     check((AGENT_CLASSES as readonly unknown[]).includes(p.agentClass), "agent class");
@@ -359,7 +416,7 @@ export class ModelPromptRegistry {
     if (this.#prompts.has(key)) fail("REGISTRY_DUPLICATE_VERSION", "a prompt version is immutable; register a new version");
     const instructionDigest = `ins_${await sha256Hex(p.instructions)}`;
     this.#prompts.set(key, Object.freeze({ ...p, instructionDigest }));
-    this.#promptStatus.set(key, [{ state: "DRAFT", by: registrar.id, at: "registered", reason: "registered" }]);
+    this.#promptStatus.set(key, [{ state: "DRAFT", by: registrar.id, at, reason: "registered" }]);
     return instructionDigest;
   }
 
@@ -369,6 +426,7 @@ export class ModelPromptRegistry {
     if (!log) fail("REGISTRY_UNKNOWN", "unknown prompt");
     check((ROLLOUT_STATES as readonly unknown[]).includes(state) && ISO_INSTANT.test(at), "state and time");
     if (log[log.length - 1].state === "REVOKED") fail("REGISTRY_NOT_EXECUTABLE", "a revoked prompt stays revoked; register a new version");
+    transition(PROMPT_TRANSITIONS, log, state, at, reason);
     log.push({ state, by: registrar.id, at, reason });
   }
 
@@ -382,7 +440,11 @@ export class ModelPromptRegistry {
   setKillSwitch(scope: KillSwitchScope, target: string, on: boolean, registrar: Registrar, at: string, reason: string): void {
     trusted(registrar);
     check(["GLOBAL", "PROVIDER", "MODEL", "CAPABILITY", "PROMPT"].includes(scope) && ISO_INSTANT.test(at) && typeof reason === "string" && reason.length > 0, "kill switch");
-    this.#killSwitches.push({ scope, target: scope === "GLOBAL" ? "*" : target, on, by: registrar.id, at, reason });
+    const key = scope === "GLOBAL" ? "*" : target;
+    if (scope !== "GLOBAL" && !(scope === "CAPABILITY" ? CAPABILITY.test(target) : ID.test(target))) fail("REGISTRY_INVALID", "kill switch target");
+    const last = [...this.#killSwitches].reverse().find((entry) => entry.scope === scope && entry.target === key);
+    if (last && Date.parse(at) < Date.parse(last.at)) fail("REGISTRY_INVALID", "kill switch changes are recorded in time order");
+    this.#killSwitches.push({ scope, target: key, on, by: registrar.id, at, reason });
   }
 
   // Reads only the kill-switch log; never calls a model or provider.
@@ -429,11 +491,13 @@ export class ModelPromptRegistry {
       if (!agentClass.capabilities.includes(request.capabilityId)) return refuse("CAPABILITY_NOT_IN_AGENT_CLASS");
       if (!request.dataClasses.every((c) => agentClass.dataCeiling.includes(c))) return refuse("ABOVE_AGENT_DATA_CEILING");
       if (!RESIDENCY_LOCATIONS[request.residency].includes(p.deploymentLocation)) return refuse("RESIDENCY");
+      if (request.runtimeClass !== undefined && p.runtimeClass !== request.runtimeClass) return refuse("RUNTIME_CLASS");
       if (index > 0) {
         // A fallback never widens the primary's boundary.
         if (DEPLOYMENT_LOCATIONS.indexOf(p.deploymentLocation) > DEPLOYMENT_LOCATIONS.indexOf(primary.deploymentLocation)) return refuse("FALLBACK_WIDENS_RESIDENCY");
         if (primary.runtimeClass === "LOCAL" && p.runtimeClass === "REMOTE") return refuse("FALLBACK_LOCAL_TO_REMOTE");
-        if (p.egressProviderId !== primary.egressProviderId && p.allowedDataClasses.some((c) => !primary.allowedDataClasses.includes(c))) {
+        // Another egress provider means other data-use and retention terms (AIF-02A manifest).
+        if (p.egressProviderId !== primary.egressProviderId) {
           return refuse("FALLBACK_WIDENS_DATA_USE");
         }
       }
@@ -452,12 +516,17 @@ export class ModelPromptRegistry {
     const prompt = this.#prompts.get(`${promptRef.id}@${promptRef.version}`);
     if (!profile || !prompt) fail("REGISTRY_UNKNOWN", "unknown model profile or prompt version");
     if (!prompt.compatibleModels.includes(profile.id)) fail("REGISTRY_INCOMPATIBLE", "prompt is not compatible with this model");
+    if (prompt.outputSchema.id !== profile.structuredOutputSchema.id || prompt.outputSchema.version !== profile.structuredOutputSchema.version) {
+      fail("REGISTRY_INCOMPATIBLE", "prompt and model must use the same structured output schema");
+    }
+    if (prompt.allowedCapabilities.length > 0 && !profile.toolUseAllowed) fail("REGISTRY_INCOMPATIBLE", "a prompt with capabilities needs a model admitted for tool use");
     if (!profile.allowedAgentClasses.includes(prompt.agentClass) || !profile.allowedTaskClasses.includes(prompt.taskClass)) {
       fail("REGISTRY_INCOMPATIBLE", "model profile is not admitted for the prompt's agent or task class");
     }
     const body = {
       profile: { id: profile.id, version: profile.version },
       modelRevision: profile.modelRevision,
+      profileDigest: this.#profileDigests.get(`${profile.id}@${profile.version}`) as string,
       prompt: { id: prompt.id, version: prompt.version },
       instructionDigest: prompt.instructionDigest,
       safetyPolicyVersion: prompt.safetyPolicyVersion,
@@ -481,6 +550,16 @@ export class ModelPromptRegistry {
     if (this.modelState(binding.profile) !== "ADMITTED") fail("REGISTRY_NOT_EXECUTABLE", "model profile is not admitted");
     const rollout = this.promptState(binding.prompt);
     if (rollout !== "CANARY" && rollout !== "ACTIVE") fail("REGISTRY_NOT_EXECUTABLE", "prompt is not in canary or active rollout");
+    const prompt = this.#prompts.get(`${binding.prompt.id}@${binding.prompt.version}`);
+    if (!prompt) fail("REGISTRY_UNKNOWN", "unknown prompt");
+    if (
+      binding.modelRevision !== profile.modelRevision ||
+      binding.instructionDigest !== prompt.instructionDigest ||
+      binding.profileDigest !== this.#profileDigests.get(`${profile.id}@${profile.version}`)
+    ) {
+      fail("REGISTRY_INVALID", "binding does not match the registered versions");
+    }
+    if (prompt.allowedCapabilities.some((capability) => this.isDisabled({ capability }))) fail("REGISTRY_DISABLED", "a prompt capability is disabled");
     if (this.isDisabled({ provider: profile.provider, model: profile.id, prompt: binding.prompt.id })) {
       fail("REGISTRY_DISABLED", "disabled by a kill switch");
     }

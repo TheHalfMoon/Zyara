@@ -107,3 +107,15 @@ Plus:
 - a duplicate version with different content is refused;
 - `CREDENTIAL` can never be an allowed data class;
 - selection degrades only among authorized alternatives.
+
+## Hardening from the pstack panel (recorded as rules)
+
+- **Model identity.** A revision is refused when any of its words (split on `- _ . : / @`) is a floating alias (`latest`, `stable`, `default`, `preview`, `current`, `beta`, `alpha`, `newest`, `auto`, `main`, `master`, `head`, `nightly`, `next`, `edge`, `canary`, `dev`, `trunk`, `tip`), or when it carries no digit. A pinned revision always has a version, date or digest.
+- **Profile fields.** `costPolicyRef` and `updateStrategyRef` are required (plan §12A.1).
+- **Agent-class fields.** `retentionDays`, `approvalPolicyRef` and `disclosureRef` are required (plan §12A.5).
+- **Fallback.** A fallback with a **different** `egressProviderId` is always refused, because another provider has other data-use and retention terms. An optional `runtimeClass: LOCAL` in the request restricts every candidate, the primary included, to local runtimes.
+- **Kill switches.** A capability kill switch on any of a prompt's `allowedCapabilities` blocks new bindings and in-flight work. Kill-switch changes are recorded in time order per switch, and the target must be a valid id.
+- **Binding compatibility.** The prompt's output schema must equal the model's structured output schema, and a prompt with capabilities needs a model admitted for tool use. The binding also carries the profile digest. `assertBindingLive` refuses a binding whose revision, instruction digest or profile digest does not match the registered versions.
+- **Clinician-assist.** Every capability must end in a preparatory verb (`read`, `draft`, `summarize`, `suggest`, `prepare`, `propose`, `explain`, `search`, `list`, `view`, `translate`). This is an allowlist, so new authority verbs (cosign, esign, attest) are refused by default. The data ceiling can never include `CLINICAL_SIGNING_REQUIRED`.
+- **Status.** Model admission follows CANDIDATE→SHADOW|ADMITTED→SUSPENDED↔ADMITTED→REVOKED. Prompt rollout follows DRAFT→CANARY→ACTIVE→RETIRED (RETIRED→ACTIVE is a rollback re-activation), with REVOKED final. Every change needs a reason and is recorded in time order; registration takes an ISO time.
+- **Health.** A report up to 30 s in the future is tolerated (clock skew), and an older report never overwrites a newer one.
