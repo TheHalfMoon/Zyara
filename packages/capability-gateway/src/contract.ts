@@ -114,6 +114,9 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
   /\bBearer\s+\S+/i,
   /-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----/,
   /\beyJ[A-Za-z0-9_-]{4,512}\.[A-Za-z0-9_-]{0,2048}\./,
+  // A JWT header followed by a JWT payload, so a token whose payload is longer than a scan
+  // window is still caught by its prefix.
+  /\beyJ[A-Za-z0-9_-]{4,512}\.eyJ/,
   /\b(AKIA|ASIA)[A-Z0-9]{16}\b/,
   /\bgh[pousr]_[A-Za-z0-9]{20,}/,
   /\bxox[abpr]-[A-Za-z0-9-]{10,}/,
@@ -422,6 +425,20 @@ function assertOpaqueToken(value: unknown, label: string, code: CapabilityContra
 // receipts): an opaque id, and an opaque token free of credential shapes and direct ids.
 export function isOpaqueId(value: unknown): value is string {
   return typeof value === "string" && OPAQUE_ID_PATTERN.test(value);
+}
+
+// True when a string carries a credential shape (keys, tokens, bearer headers, private keys,
+// "password=" assignments), using the definition scan's patterns. Used by the AIF-02A egress
+// gate on payload values. Free text such as "reset your password" is not a credential shape;
+// the bare-word list for opaque ids is deliberately not applied here. The value is scanned in
+// overlapping windows so every pattern stays on a bounded input.
+export function containsCredentialShape(value: string): boolean {
+  const step = CAPABILITY_STRING_MAX_LENGTH / 2;
+  for (let start = 0; start === 0 || start < value.length - step; start += step) {
+    const window = value.slice(start, start + CAPABILITY_STRING_MAX_LENGTH);
+    if (SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(window))) return true;
+  }
+  return false;
 }
 
 export function isOpaqueToken(value: unknown): value is string {

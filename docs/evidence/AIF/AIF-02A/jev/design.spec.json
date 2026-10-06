@@ -1,0 +1,13 @@
+{
+  "description": "AIF-02A privacy and egress gate: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "phi_to_unqualified": {"type": "noul", "instructions": "PHI or another sensitive class could reach a provider that is not admitted for that class, purpose or retention.", "criteria": {"true": "Some path sends a sensitive class to an unqualified destination", "false": "Class ceiling, allowed providers, purpose and retention are all enforced"}},
+    "silent_cloud_fallback": {"type": "noul", "instructions": "A local-only payload could end up at a remote provider, including through a fallback after a local failure.", "criteria": {"true": "Local-only data can go remote, or a fallback can be silent", "false": "Local-only classes never go remote and fallbacks are explicit and denied"}},
+    "credential_egress": {"type": "noul", "instructions": "A credential, secret or credential-shaped value could leave in a payload.", "criteria": {"true": "Some credential can be exported", "false": "Credentials are refused regardless of policy"}},
+    "value_leak_in_receipt": {"type": "noul", "instructions": "A receipt, log or decision record could contain a source value or a minimized value rather than only paths, classes and digests.", "criteria": {"true": "Values can appear in receipts or logs", "false": "Only paths, classes, transforms and digests appear"}},
+    "consent_bypass": {"type": "noul", "instructions": "Data requiring consent could be sent with missing, revoked or payload-supplied consent, or without a purpose.", "criteria": {"true": "Consent or purpose can be bypassed", "false": "Purpose is mandatory and consent is server-supplied and checked at server time"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this egress design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"classification": "Field classification trust", "minimization": "Redaction and pseudonymization", "providers": "Provider manifests and ceilings", "consent": "Consent and purpose", "fallback": "Local-only and fallback", "receipts": "Receipt content", "completeness": "Missing rules or tests"}}
+  }
+}
