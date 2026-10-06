@@ -64,3 +64,6 @@ export * from "./access.js";
 
 // GEO-01C: external spatial identity and conflation.
 export * from "./conflation.js";
+
+// GEO-09: spatial insights (aggregated views only).
+export * from "./insights.js";

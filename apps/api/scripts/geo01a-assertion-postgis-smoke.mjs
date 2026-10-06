@@ -1,7 +1,7 @@
 // GEO-01A geo assertion persistence smoke: real PostgreSQL + PostGIS proof of SRID and range
 // enforcement, mandatory provenance, precision rules, one append-only supersession chain per
 // branch, branch FK integrity and tenant isolation; then GEO-01B access geometry (048) and
-// GEO-01C conflation (049).
+// GEO-01C conflation (049); then GEO-09 spatial insights (050).
 // Requires DATABASE_URL pointing at PostgreSQL with the PostGIS extension available; skips
 // otherwise.
 import { readFileSync } from "node:fs";
@@ -543,5 +543,82 @@ if (conflationPersonal.rows.length !== 0) fail(`patient or user columns must not
 
 console.log(
   "GEO-01C conflation PostGIS smoke PASS: namespace-bound external ids, no automated reviewed links or unlinks, one active link per id under concurrency, unlink keeps history, conflicts measured and never overwrite, low-authority supersession refused, material moves audited, large and bulk moves need a reviewer, append-only, tenant isolation",
+);
+
+// ---------------------------------------------------------------------------
+// GEO-09: spatial insights released cells (migration 050), same GEO smoke.
+// ---------------------------------------------------------------------------
+await client.query(`RESET ROLE`);
+await client.query(`DROP VIEW IF EXISTS geo_insight_cells_live`);
+await client.query(`DROP TABLE IF EXISTS geo_insight_cells CASCADE`);
+await client.query(readFileSync(new URL("050_geo_spatial_insights.sql", migrations), "utf8"));
+await client.query(readFileSync(new URL("050_geo_spatial_insights.sql", migrations), "utf8"));
+
+const INSIGHT = (cell, options = {}) => {
+  const {
+    tenant = "t1", branch = "NULL", metric = "DEMAND_BY_CELL", subject = "PERSON", valueKind = "COUNT", denominator = "NULL",
+    sensitive = "FALSE", minCohort = 11, res = 5, value = "30", suppressed = "FALSE", reason = "NULL",
+    start = "'2026-09-01T00:00:00Z'", end = "'2026-10-01T00:00:00Z'", extraColumns = "", extraValues = "",
+  } = options;
+  return `INSERT INTO geo_insight_cells(tenant_id,branch_id,metric_id,subject_kind,value_kind,numerator,denominator,source,purpose,
+     sensitive,min_cohort,resolution_cdeg,cell_id,window_start,window_end,value,suppressed,reason,retention_days${extraColumns})
+   VALUES ('${tenant}',${branch},'${metric}','${subject}','${valueKind}','distinct_people_with_care_request',${denominator},
+     'care_request_events','network_planning',${sensitive},${minCohort},${res},'${cell}',${start},${end},${value},${suppressed},${reason},365${extraValues})`;
+};
+
+await client.query(`SET ROLE zyara_app`);
+await client.query(`SET app.current_tenant='t1'`);
+
+// Low-count suppression is a database fact.
+await client.query(INSIGHT("g5:494:933"));
+await expectDbError(() => client.query(INSIGHT("g5:493:934", { value: "5" })), "23514", "an unsuppressed person count below the cohort must be refused");
+await expectDbError(() => client.query(INSIGHT("g5:493:934", { value: "5", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" })), "23514", "a suppressed cell carries no value");
+await client.query(INSIGHT("g5:493:934", { value: "NULL", suppressed: "TRUE", reason: "'SUPPRESSED_LOW_COUNT'" }));
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { value: "NULL", suppressed: "TRUE" })), "23514", "suppression is explicit with its reason");
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { minCohort: 5 })), "23514", "a person metric needs a cohort of at least 11");
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { metric: "SENSITIVE_DEMAND", sensitive: "TRUE" })), "23514", "a sensitive metric needs a cohort of at least 20");
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { metric: "SENSITIVE_DEMAND", sensitive: "TRUE", minCohort: 20 })), "23514", "a sensitive metric needs a coarser grid");
+await client.query(INSIGHT("g10:247:466", { metric: "SENSITIVE_DEMAND", sensitive: "TRUE", minCohort: 20, res: 10, value: "25" }));
+await client.query(INSIGHT("g5:494:933", { metric: "SUPPLY_BY_CELL", subject: "FACILITY", minCohort: 1, value: "2" }));
+
+// No patient dots: coarse cell ids only, matching their resolution.
+await expectDbError(() => client.query(INSIGHT("g10:247:466")), "23514", "a cell id must match its resolution");
+await expectDbError(() => client.query(INSIGHT("24.7136,46.6753")), "23514", "a coordinate is not a cell id");
+await expectDbError(() => client.query(INSIGHT("g1:2471:4667", { res: 1 })), "23514", "nothing finer than 0.05 degrees exists");
+
+// Governance and ratios.
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { start: "'2025-01-01T00:00:00Z'" })), "23514", "a window is at most 366 days");
+await expectDbError(() => client.query(INSIGHT("g5:492:934", { metric: "CAPACITY_GAP_BY_CELL", valueKind: "RATIO" })), "23514", "a ratio needs a denominator");
+await client.query(INSIGHT("g5:493:934", { metric: "CAPACITY_GAP_BY_CELL", valueKind: "RATIO", denominator: "'current_branch_locations'", value: "NULL", reason: "'NO_SUPPLY'" }));
+await client.query(INSIGHT("g5:494:933", { metric: "CAPACITY_GAP_BY_CELL", valueKind: "RATIO", denominator: "'current_branch_locations'", value: "15" }));
+
+// Stable storage: one row per cell per window, append-only, database time.
+await expectDbError(() => client.query(INSIGHT("g5:494:933", { value: "31" })), "23505", "a released cell cannot be recomputed into a second value");
+await expectDbError(() => client.query(INSIGHT("g5:491:934", { extraColumns: ",computed_at", extraValues: ",'2020-01-01T00:00:00Z'" })), "42501", "computed_at is database time", "permission denied");
+for (const [statement, label] of [
+  [`UPDATE geo_insight_cells SET value = 3 WHERE cell_id = 'g5:494:933'`, "update"],
+  [`DELETE FROM geo_insight_cells WHERE cell_id = 'g5:494:933'`, "delete"],
+]) {
+  await expectDbError(() => client.query(statement), "42501", `the application role must not ${label} released cells`, "permission denied");
+}
+
+// Tenant and branch isolation.
+await expectDbError(() => client.query(INSIGHT("g5:494:933", { tenant: "t2" })), "42501", "a cross-tenant insight must be refused by RLS", "row-level security");
+await expectDbError(() => client.query(INSIGHT("g5:490:934", { branch: "'b2'" })), "23503", "an insight cannot reference another tenant's branch");
+const liveInsights = await client.query(`SELECT count(*)::int AS n FROM geo_insight_cells_live`);
+if (liveInsights.rows[0].n !== 6) fail(`six released cells must be live, got ${liveInsights.rows[0].n}`);
+await client.query(`SET app.current_tenant='t2'`);
+const foreignInsights = await client.query(`SELECT (SELECT count(*) FROM geo_insight_cells) + (SELECT count(*) FROM geo_insight_cells_live) AS n`);
+if (Number(foreignInsights.rows[0].n) !== 0) fail("tenant read isolation failed for insight cells");
+await client.query(`RESET ROLE`);
+const insightColumns = await client.query(
+  `SELECT column_name FROM information_schema.columns
+   WHERE table_name = 'geo_insight_cells'
+     AND (udt_name = 'geometry' OR column_name ~ '(lat|lon|point|coord|patient|subject|account|session|user|device)')`,
+);
+if (insightColumns.rows.length !== 0) fail(`insight cells must carry no location or person columns: ${JSON.stringify(insightColumns.rows)}`);
+
+console.log(
+  "GEO-09 spatial insights PostGIS smoke PASS: unsuppressed small person counts refused, explicit suppression, cohort 11 and sensitive 20 on coarse grid, cell ids only, ratio governance, one row per cell per window, append-only, tenant and branch isolation, no location or person columns",
 );
 await client.end();
