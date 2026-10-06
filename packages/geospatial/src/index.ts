@@ -58,3 +58,6 @@ export function discoveryEvent(name: DiscoveryEvent, branchId: string): { event:
 
 // GEO-01A: geo assertion and precision contract.
 export * from "./assertion.js";
+
+// GEO-01B: entrances and service-area geometry.
+export * from "./access.js";

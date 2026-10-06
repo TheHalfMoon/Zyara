@@ -1,0 +1,13 @@
+{
+  "description": "GEO-01B entrances and service-area geometry: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "accessibility_inferred": {"type": "noul", "instructions": "An accessibility fact (step-free, lift, accessible toilet or parking, or an ACCESSIBLE entrance) could be claimed without an attested or verified human/provider source, for example from an external dataset, imagery, 3D or AI.", "criteria": {"true": "Some accessibility claim can come from an unattested or inferred source", "false": "Accessibility claims need attested or verified sources and external data stays UNKNOWN"}},
+    "availability_inferred": {"type": "noul", "instructions": "Being inside a service area could be read or returned as meaning that care or an appointment is available.", "criteria": {"true": "A service area can imply availability", "false": "Service areas are geometry facts only and never imply availability"}},
+    "invalid_geometry": {"type": "noul", "instructions": "An invalid polygon (unclosed, self-intersecting, wrong SRID or type, out-of-range, oversized) could be stored or used.", "criteria": {"true": "Some invalid geometry passes", "false": "All are refused in code and database"}},
+    "cross_scope_link": {"type": "noul", "instructions": "An entrance or service area could link to another tenant's or another branch's branch or service, or a supersession could cross branches.", "criteria": {"true": "Some cross-tenant or cross-branch link is possible", "false": "Composite keys keep every link inside one tenant and branch"}},
+    "stale_entrance_shown": {"type": "noul", "instructions": "An inactive, superseded or expired entrance could still be treated as a current entrance.", "criteria": {"true": "Stale entrances can appear current", "false": "Only active, unexpired chain heads are current"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"accessibility": "Accessibility facts", "service_area": "Service-area semantics", "geometry": "Geometry validity", "scope": "Tenant and branch linkage", "lifecycle": "Supersession and status", "completeness": "Missing rules or tests"}}
+  }
+}
