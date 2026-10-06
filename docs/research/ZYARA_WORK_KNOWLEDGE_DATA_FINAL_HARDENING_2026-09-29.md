@@ -119,7 +119,7 @@ A crash cannot advance a cursor past uncommitted authoritative/projection state 
 
 Analytics requires versioned semantic definitions, not ad-hoc SQL labels.
 
-Every `MetricDefinition` binds:
+`MetricDefinition` is an installation-scoped semantic definition and holds no tenant data; every evaluation of a metric runs under the requesting principal's `tenant_id` and branch scope through the curated data gateway. Every `MetricDefinition` binds:
 
 ```text
 metric_id

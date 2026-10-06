@@ -189,6 +189,8 @@ AIF-03A gains a live `ProviderReadinessSnapshot` and AIF-01 gains an installatio
 Minimum state:
 
 ```text
+scope                     # INSTALLATION (operator-owned provider) | TENANT (tenant-bound credential)
+tenant_id?                # required when scope = TENANT; server-derived, never body-supplied
 provider_id
 provider_profile_id
 model_profile_id          # AIF §12A.1 ModelProfile; source of admission/data/task classes
@@ -229,6 +231,9 @@ Rules:
 Define `ModuleCapabilityReport` for the current installation/user/tenant:
 
 ```text
+tenant_id                 # server-derived from the requesting principal
+branch_id?                # the requesting work context; null only for a tenant-wide view
+principal_ref             # the report is computed per principal and is never shared across principals
 module_id
 configured
 health
@@ -275,7 +280,7 @@ nodes[]
 created_at
 ```
 
-Each node:
+Each node inherits the enclosing `PlanGraph`'s `tenant_id`, `branch_id` and subject scope and cannot widen them; a node never carries its own scope.
 
 ```text
 node_id
@@ -549,6 +554,8 @@ Rules:
 ## 13. Integration module descriptor
 
 Combine Synaplan's feature-module descriptor and DBX/Paperclip plugin boundaries into a Zyara-owned `IntegrationModuleDescriptor`.
+
+`IntegrationModuleDescriptor` is an installation-scoped catalog entry and carries no tenant data. A tenant can use a module only through a tenant-scoped enablement record (`tenant_id`, `branch_scope` as `branch_id` or `TENANT_WIDE` with a recorded justification, `module_id`, `version`, `digest`, `enabled_by`, `enabled_at`), and that enablement can only narrow what the descriptor declares.
 
 ```text
 module_id
@@ -834,7 +841,7 @@ Rules:
 
 Paperclip's runtime skill injection is useful only when versioned and governed.
 
-Define `SkillBundle`:
+Define `SkillBundle` (an installation-scoped catalog entry with no tenant data; tenant use goes through a tenant-scoped enablement record with the same fields and narrowing rule as integration modules):
 
 ```text
 skill_id
