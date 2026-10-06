@@ -1,0 +1,13 @@
+{
+  "description": "AIF-01A capability contract: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "agent_can_widen_authority": {"type": "noul", "instructions": "Under this contract an agent or workflow could obtain authority beyond what a human-authorized grant gives it, register its own capability, or hold a human-only (A5) capability.", "criteria": {"true": "Some path lets an agent self-register, self-grant, hold A5, or widen tenant/branch scope", "false": "Registration needs a trusted authority, A5 is never granted to agents and scope can only narrow"}},
+    "secret_can_enter_contract": {"type": "noul", "instructions": "A raw secret, credential or token value could be stored in or pass through a capability definition, grant or invocation.", "criteria": {"true": "Some field can carry a plaintext secret that is not rejected", "false": "Only opaque credential references are accepted and secret-looking values are rejected"}},
+    "write_without_safety": {"type": "noul", "instructions": "A write capability can be admitted without an idempotency contract, a verification method, or with an observe/draft authority class.", "criteria": {"true": "A write can be admitted missing idempotency, verification, or with A0/A1", "false": "All three are enforced for every write"}},
+    "unknown_outcome_hidden": {"type": "noul", "instructions": "An external call whose outcome is unknown could be recorded as verified or successful.", "criteria": {"true": "UNKNOWN outcomes can be marked verified or successful", "false": "UNKNOWN outcomes always require reconciliation"}},
+    "version_integrity_gap": {"type": "noul", "instructions": "A caller could execute against a capability definition different from the admitted one (changed content, other version, or mutated after admission).", "criteria": {"true": "Version, digest or immutability is not enforced somewhere", "false": "Immutable (id, version), content digest and digest check on lookup are all enforced"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this capability contract?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"authority": "Authority classes and agent limits", "scope": "Tenant/branch isolation", "secrets": "Credential handling", "integrity": "Versioning and digests", "write_safety": "Idempotency, retry and verification", "completeness": "Missing contract fields or tests"}}
+  }
+}
