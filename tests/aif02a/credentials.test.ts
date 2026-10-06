@@ -256,3 +256,18 @@ describe("AIF-02B panel hardening", () => {
     assert.equal(credentialHealth(binding({ expiresAt: "2026-13-45T00:00:00Z" }), NOW).state, "INVALID");
   });
 });
+
+describe("AIF-02B delta-1 hardening", () => {
+  it("lets model token-count parameters through but still refuses tokens", () => {
+    assertSecretFreePayload({ model: "local", max_tokens: 512, maxTokens: 512, inputTokens: 10, tokenCount: 3, usage: { total_tokens: 20 } });
+    for (const key of ["token", "authToken", "refresh_token", "tokenValue"]) {
+      assert.throws(() => assertSecretFreePayload({ [key]: "x" }), CredentialError, key);
+    }
+  });
+
+  it("refuses a base64url-encoded secret result", () => {
+    const credential = mediateCredential(request(), world().deps).credential;
+    const url = Buffer.from(SECRET).toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    assert.throws(() => credential?.use(() => url), CredentialError);
+  });
+});

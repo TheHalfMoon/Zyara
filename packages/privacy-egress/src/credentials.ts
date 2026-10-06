@@ -142,6 +142,7 @@ const SECRET_WORDS = new Set([
 const KEY_QUALIFIERS = new Set(["api", "private", "signing", "access", "secret", "encryption", "master"]);
 // A credential *reference* or *id* is metadata, not a secret.
 const REFERENCE_WORDS = new Set(["ref", "refs", "reference", "id", "ids", "handle", "kind", "status", "version"]);
+const TOKEN_COUNT_WORDS = new Set(["max", "min", "input", "output", "total", "prompt", "completion", "count", "counts", "limit", "limits", "usage", "budget"]);
 
 export function isSecretNamedKey(key: string): boolean {
   const words = keyWords(key);
@@ -149,6 +150,9 @@ export function isSecretNamedKey(key: string): boolean {
     const word = words[index];
     const next = words[index + 1];
     if ((word === "credential" || word === "credentials") && next !== undefined && REFERENCE_WORDS.has(next)) continue;
+    // Token *counts and limits* (max_tokens, inputTokens, tokenCount) are model parameters,
+    // not secrets.
+    if ((word === "token" || word === "tokens") && (TOKEN_COUNT_WORDS.has(next ?? "") || TOKEN_COUNT_WORDS.has(words[index - 1] ?? ""))) continue;
     if (SECRET_WORDS.has(word)) return true;
     if (word === "key" && index > 0 && KEY_QUALIFIERS.has(words[index - 1])) return true;
   }
@@ -248,7 +252,9 @@ export class ResolvedCredential {
   }
 
   #check<T>(result: T, secret: string): T {
-    if (leaksSecret(result, secret, [secret, base64(secret)])) {
+    const encoded = base64(secret);
+    const encodedUrl = encoded.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    if (leaksSecret(result, secret, [secret, encoded.replace(/=+$/, ""), encodedUrl])) {
       throw new CredentialError("an adapter must return plain data that does not carry the secret");
     }
     return result;

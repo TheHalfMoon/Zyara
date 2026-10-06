@@ -67,3 +67,5 @@ Failure messages and receipts carry only the ref, version, tenant, branch, provi
 - a failing vault or clock denies;
 - a handle retired mid-resolution denies as rotated;
 - `use(fn)` refuses a return value that carries the secret.
+
+Limits of the result check, recorded rather than claimed: a secret encoded at an offset inside a larger encoded blob, or in hex, is not detected. Adapters are reviewed code, and process isolation is AIF-04/AIF-06. Dates are not plain data; model and tool payloads carry instants as ISO strings (`toISOString()`). Token counts and limits (`max_tokens`, `inputTokens`) are model parameters and pass the secret-key check, while `token`, `authToken` and `refresh_token` are refused.
