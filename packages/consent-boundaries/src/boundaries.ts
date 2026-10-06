@@ -16,10 +16,20 @@ export interface ConsentGrant {
 }
 
 // A full ISO-8601 date-time with seconds and an explicit zone (Z or ±hh:mm).
-const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$/;
+const ISO_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d{1,9})?(Z|[+-](\d{2}):(\d{2}))$/;
 
+// Parses only real calendar instants: an impossible date (02-30, 04-31) or hour 24 would be
+// rolled forward by Date.parse, which could keep a revoked consent live, so it is refused.
 function instant(value: unknown): number {
-  return typeof value === "string" && ISO_DATE_TIME.test(value) ? Date.parse(value) : Number.NaN;
+  if (typeof value !== "string") return Number.NaN;
+  const match = ISO_DATE_TIME.exec(value);
+  if (!match) return Number.NaN;
+  const [year, month, day, hour, minute, second] = match.slice(1, 7).map(Number);
+  const calendar = new Date(Date.UTC(year, month - 1, day));
+  if (calendar.getUTCFullYear() !== year || calendar.getUTCMonth() !== month - 1 || calendar.getUTCDate() !== day) return Number.NaN;
+  if (hour > 23 || minute > 59 || second > 59) return Number.NaN;
+  if (match[9] !== undefined && (Number(match[9]) > 23 || Number(match[10]) > 59)) return Number.NaN;
+  return Date.parse(value);
 }
 
 // Instants are compared parsed, never as strings: "12:00:00Z" vs "12:00:00.500Z" or a
@@ -96,6 +106,9 @@ export function revokeConsent(
   purpose: ConsentPurpose,
   nowUtc: string,
 ): ConsentGrant[] {
+  // A malformed revocation time would make the grant permanently unusable without a clear
+  // record of when it was revoked, so it is refused here.
+  if (Number.isNaN(instant(nowUtc))) throw new Error("revocation time must be an ISO-8601 instant with an explicit zone");
   return grants.map((g) =>
     g.purpose === purpose && g.revokedAtUtc === null
       ? { ...g, revokedAtUtc: nowUtc }

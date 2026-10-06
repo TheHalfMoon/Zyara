@@ -46,6 +46,12 @@ describe("M051 consent boundaries", () => {
     assert.equal(isConsented([{ ...GRANTS[0], atUtc: "yesterday" }], "care", now), false);
     assert.equal(isConsented([{ ...GRANTS[0], revokedAtUtc: "2026-02-30" }], "care", now), false);
     assert.equal(isConsented(GRANTS, "care", "not-a-time"), false);
+    // Impossible calendar times are refused, never rolled forward: a revocation "on 30 Feb"
+    // must not keep consent live until 2 March.
+    for (const impossible of ["2026-02-30T00:00:00Z", "2026-04-31T00:00:00Z", "2026-09-20T24:00:00Z", "2026-09-20T12:60:00Z"]) {
+      assert.equal(isConsented([{ ...GRANTS[0], revokedAtUtc: impossible }], "care", "2026-02-28T00:00:00Z"), false, impossible);
+    }
+    assert.throws(() => revokeConsent(GRANTS, "care", "2026-02-30T00:00:00Z"));
   });
   it("refuses marketing use unconditionally", () => {
     assert.equal(authorizeMarketingUse().allowed, false);
