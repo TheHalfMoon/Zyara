@@ -131,6 +131,11 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
 // zero-padded shapes such as 00000000-0000-0000-0000-966501234567. These heuristics catch
 // accidental leaks only; a caller set on hiding an identifier could still hex-encode it.
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+// Credential words refused anywhere in an opaque token. This is exactly the 045/046 SQL
+// denylist (capability_is_opaque_token), so a token the resolver accepts is never refused
+// when its claim or receipt is recorded.
+const TOKEN_CREDENTIAL_WORDS =
+  /(secret:\/\/|bearer|api[_-]?key|access[_-]?token|refresh[_-]?token|app[_-]?secret|verify[_-]?token|private[_-]?key|password|passwd|credential|authorization|eaag)/i;
 // A long hex run inside a credential reference is a key, not a name.
 const LONG_HEX_PATTERN = /[0-9a-f]{32}/;
 
@@ -404,6 +409,7 @@ function assertOpaqueToken(value: unknown, label: string, code: CapabilityContra
   const token = assertOpaqueId(value, label, code);
   if (UUID_PATTERN.test(token)) return token;
   if (
+    TOKEN_CREDENTIAL_WORDS.test(token) ||
     SECRET_VALUE_PATTERNS.some((pattern) => pattern.test(token)) ||
     APPROVAL_DIRECT_IDENTIFIER_PATTERNS.some((pattern) => pattern.test(token))
   ) {

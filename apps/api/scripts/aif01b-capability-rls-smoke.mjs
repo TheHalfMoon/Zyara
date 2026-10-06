@@ -39,6 +39,15 @@ await client.query(readFileSync(new URL("046_capability_registry.sql", migration
 // Applying the migration twice must be a no-op.
 await client.query(readFileSync(new URL("046_capability_registry.sql", migrations), "utf8"));
 
+// Parity with the TypeScript isOpaqueToken over the shared fixtures (tests/aif01b).
+const fixtures = JSON.parse(readFileSync(new URL("../../../tests/aif01b/token-fixtures.json", import.meta.url), "utf8"));
+for (const [list, expected] of [[fixtures.accept, true], [fixtures.refuse, false]]) {
+  for (const token of list) {
+    const result = await client.query(`SELECT capability_is_opaque_token($1) AS ok`, [token]);
+    if (result.rows[0].ok !== expected) throw new Error(`SQL opaque-token parity broke for ${JSON.stringify(token)}: expected ${expected}`);
+  }
+}
+
 await client.query(`INSERT INTO tenants(id,name) VALUES ('t1','Clinic One'),('t2','Clinic Two') ON CONFLICT DO NOTHING`);
 await client.query(`INSERT INTO organizations(id,tenant_id) VALUES ('org-1','t1'),('org-2','t2') ON CONFLICT DO NOTHING`);
 await client.query(

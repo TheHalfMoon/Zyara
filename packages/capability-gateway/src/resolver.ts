@@ -204,6 +204,7 @@ function instant(value: unknown): number {
 }
 
 const PRINCIPAL_KINDS = ["human", "agent", "workflow"] as const;
+const ADMIN_ROLES: readonly string[] = ["org_admin", "branch_admin"];
 
 // Reads the caller's objects exactly once into plain data, so a getter or Proxy cannot answer
 // one value to a check and another to a later check. A principal that is not one of the three
@@ -371,9 +372,19 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
   let chosen = usable[0];
   if (principal.kind === "human") {
     const highAuthority = definition.authorityClass === "A4_EXECUTE_MED" || definition.authorityClass === "A5_HUMAN_ONLY";
-    const clinical = definition.dataClasses.includes("PHI") || definition.dataClasses.includes("CLINICAL_SIGNING_REQUIRED");
+    // A clinical action: clinical-signing data, or a write over PHI. Administrative reads of
+    // PHI (for example an approved export) are governed by approval instead.
+    const clinical =
+      definition.dataClasses.includes("CLINICAL_SIGNING_REQUIRED") ||
+      (definition.readOrWrite === "write" && definition.dataClasses.includes("PHI"));
     let firstDenial: string | undefined;
     const passing = usable.find((record) => {
+      // Admin/clinical separation for every request, including tenant-wide ones, where
+      // authorize() itself does not apply forbidAdminClinical.
+      if (clinical && ADMIN_ROLES.includes(record.grantee.id)) {
+        firstDenial ??= "AUTHZ_ADMIN_CLINICAL_SEPARATION";
+        return false;
+      }
       const authz = authorize(
         { ...principal.context, nowIso },
         {
@@ -477,6 +488,13 @@ export async function resolveCapability(
   if (typeof request !== "object" || request === null) {
     throw new CapabilityContractError("CAPABILITY_FIELD_MISSING", "request must be an object");
   }
+  // The snapshot drops undefined fields; every optional reference is null from here on, so
+  // an omitted field can never slip past a `=== null` rule.
+  request.requestedTenantId ??= null;
+  request.branchId ??= null;
+  request.idempotencyKey ??= null;
+  request.approvalRequestId ??= null;
+  request.confirmationReceiptId ??= null;
 
   let nowIso: string;
   let outcome: Outcome;

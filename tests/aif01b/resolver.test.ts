@@ -7,6 +7,7 @@
 // parameters and one invocation; A5 needs a human and an exact confirmation; and every
 // decision yields a deterministic, value-free receipt.
 import assert from "node:assert";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import type { CertifiedAdapter } from "@zyara/adapter-harness";
 import type { Membership, RequestContext } from "@zyara/authorization";
@@ -21,6 +22,7 @@ import {
   CapabilityContractRegistry,
   CapabilityRegistryState,
   RESOLUTION_VALIDITY_MS,
+  isOpaqueToken,
   resolveCapability,
   type AdmittedCapability,
   type AuthenticatedPrincipal,
@@ -725,5 +727,37 @@ describe("AIF-01B panel hardening", () => {
     const allow = await resolveCapability(WORKFLOW, request(w.caps.remind), w.deps);
     w.now.value = new Date(Date.parse(NOW) + RESOLUTION_VALIDITY_MS).toISOString();
     await assert.rejects(() => w.state.record(allow), (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_RECEIPT_INVALID");
+  });
+});
+
+describe("AIF-01B fix cycle 2", () => {
+  it("agrees with the SQL opaque-token rule on every shared fixture", async () => {
+    const fixtures = JSON.parse(readFileSync(new URL("./token-fixtures.json", import.meta.url), "utf8")) as Record<string, string[]>;
+    for (const token of fixtures.accept) assert.ok(isOpaqueToken(token), `should accept ${token}`);
+    for (const token of [...fixtures.refuse, ...fixtures.tsOnlyRefuse]) assert.ok(!isOpaqueToken(token), `should refuse ${token}`);
+  });
+
+  it("keeps admins out of clinical actions on tenant-wide requests too", async () => {
+    const w = await world();
+    const registry = new CapabilityContractRegistry();
+    const wideSign = await registry.register(
+      definition({ id: "documentation.summary.sign", ...WRITE, branchScope: "TENANT_WIDE", authorityClass: "A5_HUMAN_ONLY", dataClasses: ["PHI", "CLINICAL_SIGNING_REQUIRED"], consentPurpose: "care" }),
+      RELEASE,
+    );
+    w.state.admit(wideSign);
+    w.state.grant(grant({ grantId: "g-admin-wide", grantee: { kind: "human_role", id: "org_admin" }, capabilityId: "documentation.summary.sign", branchId: null, expiresAt: null }));
+    const orgAdmin = human([{ role: "org_admin", branchId: null }]);
+    const receipt = await resolveCapability(orgAdmin, request(wideSign, { branchId: null, confirmationReceiptId: "conf-1" }), w.deps);
+    assert.deepEqual([receipt.decision, receipt.reasons], ["DENY", ["AUTHZ_ADMIN_CLINICAL_SEPARATION"]]);
+  });
+
+  it("treats an omitted optional field as null, never as present", async () => {
+    const w = await world();
+    w.approvals.set("appr-1", approval());
+    const omitted = request(w.caps.broadcast, { approvalRequestId: "appr-1" }) as Partial<CapabilityResolutionRequest>;
+    delete omitted.idempotencyKey;
+    const receipt = await resolveCapability(WORKFLOW, omitted as CapabilityResolutionRequest, w.deps);
+    assert.equal(receipt.decision, "DENY");
+    assert.equal(receipt.idempotencyKey, null);
   });
 });
