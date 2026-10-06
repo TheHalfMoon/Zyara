@@ -10,14 +10,31 @@
 --
 -- Differencing defences, all database facts:
 -- * cohort CHECKs on cells, totals and missing counts;
--- * one person-derived release per source over any overlapping time span (any window length,
---   grid, scope, metric id or numerator), via an exclusion constraint;
+-- * sources are migrator-managed and map to a population; one person-derived release per
+--   population over any overlapping time span (any source, window length, grid, scope, metric id
+--   or numerator), via an exclusion constraint;
 -- * windows on a fixed grid, UTC-length checked;
--- * complementary suppression re-checked at commit (hidden mass is 0 or >= cohort);
--- * a release is sealed to the transaction that created it (no cells added later);
+-- * releases are written only by geo_publish_insight(), which writes header and cells in one
+--   call and checks complementary suppression (hidden mass is 0 or >= cohort) inline, so no
+--   constraint deferral or later cell write can bypass it;
 -- * the retention purge keeps a tombstone header, so a purged slot is never re-released.
 
 CREATE EXTENSION IF NOT EXISTS btree_gist;
+
+-- Insight sources: reference data managed by the migrator. Each source belongs to a population
+-- of people (or facilities); a subset source (e.g. sensitive care requests) shares its parent
+-- population, so the two can never both be released over one span.
+CREATE TABLE IF NOT EXISTS geo_insight_sources (
+  source TEXT PRIMARY KEY CHECK (source ~ '^[a-z][a-z0-9_]{1,63}$'),
+  population TEXT NOT NULL CHECK (population ~ '^[a-z][a-z0-9_]{1,63}$'),
+  subject_kind TEXT NOT NULL CHECK (subject_kind IN ('PERSON', 'FACILITY')),
+  UNIQUE (source, population, subject_kind)
+);
+INSERT INTO geo_insight_sources(source, population, subject_kind) VALUES
+  ('care_request_events', 'care_requests', 'PERSON'),
+  ('sensitive_care_request_events', 'care_requests', 'PERSON'),
+  ('geo_current_location_assertions', 'branch_locations', 'FACILITY')
+ON CONFLICT (source) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS geo_insight_releases (
   tenant_id TEXT NOT NULL REFERENCES tenants(id) ON DELETE RESTRICT,
@@ -26,6 +43,8 @@ CREATE TABLE IF NOT EXISTS geo_insight_releases (
   subject_kind TEXT NOT NULL CHECK (subject_kind IN ('PERSON', 'FACILITY')),
   numerator TEXT NOT NULL CHECK (numerator ~ '^[a-z][a-z0-9_]{1,63}$'),
   source TEXT NOT NULL CHECK (source ~ '^[a-z][a-z0-9_]{1,63}$'),
+  -- Copied from geo_insight_sources and pinned by the composite foreign key.
+  population TEXT NOT NULL,
   purpose TEXT NOT NULL CHECK (purpose ~ '^[a-z][a-z0-9_]{1,63}$'),
   sensitive BOOLEAN NOT NULL,
   min_cohort INTEGER NOT NULL CHECK (min_cohort BETWEEN 1 AND 1000),
@@ -44,6 +63,7 @@ CREATE TABLE IF NOT EXISTS geo_insight_releases (
   PRIMARY KEY (tenant_id, metric_id, window_start, window_end),
   UNIQUE (tenant_id, metric_id, window_start, window_end, resolution_cdeg, subject_kind, min_cohort),
   FOREIGN KEY (branch_id, tenant_id) REFERENCES branch_locations(id, tenant_id) ON DELETE RESTRICT,
+  FOREIGN KEY (source, population, subject_kind) REFERENCES geo_insight_sources(source, population, subject_kind) ON DELETE RESTRICT,
   -- Fixed window grid: UTC midnight, a multiple of window_days days since the epoch, and an
   -- exact UTC length (independent of the session time zone).
   CHECK (extract(epoch FROM (window_end - window_start)) = window_days * 86400::numeric),
@@ -59,9 +79,9 @@ CREATE TABLE IF NOT EXISTS geo_insight_releases (
   CHECK (total IS NULL OR subject_kind <> 'PERSON' OR total >= min_cohort),
   CHECK (missing IS NULL OR subject_kind <> 'PERSON' OR missing = 0 OR missing >= min_cohort),
   CHECK (purged_at IS NULL OR (total IS NULL AND missing IS NULL)),
-  -- One person-derived release per source over any overlapping span: no second grid, scope,
-  -- metric id, numerator or window length over the same people and time.
-  EXCLUDE USING gist (tenant_id WITH =, source WITH =, tstzrange(window_start, window_end) WITH &&)
+  -- One person-derived release per population over any overlapping span: no second source,
+  -- grid, scope, metric id, numerator or window length over the same people and time.
+  EXCLUDE USING gist (tenant_id WITH =, population WITH =, tstzrange(window_start, window_end) WITH &&)
     WHERE (subject_kind = 'PERSON')
 );
 
@@ -91,63 +111,6 @@ CREATE TABLE IF NOT EXISTS geo_insight_cells (
   -- An unsuppressed person-derived count is never below its cohort.
   CHECK (suppressed OR subject_kind <> 'PERSON' OR value >= min_cohort)
 );
-
--- Seal: cells are written only in the transaction that created their release (now() is the
--- transaction start time), so a release cannot be extended later. SECURITY DEFINER because the
--- application has no SELECT on the base tables.
-CREATE OR REPLACE FUNCTION geo_insight_cells_seal() RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, public
-AS $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM public.geo_insight_releases r
-    WHERE r.tenant_id = NEW.tenant_id AND r.metric_id = NEW.metric_id
-      AND r.window_start = NEW.window_start AND r.window_end = NEW.window_end
-      AND r.computed_at = now() AND r.purged_at IS NULL
-  ) THEN
-    RAISE EXCEPTION 'cells are written only with their release, in one transaction' USING ERRCODE = '23514';
-  END IF;
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS geo_insight_cells_seal ON geo_insight_cells;
-CREATE TRIGGER geo_insight_cells_seal
-  BEFORE INSERT ON geo_insight_cells
-  FOR EACH ROW EXECUTE FUNCTION geo_insight_cells_seal();
-
--- Complementary suppression, re-checked at commit: with a released total, the hidden mass
--- (total minus visible cells minus a released missing count) is 0 or at least the cohort.
-CREATE OR REPLACE FUNCTION geo_insight_releases_complement() RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, public
-AS $$
-DECLARE
-  visible BIGINT;
-  hidden BIGINT;
-BEGIN
-  IF NEW.total IS NULL OR NEW.subject_kind <> 'PERSON' THEN
-    RETURN NULL;
-  END IF;
-  SELECT COALESCE(sum(c.value), 0) INTO visible FROM public.geo_insight_cells c
-  WHERE c.tenant_id = NEW.tenant_id AND c.metric_id = NEW.metric_id
-    AND c.window_start = NEW.window_start AND c.window_end = NEW.window_end AND NOT c.suppressed;
-  hidden := NEW.total - visible - COALESCE(NEW.missing, 0);
-  IF hidden < 0 OR (hidden > 0 AND hidden < NEW.min_cohort) THEN
-    RAISE EXCEPTION 'released total leaves a hidden mass of % (must be 0 or >= %)', hidden, NEW.min_cohort USING ERRCODE = '23514';
-  END IF;
-  RETURN NULL;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS geo_insight_releases_complement ON geo_insight_releases;
-CREATE CONSTRAINT TRIGGER geo_insight_releases_complement
-  AFTER INSERT ON geo_insight_releases
-  DEFERRABLE INITIALLY DEFERRED
-  FOR EACH ROW EXECUTE FUNCTION geo_insight_releases_complement();
 
 ALTER TABLE geo_insight_releases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE geo_insight_releases FORCE ROW LEVEL SECURITY;
@@ -197,6 +160,57 @@ WHERE c.tenant_id = current_setting('app.current_tenant', true)
   AND r.purged_at IS NULL
   AND r.computed_at + make_interval(days => r.retention_days) > now();
 
+-- The only write path. Writes the header and its cells in one call for the current tenant,
+-- copies grid, subject kind and cohort from the header into every cell, and checks
+-- complementary suppression inline. SECURITY DEFINER because the application has no INSERT or
+-- SELECT on the base tables; the tenant always comes from app.current_tenant.
+CREATE OR REPLACE FUNCTION geo_publish_insight(p_release JSONB, p_cells JSONB) RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $$
+DECLARE
+  tenant TEXT := current_setting('app.current_tenant', true);
+  pop TEXT;
+  h public.geo_insight_releases%ROWTYPE;
+  visible BIGINT;
+  hidden BIGINT;
+BEGIN
+  IF tenant IS NULL OR tenant = '' THEN
+    RAISE EXCEPTION 'app.current_tenant is required' USING ERRCODE = '42501';
+  END IF;
+  IF p_release ? 'tenant_id' AND p_release->>'tenant_id' IS DISTINCT FROM tenant THEN
+    RAISE EXCEPTION 'a release is published for the current tenant only' USING ERRCODE = '42501';
+  END IF;
+  SELECT s.population INTO pop FROM public.geo_insight_sources s WHERE s.source = p_release->>'source';
+  IF pop IS NULL THEN
+    RAISE EXCEPTION 'unknown insight source %', p_release->>'source' USING ERRCODE = '23503';
+  END IF;
+  INSERT INTO public.geo_insight_releases(tenant_id, branch_id, metric_id, subject_kind, numerator, source, population,
+    purpose, sensitive, min_cohort, resolution_cdeg, window_days, window_start, window_end, total, missing, retention_days)
+  VALUES (tenant, p_release->>'branch_id', p_release->>'metric_id', p_release->>'subject_kind', p_release->>'numerator',
+    p_release->>'source', pop, p_release->>'purpose', (p_release->>'sensitive')::boolean, (p_release->>'min_cohort')::integer,
+    (p_release->>'resolution_cdeg')::integer, (p_release->>'window_days')::integer, (p_release->>'window_start')::timestamptz,
+    (p_release->>'window_end')::timestamptz, (p_release->>'total')::integer, (p_release->>'missing')::integer,
+    (p_release->>'retention_days')::integer)
+  RETURNING * INTO h;
+  INSERT INTO public.geo_insight_cells(tenant_id, metric_id, window_start, window_end, resolution_cdeg, subject_kind,
+    min_cohort, cell_id, value, suppressed, reason)
+  SELECT tenant, h.metric_id, h.window_start, h.window_end, h.resolution_cdeg, h.subject_kind, h.min_cohort,
+    c->>'cell_id', (c->>'value')::integer, (c->>'suppressed')::boolean, c->>'reason'
+  FROM jsonb_array_elements(COALESCE(p_cells, '[]'::jsonb)) AS c;
+  IF h.total IS NOT NULL AND h.subject_kind = 'PERSON' THEN
+    SELECT COALESCE(sum(c.value), 0) INTO visible FROM public.geo_insight_cells c
+    WHERE c.tenant_id = tenant AND c.metric_id = h.metric_id AND c.window_start = h.window_start
+      AND c.window_end = h.window_end AND NOT c.suppressed;
+    hidden := h.total - visible - COALESCE(h.missing, 0);
+    IF hidden < 0 OR (hidden > 0 AND hidden < h.min_cohort) THEN
+      RAISE EXCEPTION 'released total leaves a hidden mass of % (must be 0 or >= %)', hidden, h.min_cohort USING ERRCODE = '23514';
+    END IF;
+  END IF;
+END;
+$$;
+
 -- Retention enforcement for the current tenant: deletes expired cells and turns each expired
 -- header into a tombstone (counts cleared, key kept), so the slot is never re-released.
 CREATE OR REPLACE FUNCTION geo_purge_expired_insights() RETURNS INTEGER
@@ -227,19 +241,16 @@ $$;
 
 REVOKE ALL ON FUNCTION geo_purge_expired_insights() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION geo_purge_expired_insights() TO zyara_app;
-REVOKE ALL ON FUNCTION geo_insight_cells_seal(), geo_insight_releases_complement() FROM PUBLIC;
+REVOKE ALL ON FUNCTION geo_publish_insight(JSONB, JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION geo_publish_insight(JSONB, JSONB) TO zyara_app;
+GRANT SELECT ON geo_insight_sources TO zyara_app;
 
 GRANT SELECT ON geo_insight_releases_live, geo_insight_cells_live TO zyara_app;
--- Column-level INSERT: computed_at is database time and purged_at belongs to the purge. No SELECT
--- on the base tables, so expired and purged rows are never readable.
-GRANT INSERT (tenant_id, branch_id, metric_id, subject_kind, numerator, source, purpose, sensitive, min_cohort,
-  resolution_cdeg, window_days, window_start, window_end, total, missing, retention_days)
-  ON geo_insight_releases TO zyara_app;
-GRANT INSERT (tenant_id, metric_id, window_start, window_end, resolution_cdeg, subject_kind, min_cohort,
-  cell_id, value, suppressed, reason) ON geo_insight_cells TO zyara_app;
+-- No INSERT, SELECT, UPDATE or DELETE on the base tables: releases are written only by
+-- geo_publish_insight() and read only through the live views.
 
 -- ROLLBACK (manual, audited, only when no dependent data remains):
 -- DROP VIEW IF EXISTS geo_insight_cells_live, geo_insight_releases_live;
--- DROP FUNCTION IF EXISTS geo_purge_expired_insights(), geo_insight_cells_seal(), geo_insight_releases_complement();
--- DROP TABLE IF EXISTS geo_insight_cells, geo_insight_releases;
+-- DROP FUNCTION IF EXISTS geo_purge_expired_insights(), geo_publish_insight(JSONB, JSONB);
+-- DROP TABLE IF EXISTS geo_insight_cells, geo_insight_releases, geo_insight_sources;
 -- (btree_gist is left installed.)

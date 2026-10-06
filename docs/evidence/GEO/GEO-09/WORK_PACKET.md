@@ -58,7 +58,8 @@ Each `SpatialMetricDefinition` has:
 ## Windows
 
 - A window starts at UTC midnight on a multiple of `windowDays` days since the epoch, and its UTC length is exact, independent of the session time zone. This is enforced in TypeScript (`validateWindow`) and in the database.
-- In the database, **one person-derived release per source covers any overlapping time span**, whatever the window length, grid, scope, metric id or numerator (`EXCLUDE USING gist`, `btree_gist`). Nested or overlapping releases of the same people can therefore never be differenced. A distinct metric over the same people needs its own source code, and only if it does not overlap.
+- In the database, sources are migrator-managed reference data (`geo_insight_sources`). Each source maps to a **population**, and a subset source (such as sensitive care requests) shares its parent's population. **One person-derived release per population covers any overlapping time span**, whatever the source, window length, grid, scope, metric id or numerator (`EXCLUDE USING gist`, `btree_gist`). An unregistered (for example renamed) source cannot be released.
+- Accepted product cost: disjoint branch scopes, or weekly and monthly views over one population, cannot coexist for the same span. Per-branch dashboards need a later, reviewed rule.
 ## Release (`releaseSpatialCells`)
 
 - **Small cells.** A cell below `minCohort` is suppressed: its value is null and its reason is `SUPPRESSED_LOW_COUNT`. A missing count with 0 < missing < k is suppressed too.
@@ -99,11 +100,10 @@ Only released **counts** are stored. Ratios are never stored, and there is no va
   - The cell id prefix must match the grid.
   - Suppression is explicit (`suppressed` ⇔ a null value ⇔ a reason). The true count of a suppressed cell is never stored.
   - An unsuppressed person count is at least the cohort.
-- **Sealed releases.** Cells are written only in the transaction that created their release; a trigger compares the header's `computed_at` with `now()`.
-- **Complementary suppression in the database.** At commit, a deferred constraint trigger requires that a released total leaves a hidden mass (total − visible cells − released missing) of 0 or at least the cohort.
+- **One write path.** `geo_publish_insight(release, cells)` (`SECURITY DEFINER`, pinned `search_path`) writes the header and all cells in one call for `app.current_tenant`. It copies the grid, subject kind and cohort from the header into every cell, resolves the population from the registry, and checks complementary suppression inline: a released total must leave a hidden mass (total − visible cells − released missing) of 0 or at least the cohort. No constraint deferral and no later cell write can bypass it.
 - **Access.**
-  - FORCE RLS on both tables; append-only (column-level `INSERT`, with `computed_at` as database time).
-  - The application has **no SELECT on the base tables**. It reads the `geo_insight_*_live` views, which filter by `app.current_tenant`, retention and purge state (`security_barrier`).
+  - FORCE RLS on both tables. The application has **no INSERT, SELECT, UPDATE or DELETE** on the base tables, only EXECUTE on the publish and purge functions.
+  - `computed_at` and `purged_at` are database-controlled. It reads the `geo_insight_*_live` views, which filter by `app.current_tenant`, retention and purge state (`security_barrier`).
 - **Retention.** `geo_purge_expired_insights()` (`SECURITY DEFINER`, pinned `search_path`, current tenant only) deletes expired cells and **tombstones** the header (counts cleared, key kept). A purged slot can never be re-released.
 - **No location columns.** Neither table has a geometry, coordinate, patient, subject, account or session column.
 ## Required tests (handoff)
