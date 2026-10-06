@@ -492,19 +492,27 @@ await other.query("COMMIT");
 const raceError = await racing;
 if (raceError?.code !== "23514") fail(`a concurrent second link must be refused, got ${raceError?.code ?? "success"}`);
 await other.end();
-// REPEATABLE READ would let a stale snapshot miss a concurrent link: the guards refuse it.
-await expectDbError(
-  async () => {
-    await client.query("BEGIN ISOLATION LEVEL REPEATABLE READ");
-    try {
-      await client.query(LINK("link-rr", { ns: "osm-relation", ext: "4343" }));
-    } finally {
-      await client.query("ROLLBACK");
-    }
-  },
-  "25000",
-  "link writes refuse REPEATABLE READ",
-);
+// A snapshot older than the lock could miss a concurrent write: the guards accept READ
+// COMMITTED only.
+for (const level of ["REPEATABLE READ", "SERIALIZABLE"]) {
+  for (const [statement, label] of [
+    [LINK("link-iso", { ns: "osm-relation", ext: "4343" }), "link"],
+    [CORR("corr-iso", "geo-b1b-root", "geo-bulk-1", { branch: "b1b", actor: "iso-actor" }), "correction"],
+  ]) {
+    await expectDbError(
+      async () => {
+        await client.query(`BEGIN ISOLATION LEVEL ${level}`);
+        try {
+          await client.query(statement);
+        } finally {
+          await client.query("ROLLBACK");
+        }
+      },
+      "25000",
+      `${label} writes refuse ${level}`,
+    );
+  }
+}
 
 // Append-only and tenant isolation.
 for (const [statement, label] of [

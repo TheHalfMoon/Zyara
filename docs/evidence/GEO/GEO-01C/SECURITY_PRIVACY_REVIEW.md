@@ -17,7 +17,7 @@
   - Patterns are anchored, and geocoder namespaces cannot be linkable (CHECK).
   - Every observation and link id must match its namespace pattern (guard triggers).
 - **Authority and audit of coordinates.**
-  - A weaker source cannot supersede a stronger head. A dispute cannot move a point, and a disputed head needs Zyara verification (trigger on `geo_location_assertions`).
+  - A weaker source cannot supersede a stronger head. A dispute cannot materially move a point (more than 50 m from the anchor), and a disputed head needs Zyara verification (trigger on `geo_location_assertions`).
   - Every superseding assertion more than 50 m from the audited anchor commits only with a correction record holding actor and evidence (deferred constraint trigger). The anchor is measured from the root or a correction target, with a fallback to the oldest point. This closes the UNKNOWN-detour and small-step-walk paths.
   - A distance over 1 000 m, whether from the anchor or in total from the last reviewed anchor, needs a distinct reviewer.
   - More than 10 corrections per actor in 24 hours need a distinct reviewer. A per-actor advisory lock and database time keep this exact.
@@ -37,4 +37,4 @@ Residual risks (recorded in the work packet as enforcement boundaries and forwar
 - **Reviewer and actor identity.** `reviewer_ref` must differ from `actor_ref`, but is not yet bound to an approved `approval_requests` row. `actor_ref` is only as strong as the service's binding to the authenticated principal. The reviewer gates are therefore recorded second-identity gates, not verified approvals. Forward requirement: the GEO coordinate-correction admin command binds both.
 - **Cross-tenant collisions.** Two tenants linking the same external id is invisible to each other under RLS. GEO-03 search projection must treat such a collision as unresolved and never collapse it.
 - **Re-verification does not reset the reviewed anchor.** A Zyara re-verification that is not recorded as a reviewed correction does not reset the reviewed anchor, so total drift above 1 000 m from the last reviewed point always needs a reviewer. This is deliberately conservative.
-- **Isolation level.** The link and correction guards are exact under READ COMMITTED, where each statement takes a fresh snapshot after the advisory lock, and under SERIALIZABLE, where SSI detects the conflict. Under REPEATABLE READ a stale snapshot could miss a concurrent write, so both guards refuse that level (SQLSTATE 25000, smoke-proven) instead of failing open.
+- **Isolation level.** The link and correction guards are exact only under READ COMMITTED, where each statement takes a fresh snapshot after the advisory lock. Under REPEATABLE READ or SERIALIZABLE the snapshot can predate a concurrent commit, and SSI does not track READ COMMITTED writers. Both guards therefore refuse any other level (SQLSTATE 25000; the smoke proves both guards at both levels) instead of failing open.
