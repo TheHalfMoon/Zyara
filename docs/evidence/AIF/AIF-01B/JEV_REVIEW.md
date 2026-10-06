@@ -53,6 +53,8 @@ Triage by mechanism found real defects. All were fixed in `4c037ff`:
 | `tests/aif01b/resolver.test.ts` | all **no** (max 0.19) | low 1.33 |
 | `WORK_PACKET.md` | all **no** (max 0.04) | low 1.41 |
 
+After the pstack delta cycles, `resolver.ts` was re-run at `26a3703`. All six blocking questions were still "no" (max `durable_state_mutable` 0.31), with residual moderate 1.62 (c 0.49).
+
 The residual on `registry-state.ts` stays moderate (approval_bypass 0.46, still "no"). The concrete reason is recorded rather than argued away: receipt digests are content addressing, not authentication. A keyed MAC needs a server secret, which arrives with AIF-02. Until then, the database guard (approved + live + same tenant) and the receipt-to-claim FK are the binding controls.
 
 ## Not covered by Jev
