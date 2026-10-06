@@ -90,36 +90,41 @@ Read these first:
 6. `docs/research/ZYARA_AI_OPERATING_FABRIC_SOURCE_ADOPTION_2026-09-22.md`
 7. `docs/research/ZYARA_DECISION_AGENT_RUNTIME_DONOR_DEEP_DIVE_2026-09-23.md`
 8. `docs/research/ZYARA_AI_OPERATING_FABRIC_READINESS_CHECKLIST_2026-09-22.md`
-9. `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
-10. `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
-11. `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
-12. `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
-13. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
-14. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
-15. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
-16. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
-17. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
-18. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
-19. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
-20. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
-21. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
-22. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
-23. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
-24. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
-25. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
-26. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
-27. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
-28. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
-29. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
-30. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
-31. `docs/canonical/ZYARA_ROADMAP.md`
-32. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
-33. current V1 founder/scope/canonicalization documents;
-34. `docs/VOICE_AGENT_RUNTIME.md`
-35. `docs/COMPETITORS.md`
-36. `docs/SOURCES.md`
+9. `docs/canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md`
+10. `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_IMPLEMENTATION_HANDOFF_2026-09-29.md`
+11. `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_SOURCE_ADOPTION_2026-09-29.md`
+12. `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_READINESS_CHECKLIST_2026-09-29.md`
+13. `docs/research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`
+14. `docs/canonical/ZYARA_GEOSPATIAL_PLATFORM_PLAN_2026-09-22.md`
+15. `docs/research/ZYARA_GEOSPATIAL_IMPLEMENTATION_HANDOFF_2026-09-22.md`
+16. `docs/research/ZYARA_GEOSPATIAL_SOURCE_ADOPTION_2026-09-22.md`
+17. `docs/research/ZYARA_GEOSPATIAL_READINESS_CHECKLIST_2026-09-22.md`
+18. `docs/canonical/ZYARA_NETWORK_CAPABILITY_MAP_2026-09-16.md`
+19. `docs/research/ZYARA_AI_ERA_CLINIC_AUTOMATION_LANDSCAPE_2026-09-16.md`
+20. `docs/research/ZYARA_NETWORK_COMPETITOR_MASTER_INDEX_2026-09-16.md`
+21. `docs/research/ZYARA_AI_ERA_SOURCE_MASTER_INDEX_2026-09-16.md`
+22. `docs/research/ZYARA_QDRAT_DONOR_DEEP_DIVE_2026-09-17.md`
+23. `docs/research/ZYARA_BUZZ_DONOR_DEEP_DIVE_2026-09-17.md`
+24. `docs/research/ZYARA_NETWORK_SOURCE_CATALOG_2026-09-16.md`
+25. `docs/research/ZYARA_NETWORK_COMPETITOR_CAPABILITY_MAP_2026-09-16.md`
+26. `docs/research/ZYARA_NETWORK_PLANNING_COMPLETION_CHECKLIST_2026-09-16.md`
+27. `docs/canonical/ZYARA_PROVIDER_PLATFORM_PLAN.md`
+28. `docs/canonical/ZYARA_APPOINTMENT_SYSTEM_PLAN.md`
+29. `docs/canonical/ZYARA_DATA_AND_FHIR_MODEL.md`
+30. `docs/canonical/ZYARA_AI_SEARCH_VOICE_PLAN.md`
+31. `docs/canonical/ZYARA_PRIVACY_SECURITY_COMPLIANCE_PLAN.md`
+32. `docs/canonical/ZYARA_ARCHITECTURE_PLAN.md`
+33. `docs/canonical/ZYARA_PRODUCT_REQUIREMENTS.md`
+34. `docs/canonical/ZYARA_CANONICAL_BUILD_PLAN.md`
+35. `docs/canonical/ZYARA_TEST_AND_EVIDENCE_PLAN.md`
+36. `docs/canonical/ZYARA_ROADMAP.md`
+37. `docs/canonical/ZYARA_SOURCE_QUALIFICATION.md`
+38. current V1 founder/scope/canonicalization documents;
+39. `docs/VOICE_AGENT_RUNTIME.md`
+40. `docs/COMPETITORS.md`
+41. `docs/SOURCES.md`
 
-Both the AI Operating Fabric and Geospatial readiness checklists must pass before their respective amendments are called implementation-ready.
+The AI Operating Fabric, Work / Knowledge / Data Plane and Geospatial readiness checklists must each pass before their respective amendments are called implementation-ready; for the WKD amendment, the final-hardening addendum (`docs/research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`) must also pass.
 
 Then inspect actual product code, schemas/migrations, APIs, packages, tests, patient/provider UI, open PRs and evidence before deciding what is missing.
 
