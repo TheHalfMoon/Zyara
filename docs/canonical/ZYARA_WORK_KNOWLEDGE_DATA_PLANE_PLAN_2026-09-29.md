@@ -215,7 +215,7 @@ incident_state            # AIF §12C.14: HEALTHY | DEGRADED | QUARANTINED | SUS
 Rules:
 
 - the snapshot is a read-only projection over the AIF §12A.1 `ModelProfile`; `allowed_data_classes`, `allowed_task_classes` and `admission_state` are copied from it and never written by WKD;
-- `incident_state` is the AIF §12C.14 state; only `HEALTHY` (or `DEGRADED` where the ModelProfile policy allows it) is usable for new work, and `QUARANTINED`/`SUSPENDED`/`REVOKED` never are;
+- `incident_state` is the AIF §12C.14 state; only `HEALTHY` is usable for new work; a `DEGRADED` provider may be chosen only among already-authorized alternatives per AIF §12A.1 (model health never widens admission), and `QUARANTINED`/`SUSPENDED`/`REVOKED` never are;
 - configuration, health, and authorization are separate;
 - `healthy` does not override task/data admission;
 - an unavailable provider is not shown as usable for new work;
@@ -977,7 +977,7 @@ connector_sync_receipts
 
 Reuse existing N5/C3/C4 tables and AIF session/operation/event tables rather than duplicating approvals, audit, identities, or receipts.
 
-Scope rule for every table above: `module_descriptors` and `skill_bundles` are installation-scoped catalogs with no tenant data; `provider_readiness_snapshots` rows are installation- or tenant-scoped as §5.1 states; every other table carries `tenant_id` (and `branch_id` or a recorded tenant-wide justification) with `ENABLE` + `FORCE ROW LEVEL SECURITY` keyed on the server-set tenant, following migrations 042-045.
+Scope rule for every table above: `module_descriptors` and `skill_bundles` are installation-scoped catalogs with no tenant data; `provider_readiness_snapshots` rows are installation- or tenant-scoped as §5.1 states; every other table carries `tenant_id` (and `branch_id` or a recorded tenant-wide justification) with `ENABLE` + `FORCE ROW LEVEL SECURITY` keyed on the server-set tenant, following the RLS pattern of migrations 042-044.
 
 ## 27. Implementation program
 
@@ -1122,9 +1122,9 @@ The repository-wide first AIF leaf remains:
 
 The first WKD-specific leaf after AIF-01A/B is canonical:
 
-`WKD-01A — IntegrationModuleDescriptor + ProviderReadinessSnapshot contracts`
+`WKD-01A — IntegrationModuleDescriptor contract`
 
-Only the descriptor portion (handoff WKD-01A) depends solely on AIF-01A/B; the `ProviderReadinessSnapshot` portion (handoff WKD-01B) also waits for AIF-03A per §28.
+It depends only on AIF-01A/B. The `ProviderReadinessSnapshot` contract is the separate leaf `WKD-01B`, which also waits for AIF-03A per §28.
 
 It requires:
 

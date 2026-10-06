@@ -751,7 +751,7 @@ No one-click mutation from an AI summary.
 
 `ACTION_CENTER_OPERATIONAL_QUALIFIED = TRUE`
 
-WKD extension: [WKD](../canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) WKD-04/WKD-10 add interaction and work views to this Action Center and depend on AIF-07; approvals still settle only through C3.
+WKD extension: [WKD](../canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) WKD-04 adds interaction views to this Action Center, and WKD-10 (work views and hardening) depends on AIF-07; approvals still settle only through C3.
 
 ## 13. AIF-08 — Operations Insights
 
