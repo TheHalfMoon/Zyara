@@ -15,17 +15,13 @@ import {
   APPROVAL_DIRECT_IDENTIFIER_PATTERNS,
 } from "@zyara/collaboration";
 import { CAPABILITY_DATA_CLASSES, containsCredentialShape, type CapabilityDataClass } from "@zyara/capability-gateway";
-import { isConsented, type ConsentGrant, type ConsentPurpose } from "@zyara/consent-boundaries";
+import type { ConsentGrant, ConsentPurpose } from "@zyara/consent-boundaries";
 
 export const TRUST_ZONES = ["ZYARA_CORE", "TENANT_DEVICE", "QUALIFIED_PROVIDER", "EXTERNAL"] as const;
 export type TrustZone = (typeof TRUST_ZONES)[number];
 const LOCAL_ZONES: readonly TrustZone[] = ["ZYARA_CORE", "TENANT_DEVICE"];
 
-export const PROCESSING_LOCATIONS = ["KSA", "GCC", "OTHER"] as const;
-export type ProcessingLocation = (typeof PROCESSING_LOCATIONS)[number];
-
-export const MINIMIZATIONS = ["NONE", "DROP", "REDACT", "PSEUDONYMIZE"] as const;
-export type Minimization = (typeof MINIMIZATIONS)[number];
+export type Minimization = "NONE" | "DROP" | "REDACT" | "PSEUDONYMIZE";
 
 export const EGRESS_MAX_FIELDS = 256;
 export const EGRESS_MAX_STRING_LENGTH = 8_192;
@@ -40,7 +36,6 @@ export interface ProviderManifest {
   providerId: string;
   version: string;
   trustZone: TrustZone;
-  location: ProcessingLocation;
   dataClassCeiling: readonly CapabilityDataClass[];
   approvedPurposes: readonly ConsentPurpose[];
   retentionDays: number;
@@ -83,6 +78,11 @@ export interface EgressRequest {
   purpose: ConsentPurpose | null;
   providerId: string;
   payload: readonly PayloadField[];
+  // The zone the data leaves (handoff §6 "source trust zone").
+  sourceZone: TrustZone;
+  // The data subject (patient) the payload is about, or null for non-subject data. Consent
+  // grants count only when they belong to this subject.
+  subjectId: string | null;
   // Supplied by the server for the data subject; never read from the payload.
   consentGrants: readonly ConsentGrant[];
   // Set when this request retries at another destination after one failed.
@@ -112,8 +112,8 @@ export interface ReceiptField {
   path: string;
   dataClass: CapabilityDataClass;
   transform: Minimization;
-  // SHA-256 of the minimized value actually sent; null when the field was dropped or when
-  // the request was denied.
+  // HMAC (tenant key) of the minimized value actually sent; null when the field was dropped
+  // or the request was denied. Keyed, so a low-entropy value cannot be recovered by guessing.
   sentDigest: string | null;
 }
 
@@ -125,6 +125,8 @@ export interface EgressReceipt {
   schema: VersionedRef | null;
   providerId: string | null;
   manifestVersion: string | null;
+  sourceZone: TrustZone | null;
+  destinationZone: TrustZone | null;
   purpose: ConsentPurpose | null;
   fallback: boolean;
   humanReview: boolean;
@@ -146,8 +148,9 @@ export interface EgressDependencies {
   policies: { find(ref: VersionedRef): EgressPolicy | null | "UNAVAILABLE" };
   schemas: { find(ref: VersionedRef): PayloadSchema | null | "UNAVAILABLE" };
   providers: { find(providerId: string): ProviderManifest | null | "UNAVAILABLE" };
-  // HMAC-SHA-256 key for the tenant's pseudonyms. Held by the caller; never in a receipt.
-  pseudonymKey(tenantId: string): CryptoKey | "UNAVAILABLE";
+  // HMAC-SHA-256 key for the tenant's pseudonyms and receipt digests. Held by the caller;
+  // never in a receipt. Keyed digests keep low-entropy values (ids, phones) unguessable.
+  tenantKey(tenantId: string): CryptoKey | "UNAVAILABLE";
 }
 
 // ---------------------------------------------------------------------------
@@ -216,7 +219,7 @@ const denied = (reason: EgressReasonCode, partial: Partial<Evaluation> = {}): Ev
 
 // Rules 1-10 of the work packet, in order. Returns the first failing reason, or ALLOWED.
 function evaluate(request: EgressRequest, deps: EgressDependencies, nowIso: string): Evaluation {
-  if (typeof request.tenantId !== "string" || !OPAQUE.test(request.tenantId)) return denied("EGRESS_PAYLOAD_INVALID");
+  if (typeof request.tenantId !== "string" || !OPAQUE.test(request.tenantId) || safeZone(request.sourceZone) === null) return denied("EGRESS_PAYLOAD_INVALID");
 
   // Rule 1: policy.
   const policy = available(deps.policies.find(request.policy));
@@ -299,14 +302,20 @@ function evaluate(request: EgressRequest, deps: EgressDependencies, nowIso: stri
   // Rule 9: consent, checked at server time against server-supplied grants.
   for (const rule of rules.values()) {
     if (rule.consentPurposeRequired !== null) {
-      if (rule.consentPurposeRequired !== request.purpose || !isConsented(request.consentGrants ?? [], request.purpose, nowIso)) {
+      // Only the subject's own grants count: another patient's consent never clears this data.
+      const subjectGrants =
+        typeof request.subjectId === "string" && OPAQUE.test(request.subjectId)
+          ? (request.consentGrants ?? []).filter((grant) => grant.patientId === request.subjectId)
+          : [];
+      if (rule.consentPurposeRequired !== request.purpose || !liveConsent(subjectGrants, request.purpose, Date.parse(nowIso))) {
         return denied("EGRESS_CONSENT_REQUIRED", context);
       }
     }
   }
 
   // Rule 10: retention.
-  if ([...rules.values()].some((rule) => manifest.retentionDays > rule.retentionMaxDays)) {
+  const retentionOk = (days: unknown) => typeof days === "number" && Number.isInteger(days) && days >= 0;
+  if (!retentionOk(manifest.retentionDays) || [...rules.values()].some((rule) => !retentionOk(rule.retentionMaxDays) || manifest.retentionDays > rule.retentionMaxDays)) {
     return denied("EGRESS_RETENTION_EXCEEDED", context);
   }
 
@@ -324,16 +333,60 @@ async function minimize(
     case "REDACT":
       return { sent: { path: field.path, value: REDACTED_VALUE }, transform: "REDACT" };
     case "PSEUDONYMIZE": {
-      if (key === null || field.value === null) return { sent: { path: field.path, value: null }, transform: "PSEUDONYMIZE" };
-      const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(JSON.stringify(field.value)));
+      // The key is always resolved when a PSEUDONYMIZE rule is present (see decideEgress).
+      if (field.value === null || key === null) return { sent: { path: field.path, value: null }, transform: "PSEUDONYMIZE" };
+      const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`pseudonym:${field.path}:${JSON.stringify(field.value)}`));
       return { sent: { path: field.path, value: `pseu_${hex(mac).slice(0, 32)}` }, transform: "PSEUDONYMIZE" };
     }
-    default:
+    case "NONE":
       return { sent: { path: field.path, value: field.value }, transform: "NONE" };
+    default:
+      // An unknown transform never sends the raw value.
+      throw new Unavailable("unknown minimization");
   }
 }
 
-export async function decideEgress(request: EgressRequest, deps: EgressDependencies): Promise<EgressDecision> {
+
+// Reads the caller's request exactly once into plain data, so a getter or Proxy cannot answer
+// one value to a check and another to a later check; optional fields are normalised to null.
+function snapshotRequest(input: EgressRequest): EgressRequest {
+  let text: string | undefined;
+  try {
+    text = JSON.stringify(input);
+  } catch {
+    text = undefined;
+  }
+  const plain = (text === undefined ? {} : JSON.parse(text)) as Partial<EgressRequest>;
+  return {
+    tenantId: plain.tenantId as string,
+    policy: plain.policy as VersionedRef,
+    schema: plain.schema as VersionedRef,
+    purpose: plain.purpose ?? null,
+    providerId: plain.providerId as string,
+    sourceZone: plain.sourceZone as TrustZone,
+    subjectId: plain.subjectId ?? null,
+    payload: Array.isArray(plain.payload) ? plain.payload : [],
+    consentGrants: Array.isArray(plain.consentGrants) ? plain.consentGrants : [],
+    fallbackFrom: plain.fallbackFrom ?? null,
+  };
+}
+
+// M051 consent, evaluated on parsed instants: a grant whose timestamps are not ISO-8601 UTC
+// instants is refused, so mixed formats can never make a revoked consent look live.
+function liveConsent(grants: readonly ConsentGrant[], purpose: ConsentPurpose, now: number): boolean {
+  return grants.some((grant) => {
+    if (grant.purpose !== purpose || grant.granted !== true || typeof grant.atUtc !== "string" || !ISO_INSTANT.test(grant.atUtc)) return false;
+    if (grant.revokedAtUtc !== null && (typeof grant.revokedAtUtc !== "string" || !ISO_INSTANT.test(grant.revokedAtUtc))) return false;
+    return Date.parse(grant.atUtc) <= now && (grant.revokedAtUtc === null || Date.parse(grant.revokedAtUtc) > now);
+  });
+}
+
+async function keyedDigest(key: CryptoKey, path: string, value: PayloadValue): Promise<string> {
+  return `hmac_${hex(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`digest:${path}:${JSON.stringify(value)}`)))}`;
+}
+
+export async function decideEgress(requestInput: EgressRequest, deps: EgressDependencies): Promise<EgressDecision> {
+  const request = snapshotRequest(requestInput);
   let nowIso: string | null = null;
   let evaluation: Evaluation;
   try {
@@ -345,33 +398,36 @@ export async function decideEgress(request: EgressRequest, deps: EgressDependenc
     evaluation = denied("EGRESS_DEPENDENCY_UNAVAILABLE");
   }
 
-  const allow = evaluation.reasons[0] === "EGRESS_ALLOWED";
   const sent: PayloadField[] = [];
   const receiptFields: ReceiptField[] = [];
   let humanReview = false;
-  if (allow && evaluation.policy !== null) {
+  if (evaluation.reasons[0] === "EGRESS_ALLOWED" && evaluation.policy !== null) {
     const rules = evaluation.policy.rules;
-    let key: CryptoKey | null = null;
     try {
-      const needsKey = evaluation.fields.some((field) => rules[field.dataClass]?.minimization === "PSEUDONYMIZE");
-      key = needsKey ? available(deps.pseudonymKey(request.tenantId)) : null;
+      const key = available(deps.tenantKey(request.tenantId));
+      // Minimization happens before the receipt: the receipt digests what is actually sent.
+      for (const field of evaluation.fields) {
+        const rule = rules[field.dataClass] as ClassRule;
+        humanReview ||= rule.humanReview;
+        const { sent: out, transform } = await minimize(field, rule, key);
+        if (out !== null) sent.push(Object.freeze(out));
+        receiptFields.push({
+          path: field.path,
+          dataClass: field.dataClass,
+          transform,
+          sentDigest: out === null ? null : await keyedDigest(key, out.path, out.value),
+        });
+      }
     } catch {
-      return decideDenied(request, nowIso, "EGRESS_DEPENDENCY_UNAVAILABLE", evaluation);
+      // A missing key or a failing transform denies; nothing partial is ever returned.
+      evaluation = { ...evaluation, reasons: ["EGRESS_DEPENDENCY_UNAVAILABLE"] };
+      sent.length = 0;
+      receiptFields.length = 0;
+      humanReview = false;
     }
-    // Minimization happens before the receipt: the receipt digests what is actually sent.
-    for (const field of evaluation.fields) {
-      const rule = rules[field.dataClass] as ClassRule;
-      humanReview ||= rule.humanReview;
-      const { sent: out, transform } = await minimize(field, rule, key);
-      if (out !== null) sent.push(Object.freeze(out));
-      receiptFields.push({
-        path: field.path,
-        dataClass: field.dataClass,
-        transform,
-        sentDigest: out === null ? null : `sha256_${await sha256Hex(JSON.stringify(out.value))}`,
-      });
-    }
-  } else {
+  }
+  const allow = evaluation.reasons[0] === "EGRESS_ALLOWED";
+  if (!allow) {
     for (const field of evaluation.fields) receiptFields.push({ path: field.path, dataClass: field.dataClass, transform: "NONE", sentDigest: null });
   }
 
@@ -379,12 +435,18 @@ export async function decideEgress(request: EgressRequest, deps: EgressDependenc
   return Object.freeze({ receipt, payload: allow ? Object.freeze(sent) : null });
 }
 
-async function decideDenied(request: EgressRequest, nowIso: string | null, reason: EgressReasonCode, evaluation: Evaluation): Promise<EgressDecision> {
-  const fields = evaluation.fields.map((field) => ({ path: field.path, dataClass: field.dataClass, transform: "NONE" as const, sentDigest: null }));
-  const receipt = await buildReceipt(request, nowIso, { ...evaluation, reasons: [reason] }, false, fields, false);
-  return Object.freeze({ receipt, payload: null });
+function safeRef(value: unknown): VersionedRef | null {
+  if (typeof value !== "object" || value === null) return null;
+  const { id, version } = value as Record<string, unknown>;
+  return typeof id === "string" && OPAQUE.test(id) && typeof version === "string" && OPAQUE.test(version) ? { id, version } : null;
 }
 
+function safeZone(value: unknown): TrustZone | null {
+  return (TRUST_ZONES as readonly unknown[]).includes(value) ? (value as TrustZone) : null;
+}
+
+// The receipt always says what was asked (destination, purpose, refs, zones), echoing each
+// request value only in a safe shape, plus what the gate found (manifest version, retention).
 async function buildReceipt(
   request: EgressRequest,
   nowIso: string | null,
@@ -397,11 +459,13 @@ async function buildReceipt(
     decision: allow ? "ALLOW" : "DENY",
     reasons: evaluation.reasons,
     tenantId: typeof request.tenantId === "string" && OPAQUE.test(request.tenantId) ? request.tenantId : "invalid",
-    policy: evaluation.policy === null ? null : { id: evaluation.policy.id, version: evaluation.policy.version },
-    schema: evaluation.schema === null ? null : { id: evaluation.schema.id, version: evaluation.schema.version },
-    providerId: evaluation.manifest?.providerId ?? null,
+    policy: safeRef(request.policy),
+    schema: safeRef(request.schema),
+    providerId: typeof request.providerId === "string" && OPAQUE.test(request.providerId) ? request.providerId : null,
     manifestVersion: evaluation.manifest?.version ?? null,
-    purpose: evaluation.policy === null ? null : request.purpose,
+    sourceZone: safeZone(request.sourceZone),
+    destinationZone: evaluation.manifest?.trustZone ?? null,
+    purpose: (["care", "recall", "analytics"] as readonly unknown[]).includes(request.purpose) ? request.purpose : null,
     fallback: request.fallbackFrom !== null && request.fallbackFrom !== undefined,
     humanReview,
     retentionDays: allow ? (evaluation.manifest?.retentionDays ?? null) : null,

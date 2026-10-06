@@ -114,6 +114,9 @@ const SECRET_VALUE_PATTERNS: readonly RegExp[] = [
   /\bBearer\s+\S+/i,
   /-----BEGIN [A-Z ]{0,40}PRIVATE KEY-----/,
   /\beyJ[A-Za-z0-9_-]{4,512}\.[A-Za-z0-9_-]{0,2048}\./,
+  // A JWT header followed by a JWT payload, so a token whose payload is longer than a scan
+  // window is still caught by its prefix.
+  /\beyJ[A-Za-z0-9_-]{4,512}\.eyJ/,
   /\b(AKIA|ASIA)[A-Z0-9]{16}\b/,
   /\bgh[pousr]_[A-Za-z0-9]{20,}/,
   /\bxox[abpr]-[A-Za-z0-9-]{10,}/,

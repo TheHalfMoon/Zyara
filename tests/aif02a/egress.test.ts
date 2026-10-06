@@ -63,7 +63,7 @@ async function deps(overrides: Partial<EgressDependencies> = {}): Promise<Egress
     policies: { find: (ref) => (ref.id === POLICY.id && ref.version === POLICY.version ? POLICY : null) },
     schemas: { find: (ref) => (ref.id === SCHEMA.id && ref.version === SCHEMA.version ? SCHEMA : null) },
     providers: { find: (id) => PROVIDERS[id] ?? null },
-    pseudonymKey: () => key,
+    tenantKey: () => key,
     ...overrides,
   };
 }
@@ -75,6 +75,8 @@ function request(overrides: Partial<EgressRequest> = {}): EgressRequest {
     schema: { id: SCHEMA.id, version: SCHEMA.version },
     purpose: "recall",
     providerId: "llm-ksa",
+    sourceZone: "ZYARA_CORE",
+    subjectId: "p-1",
     payload: [
       { path: "clinicName", value: "Synthetic Clinic Riyadh" },
       { path: "slotLabel", value: "morning" },
@@ -108,9 +110,11 @@ describe("AIF-02A allowed egress", () => {
     );
     assert.equal(decision.receipt.decision, "ALLOW");
     assert.equal(decision.payload?.find((field) => field.path === "visitReason")?.value, REDACTED_VALUE);
-    const digest = async (value: unknown) => `sha256_${[...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(JSON.stringify(value))))].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
+    const key = await crypto.subtle.importKey("raw", new TextEncoder().encode("tenant-t1-synthetic-key"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+    const digest = async (path: string, value: unknown) =>
+      `hmac_${[...new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`digest:${path}:${JSON.stringify(value)}`)))].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
     const visit = decision.receipt.fields.find((field) => field.path === "visitReason");
-    assert.deepEqual([visit?.transform, visit?.sentDigest], ["REDACT", await digest(REDACTED_VALUE)]);
+    assert.deepEqual([visit?.transform, visit?.sentDigest], ["REDACT", await digest("visitReason", REDACTED_VALUE)]);
     assert.ok(!JSON.stringify(decision.receipt).includes("chest pain"));
     assert.equal(decision.receipt.humanReview, true);
   });
@@ -120,7 +124,7 @@ describe("AIF-02A allowed egress", () => {
     const b = await decideEgress(request(), await deps());
     assert.equal(a.receipt.receiptDigest, b.receipt.receiptDigest);
     const otherKey = await crypto.subtle.importKey("raw", new TextEncoder().encode("tenant-t2-synthetic-key"), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
-    const c = await decideEgress(request(), await deps({ pseudonymKey: () => otherKey }));
+    const c = await decideEgress(request(), await deps({ tenantKey: () => otherKey }));
     const name = (decision: typeof a) => decision.payload?.find((field) => field.path === "patientName")?.value;
     assert.equal(name(a), name(b));
     assert.notEqual(name(a), name(c));
@@ -241,10 +245,77 @@ describe("AIF-02A provider, policy and retention", () => {
       { clock: { now: () => "never" } },
       { policies: { find: () => "UNAVAILABLE" as const } },
       { providers: { find: () => { throw new Error("down"); } } },
-      { pseudonymKey: () => "UNAVAILABLE" as const },
+      { tenantKey: () => "UNAVAILABLE" as const },
     ] as Partial<EgressDependencies>[]) {
       const decision = await decideEgress(request(), await deps(broken));
       assert.deepEqual([decision.receipt.decision, decision.receipt.reasons, decision.payload], ["DENY", ["EGRESS_DEPENDENCY_UNAVAILABLE"], null]);
     }
+  });
+});
+
+describe("AIF-02A panel hardening", () => {
+  it("counts only the data subject's own consent", async () => {
+    const otherPatient = { ...RECALL_CONSENT, patientId: "p-2" };
+    assert.deepEqual((await decideEgress(request({ consentGrants: [otherPatient] }), await deps())).receipt.reasons, ["EGRESS_CONSENT_REQUIRED"]);
+    assert.deepEqual((await decideEgress(request({ subjectId: null }), await deps())).receipt.reasons, ["EGRESS_CONSENT_REQUIRED"]);
+  });
+
+  it("compares consent instants, not strings, and refuses malformed grant times", async () => {
+    // Revoked at 11:59:59Z; now is 12:00:00.000Z. A string compare of mixed formats could misorder these.
+    const revoked = { ...RECALL_CONSENT, revokedAtUtc: "2026-10-06T11:59:59Z" };
+    assert.deepEqual((await decideEgress(request({ consentGrants: [revoked] }), await deps())).receipt.reasons, ["EGRESS_CONSENT_REQUIRED"]);
+    const offset = { ...RECALL_CONSENT, atUtc: "2026-09-01T00:00:00+03:00" };
+    assert.deepEqual((await decideEgress(request({ consentGrants: [offset] }), await deps())).receipt.reasons, ["EGRESS_CONSENT_REQUIRED"]);
+  });
+
+  it("reads the request once, so a getter cannot swap a field between checks", async () => {
+    let reads = 0;
+    const tricky = request({ payload: [] });
+    Object.defineProperty(tricky, "payload", {
+      enumerable: true,
+      get: () => (reads++ === 0 ? [{ path: "clinicName", value: "Synthetic Clinic" }] : [{ path: "visitReason", value: "secret diagnosis" }]),
+    });
+    const decision = await decideEgress(tricky, await deps());
+    assert.equal(reads, 1);
+    assert.equal(decision.receipt.decision, "ALLOW");
+    assert.deepEqual(decision.payload?.map((field) => field.path), ["clinicName"]);
+  });
+
+  it("drops a DROP field from the payload and records no digest for it", async () => {
+    const dropPolicy: EgressPolicy = { ...POLICY, rules: { ...POLICY.rules, INTERNAL: { ...POLICY.rules.INTERNAL!, minimization: "DROP" } } };
+    const decision = await decideEgress(request(), await deps({ policies: { find: () => dropPolicy } }));
+    assert.equal(decision.receipt.decision, "ALLOW");
+    assert.ok(!decision.payload?.some((field) => field.path === "slotLabel"));
+    const slot = decision.receipt.fields.find((field) => field.path === "slotLabel");
+    assert.deepEqual([slot?.transform, slot?.sentDigest], ["DROP", null]);
+  });
+
+  it("keeps the tenant key and raw values out of receipts; digests are keyed", async () => {
+    const decision = await decideEgress(request({ payload: [{ path: "clinicName", value: "Synthetic Clinic" }] }), await deps());
+    const text = JSON.stringify(decision.receipt);
+    assert.ok(!text.includes("tenant-t1-synthetic-key") && !text.includes("Synthetic Clinic"));
+    assert.match(String(decision.receipt.fields[0].sentDigest), /^hmac_[0-9a-f]{64}$/);
+  });
+
+  it("records the asked destination, purpose and zones even on an early denial", async () => {
+    const decision = await decideEgress(request({ policy: { id: "egress_reminders", version: "9.9.9" } }), await deps());
+    assert.deepEqual(
+      [decision.receipt.providerId, decision.receipt.purpose, decision.receipt.sourceZone, decision.receipt.policy?.version],
+      ["llm-ksa", "recall", "ZYARA_CORE", "9.9.9"],
+    );
+    const free = await decideEgress(request({ purpose: "marketing campaign" as unknown as "recall" }), await deps());
+    assert.equal(free.receipt.purpose, null);
+    const allowed = await decideEgress(request(), await deps());
+    assert.deepEqual([allowed.receipt.sourceZone, allowed.receipt.destinationZone], ["ZYARA_CORE", "QUALIFIED_PROVIDER"]);
+  });
+
+  it("denies an unknown transform, malformed retention, an invalid source zone and a long JWT", async () => {
+    const weird: EgressPolicy = { ...POLICY, rules: { ...POLICY.rules, PUBLIC: { ...POLICY.rules.PUBLIC!, minimization: "ENCRYPT" as unknown as "NONE" } } };
+    assert.deepEqual((await decideEgress(request(), await deps({ policies: { find: () => weird } }))).receipt.reasons, ["EGRESS_DEPENDENCY_UNAVAILABLE"]);
+    const nanRetention = { ...PROVIDERS["llm-ksa"], retentionDays: Number.NaN };
+    assert.deepEqual((await decideEgress(request(), await deps({ providers: { find: () => nanRetention } }))).receipt.reasons, ["EGRESS_RETENTION_EXCEEDED"]);
+    assert.deepEqual((await decideEgress(request({ sourceZone: "MARS" as unknown as "ZYARA_CORE" }), await deps())).receipt.reasons, ["EGRESS_PAYLOAD_INVALID"]);
+    const jwt = `eyJhbGciOiJIUzI1NiJ9.eyJ${"a".repeat(1200)}.signature`;
+    assert.deepEqual((await decideEgress(request({ payload: [{ path: "slotLabel", value: jwt }] }), await deps())).receipt.reasons, ["EGRESS_CREDENTIAL_REFUSED"]);
   });
 });
