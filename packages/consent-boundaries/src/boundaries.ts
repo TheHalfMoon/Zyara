@@ -15,18 +15,31 @@ export interface ConsentGrant {
   revokedAtUtc: string | null;
 }
 
+// A full ISO-8601 date-time with seconds and an explicit zone (Z or ±hh:mm).
+const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,9})?(Z|[+-]\d{2}:\d{2})$/;
+
+function instant(value: unknown): number {
+  return typeof value === "string" && ISO_DATE_TIME.test(value) ? Date.parse(value) : Number.NaN;
+}
+
+// Instants are compared parsed, never as strings: "12:00:00Z" vs "12:00:00.500Z" or a
+// "+03:00" offset would otherwise misorder grant and revocation times. Any malformed time
+// (grant, revocation or now) fails closed.
 export function isConsented(
   grants: readonly ConsentGrant[],
   purpose: ConsentPurpose,
   nowUtc: string,
 ): boolean {
-  return grants.some(
-    (g) =>
-      g.purpose === purpose &&
-      g.granted &&
-      g.atUtc <= nowUtc &&
-      (g.revokedAtUtc === null || g.revokedAtUtc > nowUtc),
-  );
+  const now = instant(nowUtc);
+  if (Number.isNaN(now)) return false;
+  return grants.some((g) => {
+    if (g.purpose !== purpose || g.granted !== true) return false;
+    const at = instant(g.atUtc);
+    if (Number.isNaN(at) || at > now) return false;
+    if (g.revokedAtUtc === null) return true;
+    const revoked = instant(g.revokedAtUtc);
+    return !Number.isNaN(revoked) && revoked > now;
+  });
 }
 
 export type DataClass = "clinical" | "operational";
