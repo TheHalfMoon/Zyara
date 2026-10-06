@@ -1,0 +1,34 @@
+name: aif03a-ci
+on:
+  push:
+    branches:
+      - "feat/zyara-network-aif03a-model-prompt-registry"
+  pull_request:
+    paths:
+      - "packages/model-registry/**"
+      - "packages/capability-gateway/**"
+      - "tests/aif03a/**"
+      - "docs/evidence/AIF/AIF-03A/**"
+      - ".github/workflows/aif03a-ci.yml"
+
+jobs:
+  model-prompt-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @zyara/model-registry typecheck
+      - run: pnpm --filter @zyara/aif03a-tests test
+      - run: pnpm --filter @zyara/model-registry lint
+      - run: pnpm --filter @zyara/aif03a-tests lint
+      - run: node scripts/check-boundaries.mjs
