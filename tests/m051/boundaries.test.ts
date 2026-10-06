@@ -33,6 +33,26 @@ describe("M051 consent boundaries", () => {
     assert.equal(authorizeClinicalRead(revoked, "staff", "p1", "care", "2026-09-21T00:00:00.000Z", log).allowed, false);
     assert.equal(log[0].reason, "care-consent-required");
   });
+  it("compares instants, not strings, and fails closed on malformed times", () => {
+    const now = "2026-09-20T12:00:00.500Z";
+    // Revoked at 12:00:00Z, half a second before now: a string compare called this live.
+    const revoked = [{ ...GRANTS[0], revokedAtUtc: "2026-09-20T12:00:00Z" }];
+    assert.equal(isConsented(revoked, "care", now), false);
+    // Granted at 14:00+03:00 = 11:00Z, before now: a string compare called this not yet granted.
+    const offset = [{ ...GRANTS[0], atUtc: "2026-09-20T14:00:00+03:00" }];
+    assert.equal(isConsented(offset, "care", now), true);
+    // Revoked at 14:30+03:00 = 11:30Z, before now: a string compare called this still live.
+    assert.equal(isConsented([{ ...GRANTS[0], revokedAtUtc: "2026-09-20T14:30:00+03:00" }], "care", now), false);
+    assert.equal(isConsented([{ ...GRANTS[0], atUtc: "yesterday" }], "care", now), false);
+    assert.equal(isConsented([{ ...GRANTS[0], revokedAtUtc: "2026-02-30" }], "care", now), false);
+    assert.equal(isConsented(GRANTS, "care", "not-a-time"), false);
+    // Impossible calendar times are refused, never rolled forward: a revocation "on 30 Feb"
+    // must not keep consent live until 2 March.
+    for (const impossible of ["2026-02-30T00:00:00Z", "2026-04-31T00:00:00Z", "2026-09-20T24:00:00Z", "2026-09-20T12:60:00Z"]) {
+      assert.equal(isConsented([{ ...GRANTS[0], revokedAtUtc: impossible }], "care", "2026-02-28T00:00:00Z"), false, impossible);
+    }
+    assert.throws(() => revokeConsent(GRANTS, "care", "2026-02-30T00:00:00Z"));
+  });
   it("refuses marketing use unconditionally", () => {
     assert.equal(authorizeMarketingUse().allowed, false);
   });
