@@ -66,6 +66,7 @@ export type ResolutionReasonCode =
   | "CAPABILITY_APPROVAL_STALE"
   | "CAPABILITY_APPROVAL_PARAMETERS_CHANGED"
   | "CAPABILITY_APPROVAL_CONSUMED"
+  | "CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY"
   | "CAPABILITY_CONFIRMATION_INVALID"
   | `INVOCATION_${string}`
   | `AUTHZ_${string}`
@@ -384,6 +385,9 @@ function evaluate(principal: AuthenticatedPrincipal, request: CapabilityResoluti
     if (request.approvalRequestId === null) {
       return { decision: "ASK", reasons: ["APPROVAL_REQUIRED"], grantId: chosen.grantId, admitted };
     }
+    // The approval is claimed by one invocation identity, so even an approval-gated read
+    // must name its invocation with an idempotency key.
+    if (request.idempotencyKey === null) return deny("CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY", admitted);
     const approval = available(deps.approvals.getRequest(request.approvalRequestId, tenantId));
     if (approval === null) return deny("CAPABILITY_APPROVAL_UNKNOWN", admitted);
     if (approval.tenantId !== tenantId || approval.branchId !== request.branchId || approval.actionType !== definition.id) {
@@ -444,6 +448,14 @@ export async function resolveCapability(
     outcome = { decision: "UNDECIDABLE", reasons: ["DEPENDENCY_UNAVAILABLE"], grantId: null, admitted: null };
   }
   return buildReceipt(principal, request, outcome, nowIso);
+}
+
+// Recomputes the content digest, so a receipt edited after resolution (for example a DENY
+// turned into an ALLOW) is detected. The digest is content addressing, not authentication:
+// a keyed MAC needs a server secret and arrives with AIF-02 credential mediation.
+export async function verifyReceiptDigest(receipt: ResolutionReceipt): Promise<boolean> {
+  const { receiptDigest, ...body } = receipt;
+  return receiptDigest === `res_${await sha256Hex(canonicalJson({ ...body, reasons: [...body.reasons] }))}`;
 }
 
 function shaped(value: unknown, pattern: RegExp): string | null {

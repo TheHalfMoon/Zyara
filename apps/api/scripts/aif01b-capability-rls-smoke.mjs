@@ -44,6 +44,7 @@ await client.query(
   `INSERT INTO branch_locations(id,tenant_id,organization_id)
    VALUES ('b1','t1','org-1'),('b2','t2','org-2') ON CONFLICT DO NOTHING`,
 );
+await client.query(`INSERT INTO accounts(id,display_name) VALUES ('acct-admin','Synthetic Admin') ON CONFLICT DO NOTHING`);
 await client.query(`DELETE FROM approval_events WHERE request_id LIKE 'aif01b-%'`);
 await client.query(`DELETE FROM approval_requests WHERE id LIKE 'aif01b-%'`);
 
@@ -129,18 +130,30 @@ await expectDbError(
   "a grant for an unadmitted capability must be refused",
 );
 
-await client.query(
+const APPROVAL = (id, status, created, expires) =>
   `INSERT INTO approval_requests(
      id,tenant_id,branch_id,action_type,risk_class,required_authority,self_approval_forbidden,
      evidence_required,parameters_digest,parameter_keys,requester_kind,requester_account_id,
      requester_agent_id,requester_ref,status,correlation_id,idempotency_key,source_ref,
      source_revision,observed_at,created_at,updated_at,expires_at)
-   VALUES ('aif01b-appr-1','t1','b1','communications.outbound.broadcast','high','branch_admin',true,true,
+   VALUES ('${id}','t1','b1','communications.outbound.broadcast','high','branch_admin',true,true,
      'params_${"ab".repeat(32)}',ARRAY['audienceType','channel','scheduledHour'],'human','account-requester',
-     NULL,NULL,'awaiting_approval',NULL,NULL,'aif01b-smoke','aif01b-smoke',now(),now(),now(),now() + interval '30 minutes')`,
-);
+     NULL,NULL,'${status}',NULL,NULL,'aif01b-smoke','aif01b-smoke',now(),${created},${created},${expires})`;
+await client.query(APPROVAL("aif01b-appr-1", "approved", "now()", "now() + interval '30 minutes'"));
+await client.query(APPROVAL("aif01b-appr-2", "awaiting_approval", "now()", "now() + interval '30 minutes'"));
+await client.query(APPROVAL("aif01b-appr-3", "approved", "now() - interval '2 hours'", "now() - interval '1 hour'"));
 
 const RES = `res_${"c".repeat(64)}`;
+for (const [id, label] of [["aif01b-appr-2", "an approval still awaiting a decision"], ["aif01b-appr-3", "an expired approval"], ["aif01b-missing", "an unknown approval"]]) {
+  await expectDbError(
+    () => client.query(
+      `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,idempotency_key,receipt_digest)
+       VALUES ('t1','${id}','idem-0001','${RES}')`,
+    ),
+    "23514",
+    `${label} must not be claimable`,
+  );
+}
 await client.query(
   `INSERT INTO capability_approval_claims(tenant_id,approval_request_id,idempotency_key,receipt_digest)
    VALUES ('t1','aif01b-appr-1','idem-0001','${RES}')`,
@@ -163,14 +176,17 @@ const RECEIPT = (digest, options = {}) => {
     grant = "'g-1'",
     correlation = "'corr-0001'",
     params = `'params_${"ab".repeat(32)}'`,
+    idem = "'idem-0001'",
+    approval = "NULL",
+    claimKey = "NULL",
   } = options;
   return `INSERT INTO capability_resolution_receipts(
      receipt_digest,tenant_id,branch_id,decision,reason_codes,capability_id,version,definition_digest,
      actor_kind,actor_ref,parameters_digest,correlation_id,idempotency_key,grant_id,approval_request_id,
-     decided_at,valid_until)
+     claim_idempotency_key,decided_at,valid_until)
    VALUES ('${digest}','${tenant}','b1','${decision}',ARRAY['ALLOWED'],'communications.reminder.send','1.0.0',
-     'cap_${"1".repeat(64)}','workflow','wf-recall',${params},${correlation},'idem-0001',${grant},NULL,
-     ${decided},${valid})`;
+     'cap_${"1".repeat(64)}','workflow','wf-recall',${params},${correlation},${idem},${grant},${approval},
+     ${claimKey},${decided},${valid})`;
 };
 
 await client.query(RECEIPT(`res_${"d".repeat(64)}`));
@@ -181,6 +197,28 @@ await expectDbError(() => client.query(RECEIPT(`res_${"0".repeat(64)}`, { grant:
 await expectDbError(() => client.query(RECEIPT(`res_${"9".repeat(64)}`, { valid: "now() - interval '1 second'" })), "23514", "an ALLOW must be valid after it is decided");
 await expectDbError(() => client.query(RECEIPT(`res_${"8".repeat(64)}`, { correlation: "'0501234567'" })), "23514", "a receipt correlation id must not be a direct identifier");
 await expectDbError(() => client.query(RECEIPT(`res_${"7".repeat(64)}`, { params: "'send to +966500000000'" })), "23514", "a receipt never stores parameter values");
+
+// An approval-backed ALLOW must match the claim won by the same invocation.
+const APPROVED = { approval: "'aif01b-appr-1'" };
+await client.query(RECEIPT(`res_${"6".repeat(64)}`, { ...APPROVED, claimKey: "'idem-0001'" }));
+await expectDbError(
+  () => client.query(RECEIPT(`res_${"5".repeat(64)}`, { ...APPROVED, idem: "'idem-0002'", claimKey: "'idem-0002'" })),
+  "23503",
+  "an ALLOW for an approval claimed by another invocation must be refused",
+);
+await expectDbError(
+  () => client.query(RECEIPT(`res_${"4".repeat(64)}`, APPROVED)),
+  "23514",
+  "an approval-backed ALLOW must be bound to its claim",
+);
+await expectDbError(
+  () => client.query(RECEIPT(`res_${"3".repeat(64)}`, { ...APPROVED, claimKey: "'idem-0009'" })),
+  "23514",
+  "the claim key must be the receipt's own invocation key",
+);
+await client.query(
+  RECEIPT(`res_${"2".repeat(64)}`, { ...APPROVED, decision: "DENY", idem: "'idem-0002'", grant: "NULL", valid: "now()" }),
+);
 
 await client.query(`SET ROLE zyara_app`);
 await client.query(`SET app.current_tenant='t1'`);

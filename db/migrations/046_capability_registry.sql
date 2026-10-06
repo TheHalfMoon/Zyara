@@ -59,7 +59,8 @@ CREATE TABLE IF NOT EXISTS capability_grants (
   capability_id TEXT NOT NULL,
   version TEXT NOT NULL,
   authority_class TEXT NOT NULL,
-  granted_by TEXT NOT NULL CHECK (granted_by ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'),
+  -- A real account (002); the application binds it to the authenticated administrator.
+  granted_by TEXT NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
   granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   expires_at TIMESTAMPTZ,
   PRIMARY KEY (id),
@@ -77,7 +78,7 @@ CREATE TABLE IF NOT EXISTS capability_grants (
 CREATE TABLE IF NOT EXISTS capability_grant_revocations (
   grant_id TEXT NOT NULL,
   tenant_id TEXT NOT NULL,
-  revoked_by TEXT NOT NULL CHECK (revoked_by ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'),
+  revoked_by TEXT NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
   reason_code TEXT NOT NULL CHECK (reason_code ~ '^[a-z][a-z0-9_]{1,63}$'),
   revoked_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   -- One revocation per grant; a grant is never un-revoked (issue a new grant instead).
@@ -94,8 +95,34 @@ CREATE TABLE IF NOT EXISTS capability_approval_claims (
   receipt_digest TEXT NOT NULL CHECK (receipt_digest ~ '^res_[0-9a-f]{64}$'),
   claimed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   PRIMARY KEY (tenant_id, approval_request_id),
+  -- Target of the receipt FK: an approval-backed ALLOW receipt must match this claim.
+  UNIQUE (tenant_id, approval_request_id, idempotency_key),
   FOREIGN KEY (approval_request_id, tenant_id) REFERENCES approval_requests(id, tenant_id) ON DELETE RESTRICT
 );
+
+-- Defense in depth for the resolver's rule 8: only a live, approved, unexpired approval of
+-- the claiming tenant can be claimed. Runs as the invoker, so RLS on approval_requests
+-- also hides another tenant's approvals from the check.
+CREATE OR REPLACE FUNCTION capability_approval_claims_guard() RETURNS TRIGGER AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM approval_requests r
+    WHERE r.id = NEW.approval_request_id
+      AND r.tenant_id = NEW.tenant_id
+      AND r.status = 'approved'
+      AND r.expires_at > now()
+  ) THEN
+    RAISE EXCEPTION 'approval % is not approved and live', NEW.approval_request_id
+      USING ERRCODE = '23514';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS capability_approval_claims_live_guard ON capability_approval_claims;
+CREATE TRIGGER capability_approval_claims_live_guard
+  BEFORE INSERT ON capability_approval_claims
+  FOR EACH ROW EXECUTE FUNCTION capability_approval_claims_guard();
 
 CREATE TABLE IF NOT EXISTS capability_resolution_receipts (
   receipt_digest TEXT NOT NULL CHECK (receipt_digest ~ '^res_[0-9a-f]{64}$'),
@@ -113,11 +140,18 @@ CREATE TABLE IF NOT EXISTS capability_resolution_receipts (
   idempotency_key TEXT,
   grant_id TEXT,
   approval_request_id TEXT,
+  -- Set exactly for an approval-backed ALLOW, equal to idempotency_key, and bound by FK to
+  -- the approval claim, so the database refuses an ALLOW that did not win the claim.
+  claim_idempotency_key TEXT,
   decided_at TIMESTAMPTZ,
   valid_until TIMESTAMPTZ,
   recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   -- The same decision recomputed (same digest) is recorded once.
   PRIMARY KEY (tenant_id, receipt_digest),
+  FOREIGN KEY (tenant_id, approval_request_id, claim_idempotency_key)
+    REFERENCES capability_approval_claims(tenant_id, approval_request_id, idempotency_key) ON DELETE RESTRICT,
+  CHECK ((decision = 'ALLOW' AND approval_request_id IS NOT NULL) = (claim_idempotency_key IS NOT NULL)),
+  CHECK (claim_idempotency_key IS NULL OR claim_idempotency_key = idempotency_key),
   -- Without trusted time a decision can only be UNDECIDABLE.
   CHECK (decided_at IS NOT NULL OR decision = 'UNDECIDABLE'),
   CHECK (decision <> 'ALLOW' OR (valid_until IS NOT NULL AND valid_until > decided_at AND grant_id IS NOT NULL)),

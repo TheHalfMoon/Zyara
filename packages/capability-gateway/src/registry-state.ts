@@ -5,8 +5,20 @@
 // replaying them. The real-PostgreSQL smoke proves the same rules against the database;
 // this class lets the resolver be qualified without one.
 
+import { APPROVAL_PARAMETERS_DIGEST_PATTERN } from "@zyara/collaboration";
+
 import type { CapabilityGrantee } from "./contract.js";
-import { CapabilityContractError, validateGrant, type AdmittedCapability } from "./contract.js";
+import {
+  CAPABILITY_DIGEST_PATTERN,
+  CAPABILITY_ID_PATTERN,
+  CAPABILITY_VERSION_PATTERN,
+  CapabilityContractError,
+  isOpaqueId,
+  isOpaqueToken,
+  validateGrant,
+  type AdmittedCapability,
+} from "./contract.js";
+import { RESOLUTION_DECISIONS, verifyReceiptDigest } from "./resolver.js";
 import type {
   CapabilityGrantRecord,
   DefinitionStatus,
@@ -34,6 +46,33 @@ interface Revocation {
 
 function fail(message: string): never {
   throw new CapabilityContractError("CAPABILITY_GRANT_MISMATCH", message);
+}
+
+const REASON_CODE = /^[A-Z][A-Z0-9_]{1,95}$/;
+
+// The same rules the 046 receipt CHECKs apply: closed decision, digest shapes, opaque tokens
+// and server time; a hand-made receipt carrying free text is refused before it is stored.
+function assertReceiptShape(receipt: ResolutionReceipt): void {
+  const bad = (message: string): never => {
+    throw new CapabilityContractError("CAPABILITY_RECEIPT_INVALID", message);
+  };
+  if (!(RESOLUTION_DECISIONS as readonly string[]).includes(receipt.decision)) bad("unknown decision");
+  if (!/^res_[0-9a-f]{64}$/.test(receipt.receiptDigest)) bad("receipt digest shape");
+  if (!Array.isArray(receipt.reasons) || receipt.reasons.length === 0 || !receipt.reasons.every((code) => REASON_CODE.test(code))) {
+    bad("reason codes must be closed codes");
+  }
+  if (!isOpaqueId(receipt.tenantId)) bad("tenant");
+  if (!(["human", "agent", "workflow"] as const).includes(receipt.actorKind)) bad("actor kind");
+  for (const value of [receipt.branchId, receipt.grantId]) if (value !== null && !isOpaqueId(value)) bad("id shape");
+  for (const value of [receipt.actorRef, receipt.correlationId, receipt.idempotencyKey, receipt.approvalRequestId]) {
+    if (value !== null && !isOpaqueToken(value)) bad("token shape");
+  }
+  if (receipt.capabilityId !== null && !CAPABILITY_ID_PATTERN.test(receipt.capabilityId)) bad("capability id");
+  if (receipt.version !== null && !CAPABILITY_VERSION_PATTERN.test(receipt.version)) bad("version");
+  if (receipt.definitionDigest !== null && !CAPABILITY_DIGEST_PATTERN.test(receipt.definitionDigest)) bad("definition digest");
+  if (receipt.parametersDigest !== null && !APPROVAL_PARAMETERS_DIGEST_PATTERN.test(receipt.parametersDigest)) bad("parameters digest");
+  if (receipt.decidedAt === null && receipt.decision !== "UNDECIDABLE") bad("only UNDECIDABLE may lack trusted time");
+  if (receipt.decision === "ALLOW" && (receipt.grantId === null || receipt.validUntil === null)) bad("ALLOW names its grant and validity");
 }
 
 export class CapabilityRegistryState {
@@ -80,8 +119,9 @@ export class CapabilityRegistryState {
     this.#revocations.push({ grantId, tenantId, revokedAt });
   }
 
-  // First claim wins; the same invocation (same idempotency key) may claim again.
-  claimApproval(tenantId: string, approvalRequestId: string, idempotencyKey: string): ApprovalClaimResult {
+  // First claim wins; the same invocation (same idempotency key) may claim again. Private:
+  // the only way to claim is to record an approval-backed ALLOW receipt.
+  #claimApproval(tenantId: string, approvalRequestId: string, idempotencyKey: string): ApprovalClaimResult {
     const key = `${tenantId}:${approvalRequestId}`;
     const holder = this.#claims.get(key);
     if (holder === undefined) {
@@ -91,13 +131,23 @@ export class CapabilityRegistryState {
     return holder === idempotencyKey ? "SAME_INVOCATION" : "CLAIMED_BY_OTHER";
   }
 
-  // Appends the receipt and, for an ALLOW that used an approval, claims that approval. A lost
-  // claim race means the decision must be treated as DENY by the caller.
-  record(receipt: ResolutionReceipt): ApprovalClaimResult | "RECORDED" {
-    this.#receipts.push(receipt);
-    if (receipt.decision === "ALLOW" && receipt.approvalRequestId !== null && receipt.idempotencyKey !== null) {
-      return this.claimApproval(receipt.tenantId, receipt.approvalRequestId, receipt.idempotencyKey);
+  // For an ALLOW that used an approval, claims the approval first and appends the receipt
+  // only when the claim is this invocation's (as the 046 FK from receipt to claim requires).
+  // A lost race appends nothing: the caller re-resolves, which now yields
+  // DENY CAPABILITY_APPROVAL_CONSUMED, and records that receipt instead.
+  async record(receipt: ResolutionReceipt): Promise<ApprovalClaimResult | "RECORDED"> {
+    assertReceiptShape(receipt);
+    if (!(await verifyReceiptDigest(receipt))) {
+      throw new CapabilityContractError("CAPABILITY_RECEIPT_INVALID", "receipt content does not match its digest");
     }
+    if (receipt.decision === "ALLOW" && receipt.approvalRequestId !== null) {
+      if (receipt.idempotencyKey === null) fail("an approval-backed ALLOW must name its invocation");
+      const claim = this.#claimApproval(receipt.tenantId, receipt.approvalRequestId, receipt.idempotencyKey);
+      if (claim === "CLAIMED_BY_OTHER") return claim;
+      this.#receipts.push(receipt);
+      return claim;
+    }
+    this.#receipts.push(receipt);
     return "RECORDED";
   }
 

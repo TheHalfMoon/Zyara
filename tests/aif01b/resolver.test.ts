@@ -468,10 +468,10 @@ describe("AIF-01B approvals (N5/C3)", () => {
     const w = await world();
     w.approvals.set("appr-1", approval());
     const first = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
-    assert.equal(w.state.record(first), "CLAIMED");
+    assert.equal(await w.state.record(first), "CLAIMED");
     const again = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
     assert.equal(again.decision, "ALLOW");
-    assert.equal(w.state.record(again), "SAME_INVOCATION");
+    assert.equal(await w.state.record(again), "SAME_INVOCATION");
     const other = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1", idempotencyKey: "idem-0002" }), w.deps);
     assert.deepEqual([other.decision, other.reasons], ["DENY", ["CAPABILITY_APPROVAL_CONSUMED"]]);
   });
@@ -482,8 +482,32 @@ describe("AIF-01B approvals (N5/C3)", () => {
     const a = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1" }), w.deps);
     const b = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1", idempotencyKey: "idem-0002" }), w.deps);
     assert.deepEqual([a.decision, b.decision], ["ALLOW", "ALLOW"]);
-    assert.equal(w.state.record(a), "CLAIMED");
-    assert.equal(w.state.record(b), "CLAIMED_BY_OTHER");
+    assert.equal(await w.state.record(a), "CLAIMED");
+    assert.equal(await w.state.record(b), "CLAIMED_BY_OTHER");
+    // The losing ALLOW is never persisted; re-resolving it yields the recorded DENY.
+    assert.deepEqual(w.state.receipts("t1").map((item) => item.idempotencyKey), ["idem-0001"]);
+    const retry = await resolveCapability(WORKFLOW, request(w.caps.broadcast, { approvalRequestId: "appr-1", idempotencyKey: "idem-0002" }), w.deps);
+    assert.deepEqual([retry.decision, retry.reasons], ["DENY", ["CAPABILITY_APPROVAL_CONSUMED"]]);
+    assert.equal(await w.state.record(retry), "RECORDED");
+  });
+
+  it("requires an invocation key even for an approval-gated read, so the approval cannot be reused", async () => {
+    const w = await world();
+    const registry = new CapabilityContractRegistry();
+    const exportRead = await registry.register(
+      definition({ id: "data.export.patient_records", riskClass: "critical", dataClasses: ["PHI"], consentPurpose: "care" }),
+      RELEASE,
+    );
+    w.state.admit(exportRead);
+    w.state.grant(grant({ grantId: "g-export", grantee: { kind: "workflow", id: "wf-recall" }, capabilityId: "data.export.patient_records", branchId: null }));
+    w.approvals.set("appr-x", approval({ id: "appr-x", actionType: "data.export.patient_records", branchId: null }));
+    const keyless = await resolveCapability(WORKFLOW, request(exportRead, { branchId: null, approvalRequestId: "appr-x", idempotencyKey: null }), w.deps);
+    assert.deepEqual([keyless.decision, keyless.reasons], ["DENY", ["CAPABILITY_APPROVAL_NEEDS_INVOCATION_KEY"]]);
+    const keyed = await resolveCapability(WORKFLOW, request(exportRead, { branchId: null, approvalRequestId: "appr-x", idempotencyKey: "export-1" }), w.deps);
+    assert.equal(keyed.decision, "ALLOW");
+    assert.equal(await w.state.record(keyed), "CLAIMED");
+    const reuse = await resolveCapability(WORKFLOW, request(exportRead, { branchId: null, approvalRequestId: "appr-x", idempotencyKey: "export-2" }), w.deps);
+    assert.deepEqual(reuse.reasons, ["CAPABILITY_APPROVAL_CONSUMED"]);
   });
 
   it("denies an approval-gated capability that has no N5/C3 protected-action rule", async () => {
@@ -560,8 +584,8 @@ describe("AIF-01B receipts", () => {
     const deny = await resolveCapability(WORKFLOW, request(w.caps.remind, { branchId: "b2" }), w.deps);
     assert.equal(deny.validUntil, deny.decidedAt);
     assert.notEqual(deny.receiptDigest, allow.receiptDigest);
-    w.state.record(allow);
-    w.state.record(deny);
+    await w.state.record(allow);
+    await w.state.record(deny);
     assert.equal(w.state.receipts("t1").length, 2);
     assert.ok(Object.isFrozen(allow));
   });
@@ -587,6 +611,13 @@ describe("AIF-01B receipts", () => {
     for (const leaked of ["0501234567", "Bearer", "Ahmed", "1012345678", "sk_live", "AKIA", "drop table"]) {
       assert.ok(!text.includes(leaked), `receipt leaked ${leaked}`);
     }
+    const forged = { ...receipt, correlationId: "call 0501234567", decision: "ALLOW" as const };
+    await assert.rejects(() => w.state.record(forged), (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_RECEIPT_INVALID");
+    await assert.rejects(() => w.state.record({ ...receipt, reasons: ["free text reason"] }));
+    // A well-shaped edit (a DENY turned into an ALLOW) is caught by the content digest.
+    const denied = await resolveCapability(WORKFLOW, request(w.caps.remind, { branchId: "b2" }), w.deps);
+    const tampered = { ...denied, decision: "ALLOW" as const, reasons: ["ALLOWED" as const], grantId: "g-wf-remind", validUntil: denied.decidedAt };
+    await assert.rejects(() => w.state.record(tampered), (error: unknown) => error instanceof CapabilityContractError && error.code === "CAPABILITY_RECEIPT_INVALID");
     const timeless = await resolveCapability(WORKFLOW, request(w.caps.remind), { ...w.deps, clock: { now: () => { throw new Error("x"); } } });
     assert.deepEqual([timeless.decidedAt, timeless.validUntil], [null, null]);
   });
