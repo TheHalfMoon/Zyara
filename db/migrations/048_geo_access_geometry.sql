@@ -21,12 +21,14 @@ CREATE OR REPLACE FUNCTION geo_public_text_ok(value TEXT) RETURNS BOOLEAN
 LANGUAGE sql IMMUTABLE
 SET search_path = pg_catalog
 AS $$
+  -- Normalize first: Arabic-Indic and Persian digits to ASCII, a no-break space to a space.
   SELECT value IS NULL OR (
-    btrim(value) <> ''
-    AND translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789') !~ '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
-    AND regexp_replace(translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789'), '[[:space:]()+.-]', '', 'g') !~ '[0-9]{9,}'
-    AND btrim(translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789')) !~ '^[0-9]{7,}$'
+    regexp_replace(n.v, '[[:space:]]', '', 'g') <> ''
+    AND n.v !~ '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+    AND regexp_replace(n.v, '[[:space:]()+.-]', '', 'g') !~ '[0-9]{9,}'
+    AND btrim(n.v) !~ '^[0-9]{7,}$'
   )
+  FROM (SELECT translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹' || chr(160), '01234567890123456789 ') AS v) AS n
 $$;
 
 CREATE TABLE IF NOT EXISTS geo_entrances (

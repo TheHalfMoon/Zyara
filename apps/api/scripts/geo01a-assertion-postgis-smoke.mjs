@@ -220,6 +220,8 @@ await expectDbError(() => client.query(E("ent-mail", { instructions: "'ask ahmad
 await expectDbError(() => client.query(E("ent-nolabel", { labelEn: "NULL" })), "23514", "an entrance needs a public label");
 await expectDbError(() => client.query(E("ent-arphone", { labelEn: "'اتصل ٠٥٠١٢٣٤٥٦٧'" })), "23514", "Arabic-Indic digits must not carry a phone number");
 await expectDbError(() => client.query(E("ent-blank", { labelEn: "'   '" })), "23514", "a blank label must be refused");
+await expectDbError(() => client.query(E("ent-tabs", { labelEn: "E'\\t\\n'" })), "23514", "a whitespace-only label must be refused");
+await expectDbError(() => client.query(E("ent-nbsp", { labelEn: "'Call 050' || chr(160) || '123' || chr(160) || '4567'" })), "23514", "no-break spaces must not hide a phone number");
 await client.query(E("ent-floors", { labelEn: "'Gate 3'", instructions: "'Level 2, room 12345'", supersedes: "NULL", kind: "SERVICE", stepFree: "NO" }));
 await expectDbError(() => client.query(E("ent-srid", { point: "ST_SetSRID(ST_MakePoint(46.6755, 24.7138), 3857)" })), "23514", "an entrance point must be SRID 4326");
 await expectDbError(() => client.query(E("ent-xb", { branch: "b2" })), "23503", "an entrance cannot reference another tenant's branch");
