@@ -49,6 +49,7 @@ function request(overrides: Partial<CredentialRequest> = {}): CredentialRequest 
     tenantId: "t1",
     branchId: "b1",
     providerId: "whatsapp-cloud",
+    subject: { kind: "EXTERNAL_INTEGRATION", id: "wa-integration-1" },
     capabilityId: "communications.reminder.send",
     requiredScopes: ["messages.send"],
     ...overrides,
@@ -165,11 +166,10 @@ describe("AIF-02B the secret never leaves the adapter boundary", () => {
       const text = JSON.stringify(output);
       assert.ok(!text.includes(SECRET) && !text.includes(HANDLE), text);
     }
-    try {
-      allowed.credential?.use((secret) => secret);
-    } catch (error) {
-      assert.ok(!String((error as Error).message).includes(SECRET));
-    }
+    assert.throws(
+      () => allowed.credential?.use((secret) => secret),
+      (error: unknown) => error instanceof CredentialError && !error.message.includes(SECRET),
+    );
     assert.deepEqual([health.state, health.version, health.daysToExpiry], ["HEALTHY", 2, 55]);
     assert.equal(credentialHealth(binding({ expiresAt: "2026-10-10T00:00:00.000Z" }), NOW).state, "EXPIRING");
     assert.equal(credentialHealth(binding({ status: "REVOKED" }), NOW).state, "REVOKED");
@@ -183,5 +183,76 @@ describe("AIF-02B the secret never leaves the adapter boundary", () => {
     assert.throws(() => assertSecretFreePayload([{ api_key: "x" }]), CredentialError);
     // An opaque reference is metadata, not a secret.
     assertSecretFreePayload({ credentialRef: "credref_whatsapp_sender_01", body: "Your appointment is tomorrow." });
+  });
+});
+
+describe("AIF-02B panel hardening", () => {
+  it("binds the credential to its subject", () => {
+    const w = world();
+    const other = mediateCredential(request({ subject: { kind: "HUMAN_DELEGATE", id: "acct-doc-1" } }), w.deps);
+    assert.deepEqual([other.receipt.reasons, other.credential, w.vaultCalls], [["CREDENTIAL_SUBJECT_MISMATCH"], null, []]);
+  });
+
+  it("fails the lease closed on a malformed or backwards clock", () => {
+    const w = world();
+    const { credential } = mediateCredential(request(), w.deps);
+    w.now.value = "not-a-time";
+    assert.throws(() => credential?.use(() => 1), /lease expired/);
+    const v = world();
+    const fresh = mediateCredential(request(), v.deps).credential;
+    v.now.value = "2026-10-06T11:59:00.000Z";
+    assert.throws(() => fresh?.use(() => 1), /lease expired/);
+  });
+
+  it("redacts adapter errors and refuses non-plain or secret-carrying results", async () => {
+    const credential = mediateCredential(request(), world().deps).credential;
+    assert.ok(credential);
+    assert.throws(
+      () => credential.use((secret) => { throw new Error(`boom ${secret}`); }),
+      (error: unknown) => error instanceof CredentialError && error.message === "adapter failed" && !String(error.stack).includes(SECRET),
+    );
+    for (const leak of [
+      (s: string) => Promise.resolve(s),
+      (s: string) => () => s,
+      (s: string) => new Map([["k", s]]),
+      (s: string) => new Set([s]),
+      (s: string) => Buffer.from(s),
+      (s: string) => new Error(s),
+      (s: string) => ({ [Symbol("x")]: s }),
+      (s: string) => Buffer.from(s).toString("base64"),
+      (s: string) => ({ deep: [{ value: `prefix-${s}` }] }),
+    ]) {
+      assert.throws(() => credential.use(leak as (s: string) => unknown), CredentialError);
+    }
+    assert.deepEqual(credential.use(() => ({ status: 202, accepted: true })), { status: 202, accepted: true });
+    assert.equal(await credential.useAsync(async (s) => s.length), SECRET.length);
+    await assert.rejects(() => credential.useAsync(async (s) => s), CredentialError);
+    await assert.rejects(() => credential.useAsync(async (s) => { throw new Error(s); }), /adapter failed/);
+  });
+
+  it("names secret fields by words, not substrings", () => {
+    for (const key of ["authToken", "sessionToken", "idToken", "pwd", "passphrase", "Set-Cookie", "signingKey", "accessKey", "X-Api-Key", "client_secret", "privateKey"]) {
+      assert.throws(() => assertSecretFreePayload({ [key]: "x" }), CredentialError, key);
+    }
+    for (const key of ["credentialRef", "credentialsRef", "credentialId", "secretary", "bearerOf", "primaryKey", "monkey"]) {
+      assertSecretFreePayload({ [key]: "x" });
+    }
+    assert.throws(() => assertSecretFreePayload({ body: Buffer.from("sk_live_abcdefghijklmnop") }), CredentialError);
+    assert.throws(() => assertSecretFreePayload({ items: new Map() }), CredentialError);
+  });
+
+  it("validates binding fields and never echoes credential-shaped ids", () => {
+    const stringScopes = world(binding({ scopes: "messages.send.extended" as unknown as string[] }));
+    assert.deepEqual(mediateCredential(request(), stringScopes.deps).receipt.reasons, ["CREDENTIAL_DEPENDENCY_UNAVAILABLE"]);
+    const leaked = mediateCredential(request({ capabilityId: "sk_live_abcdefghijklmnop" }), world().deps);
+    assert.deepEqual([leaked.receipt.reasons, leaked.receipt.capabilityId], [["CREDENTIAL_REQUEST_INVALID"], null]);
+    const throwing = Object.defineProperty(request(), "tenantId", { get: () => { throw new Error("trap"); } });
+    assert.deepEqual(mediateCredential(throwing, world().deps).receipt.reasons, ["CREDENTIAL_REQUEST_INVALID"]);
+  });
+
+  it("reports every health state from metadata only", () => {
+    assert.equal(credentialHealth(binding({ notBefore: "2026-10-07T00:00:00.000Z" }), NOW).state, "NOT_YET_VALID");
+    assert.equal(credentialHealth(binding({ expiresAt: "2026-10-05T00:00:00.000Z" }), NOW).state, "EXPIRED");
+    assert.equal(credentialHealth(binding({ expiresAt: "2026-13-45T00:00:00Z" }), NOW).state, "INVALID");
   });
 });

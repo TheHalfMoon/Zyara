@@ -40,7 +40,7 @@ The AIF plan defines AIF-02 as one unit: "Privacy / Egress / Secret Mediation". 
 2. Unknown binding → `CREDENTIAL_UNKNOWN`.
 3. Tenant mismatch → `CREDENTIAL_CROSS_TENANT`.
 4. Branch mismatch (a branch-scoped binding used on another branch, or for a tenant-wide call) → `CREDENTIAL_CROSS_BRANCH`.
-5. Provider mismatch → `CREDENTIAL_PROVIDER_MISMATCH`.
+5. Provider mismatch → `CREDENTIAL_PROVIDER_MISMATCH`. Subject mismatch (the request names on whose behalf it acts; it must equal the binding subject kind and id) → `CREDENTIAL_SUBJECT_MISMATCH`.
 6. Revoked → `CREDENTIAL_REVOKED`.
 7. Before `notBefore`, or at or after `expiresAt` (server time) → `CREDENTIAL_NOT_YET_VALID` / `CREDENTIAL_EXPIRED`.
 8. Version differs from the current binding version → `CREDENTIAL_ROTATED`. A rotation invalidates every request that names the old version.
@@ -48,7 +48,7 @@ The AIF plan defines AIF-02 as one unit: "Privacy / Egress / Secret Mediation". 
 10. Vault unavailable or failing → `CREDENTIAL_DEPENDENCY_UNAVAILABLE`. The same applies to any port failure or the clock. The vault is called only after rules 1–9 pass, and only with the current version's handle. If the vault reports that handle as retired (a request racing a rotation), the decision is `CREDENTIAL_ROTATED`, so a resolution never returns a secret from a rotated-away version.
 11. Otherwise `ALLOW`.
 
-Adapter boundary: `use(fn)` runs Zyara adapter code (reviewed code, never model-generated). Its return value is checked: if it contains the secret (directly or inside a string or object), `use` throws, so an adapter cannot hand the secret back out. A model or agent never chooses the `ref`: it comes from the admitted capability definition's `credentialBinding`, as resolved under AIF-01B.
+Adapter boundary: `use(fn)` (sync) and `useAsync(fn)` run Zyara adapter code (reviewed code, never model-generated). An error from the adapter is replaced by a redacted `adapter failed` error, with no message, cause or stack from the original. The return value must be plain data (primitives, plain objects, arrays), with no function, Promise, Map, Set, buffer, Error, symbol key or accessor, and must not contain the secret or its base64 form. These checks are best effort for reviewed adapters: a second line of defense, not a sandbox. The lease fails closed on a malformed or backwards clock. `assertSecretFreePayload` also refuses non-plain values, and it matches secret-named keys by word (authToken, X-Api-Key, passphrase, cookie), not by substring (credentialRef and secretary pass). A model or agent never chooses the `ref`: it comes from the admitted capability definition's `credentialBinding`, as resolved under AIF-01B.
 
 Failure messages and receipts carry only the ref, version, tenant, branch, provider, capability, reasons and server time. They never carry the secret or the vault handle.
 
