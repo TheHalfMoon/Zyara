@@ -117,6 +117,8 @@ describe("GEO-01B entrances", () => {
   it("refuses an entrance far from its facility, or with no facility point unless verified", () => {
     assert.equal(code(() => validateEntrance(entrance({ point: { lon: 46.72, lat: 24.75 } }), FACILITY, null)), "GEO_ENTRANCE_TOO_FAR");
     assert.equal(code(() => validateEntrance(entrance(), null, null)), "GEO_ENTRANCE_NO_FACILITY");
+    const disputed = { ...FACILITY, verificationState: "DISPUTED" as const, precision: "PROVIDER_ATTESTED_POINT" as const, visibility: "TENANT_INTERNAL" as const };
+    assert.equal(code(() => validateEntrance(entrance(), disputed, null)), "GEO_ENTRANCE_NO_FACILITY");
     const hidden = { ...FACILITY, precision: "PRIVATE_HIDDEN" as const, visibility: "TENANT_INTERNAL" as const };
     assert.equal(code(() => validateEntrance(entrance(), hidden, null)), "GEO_ENTRANCE_NO_FACILITY");
     const verified = entrance({ source: { kind: "ZYARA_VERIFICATION", ref: "visit-9", revision: "r1" }, verificationState: "VERIFIED" });
@@ -125,11 +127,15 @@ describe("GEO-01B entrances", () => {
   });
 
   it("keeps labels and instructions public wayfinding text", () => {
-    for (const bad of ["Call 050 123 4567 at the gate", "Ask for ahmad@example.test", "1012345678"]) {
+    for (const bad of ["Call 050 123 4567 at the gate", "Ask for ahmad@example.test", "1012345678", "اتصل ٠٥٠١٢٣٤٥٦٧", "۰۵۰۱۲۳۴۵۶۷"]) {
       assert.equal(code(() => validateEntrance(entrance({ publicLabel: { en: bad } }), FACILITY, null)), "GEO_TEXT_NOT_PUBLIC_SAFE", bad);
       assert.equal(code(() => validateEntrance(entrance({ arrivalInstructions: { en: bad } }), FACILITY, null)), "GEO_TEXT_NOT_PUBLIC_SAFE", bad);
     }
+    // Blank text is refused too (by the length rule, before the public-text rule).
+    assert.equal(code(() => validateEntrance(entrance({ publicLabel: { en: "   " } }), FACILITY, null)), "GEO_ENTRANCE_INVALID");
+    assert.equal(isPublicSafeText("   "), false);
     assert.equal(isPublicSafeText("Gate 3, level 2, follow the green line"), true);
+    assert.equal(isPublicSafeText("البوابة ٣، الطابق ٢"), true);
     assert.equal(code(() => validateEntrance(entrance({ publicLabel: {} }), FACILITY, null)), "GEO_ENTRANCE_INVALID");
   });
 
@@ -161,6 +167,12 @@ describe("GEO-01B service areas", () => {
     assert.equal(code(() => validateServiceArea(area({ geometry: { type: "LineString", coordinates: SQUARE } as unknown as GeoServiceArea["geometry"] }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_INVALID");
     const bowtie = [[[46.665, 24.704], [46.685, 24.722], [46.685, 24.704], [46.665, 24.722], [46.665, 24.704]]];
     assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates: bowtie } }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_INVALID");
+    // Repeated consecutive vertices are valid OGC and are not a self-intersection.
+    const repeated = [[[46.665, 24.704], [46.685, 24.704], [46.685, 24.704], [46.685, 24.722], [46.665, 24.722], [46.665, 24.704]]];
+    assert.equal(validateServiceArea(area({ geometry: { type: "Polygon", coordinates: repeated } }), SAME_BRANCH, FACILITY, null).geometry.type, "Polygon");
+    // A multipolygon with one part near Riyadh and one in Jeddah is implausible as a whole.
+    const split = { type: "MultiPolygon" as const, coordinates: [SQUARE, [[[39.15, 21.48], [39.25, 21.48], [39.25, 21.58], [39.15, 21.58], [39.15, 21.48]]]] };
+    assert.equal(code(() => validateServiceArea(area({ geometry: split }), SAME_BRANCH, FACILITY, null)), "GEO_SERVICE_AREA_IMPLAUSIBLE");
     const huge = [[[40, 18], [52, 18], [52, 30], [40, 30], [40, 18]]];
     assert.equal(code(() => validateServiceArea(area({ geometry: { type: "Polygon", coordinates: huge } }), SAME_BRANCH, null, null)), "GEO_SERVICE_AREA_INVALID");
     const outOfRange = [[[46.6, 24.7], [190, 24.7], [46.7, 24.8], [46.6, 24.7]]];

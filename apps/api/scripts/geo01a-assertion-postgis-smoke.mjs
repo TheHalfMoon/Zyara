@@ -218,6 +218,9 @@ await expectDbError(() => client.query(E("ent-acc", { kind: "ACCESSIBLE", stepFr
 await expectDbError(() => client.query(E("ent-phone", { labelEn: "'Call 050 123 4567'" })), "23514", "labels must not carry phone numbers");
 await expectDbError(() => client.query(E("ent-mail", { instructions: "'ask ahmad@example.test'" })), "23514", "instructions must not carry e-mail addresses");
 await expectDbError(() => client.query(E("ent-nolabel", { labelEn: "NULL" })), "23514", "an entrance needs a public label");
+await expectDbError(() => client.query(E("ent-arphone", { labelEn: "'اتصل ٠٥٠١٢٣٤٥٦٧'" })), "23514", "Arabic-Indic digits must not carry a phone number");
+await expectDbError(() => client.query(E("ent-blank", { labelEn: "'   '" })), "23514", "a blank label must be refused");
+await client.query(E("ent-floors", { labelEn: "'Gate 3'", instructions: "'Level 2, room 12345'", supersedes: "NULL", kind: "SERVICE", stepFree: "NO" }));
 await expectDbError(() => client.query(E("ent-srid", { point: "ST_SetSRID(ST_MakePoint(46.6755, 24.7138), 3857)" })), "23514", "an entrance point must be SRID 4326");
 await expectDbError(() => client.query(E("ent-xb", { branch: "b2" })), "23503", "an entrance cannot reference another tenant's branch");
 
@@ -228,9 +231,9 @@ await client.query(E("ent-4", { kind: "PARKING", stepFree: "NO", supersedes: "'e
 await expectDbError(() => client.query(E("ent-fork", { supersedes: "'ent-1'" })), "23505", "an entrance has at most one successor");
 await expectDbError(() => client.query(E("ent-xbranch", { branch: "b1b", supersedes: "'ent-2'" })), "23503", "entrance supersession cannot cross branches");
 const currentE = await client.query(`SELECT id FROM geo_current_entrances ORDER BY id`);
-if (JSON.stringify(currentE.rows.map((r) => r.id)) !== JSON.stringify(["ent-2"])) fail(`current entrances must be [ent-2], got ${JSON.stringify(currentE.rows)}`);
+if (JSON.stringify(currentE.rows.map((r) => r.id)) !== JSON.stringify(["ent-2", "ent-floors"])) fail(`current entrances must be [ent-2, ent-floors], got ${JSON.stringify(currentE.rows)}`);
 const allE = await client.query(`SELECT count(*)::int AS n FROM geo_entrances`);
-if (allE.rows[0].n !== 4) fail("entrance history must be preserved");
+if (allE.rows[0].n !== 5) fail("entrance history must be preserved");
 
 // Service areas: validity and same-branch linkage.
 await client.query(SA("area-1"));

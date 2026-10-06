@@ -111,11 +111,18 @@ function source(value: GeoSourceRef): GeoSourceRef {
   return { kind: value.kind, ref: opaque(value.ref, "source.ref", "GEO_PROVENANCE_REQUIRED"), revision: opaque(value.revision, "source.revision", "GEO_PROVENANCE_REQUIRED") };
 }
 
+// Arabic-Indic (U+0660-0669) and extended Arabic-Indic/Persian (U+06F0-06F9) digits count as
+// digits too, so a phone number written in Arabic numerals is caught.
+function asciiDigits(text: string): string {
+  return text.replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[\u06F0-\u06F9]/g, (d) => String(d.charCodeAt(0) - 0x06f0));
+}
+
 // Public wayfinding text only: no e-mail address, no phone-like or identifier digit runs.
 export function isPublicSafeText(text: string): boolean {
-  if (EMAIL.test(text)) return false;
-  const digits = text.replace(/[\s()+\-.]/g, "");
-  return !/[0-9]{9,}/.test(digits) && !/^[0-9]{7,}$/.test(text.trim());
+  const normalized = asciiDigits(text);
+  if (EMAIL.test(normalized) || normalized.trim().length === 0) return false;
+  const digits = normalized.replace(/[\s()+\-.]/g, "");
+  return !/[0-9]{9,}/.test(digits) && !/^[0-9]{7,}$/.test(normalized.trim());
 }
 
 function localized(value: unknown, max: number, label: string, required: boolean): LocalizedText | null {
@@ -150,7 +157,7 @@ export function haversineMeters(a: GeoPoint, b: GeoPoint): number {
 
 function usableFacilityPoint(facility: GeoLocationAssertion | null): GeoPoint | null {
   if (facility === null || facility.point === null) return null;
-  if (facility.precision === "UNKNOWN" || facility.precision === "PRIVATE_HIDDEN") return null;
+  if (facility.precision === "UNKNOWN" || facility.precision === "PRIVATE_HIDDEN" || facility.verificationState === "DISPUTED") return null;
   return facility.point;
 }
 
@@ -260,12 +267,13 @@ export function validateServiceArea(
     fail("GEO_SERVICE_AREA_INVALID", "geometry must be a GeoJSON Polygon or MultiPolygon");
   }
   let positions = 0;
-  let minLon = 180;
-  let maxLon = -180;
-  let minLat = 90;
-  let maxLat = -90;
+  const facilityPoint = usableFacilityPoint(facility);
   for (const polygon of polygonsOf(geometry)) {
     if (!Array.isArray(polygon) || polygon.length === 0) fail("GEO_SERVICE_AREA_INVALID", "a polygon needs at least one ring");
+    let minLon = 180;
+    let maxLon = -180;
+    let minLat = 90;
+    let maxLat = -90;
     for (const ring of polygon) {
       if (!Array.isArray(ring) || ring.length < 4) fail("GEO_SERVICE_AREA_INVALID", "a ring needs at least 4 positions");
       for (const position of ring) {
@@ -286,16 +294,16 @@ export function validateServiceArea(
       if (first[0] !== last[0] || first[1] !== last[1]) fail("GEO_SERVICE_AREA_INVALID", "every ring must be closed");
       if (ring.length <= SELF_INTERSECTION_CHECK_MAX_RING && ringSelfIntersects(ring)) fail("GEO_SERVICE_AREA_INVALID", "a ring must not intersect itself");
     }
+    // Every part of a (multi)polygon must be near the branch, not just their combined box.
+    if (facilityPoint !== null) {
+      const nearest = { lon: Math.min(Math.max(facilityPoint.lon, minLon), maxLon), lat: Math.min(Math.max(facilityPoint.lat, minLat), maxLat) };
+      if (haversineMeters(facilityPoint, nearest) > SERVICE_AREA_MAX_DISTANCE_KM * 1000) {
+        fail("GEO_SERVICE_AREA_IMPLAUSIBLE", `every part of a service area must lie within ${SERVICE_AREA_MAX_DISTANCE_KM} km of its branch`);
+      }
+    }
   }
   const areaKm2 = polygonsOf(geometry).reduce((total, polygon) => total + ringAreaKm2(polygon[0]) - polygon.slice(1).reduce((holes, hole) => holes + ringAreaKm2(hole), 0), 0);
   if (areaKm2 > SERVICE_AREA_MAX_KM2) fail("GEO_SERVICE_AREA_INVALID", `a service area is at most ${SERVICE_AREA_MAX_KM2} km2`);
-  const facilityPoint = usableFacilityPoint(facility);
-  if (facilityPoint !== null) {
-    const nearest = { lon: Math.min(Math.max(facilityPoint.lon, minLon), maxLon), lat: Math.min(Math.max(facilityPoint.lat, minLat), maxLat) };
-    if (haversineMeters(facilityPoint, nearest) > SERVICE_AREA_MAX_DISTANCE_KM * 1000) {
-      fail("GEO_SERVICE_AREA_IMPLAUSIBLE", `a service area must lie within ${SERVICE_AREA_MAX_DISTANCE_KM} km of its branch`);
-    }
-  }
   const src = source(input.source);
   if (instant(input.expiresAt, "expiresAt") <= instant(input.observedAt, "observedAt")) fail("GEO_TIME_INVALID", "expiresAt must be after observedAt");
   if (input.status !== "ACTIVE" && input.status !== "INACTIVE") fail("GEO_SERVICE_AREA_INVALID", "status");
@@ -334,8 +342,11 @@ function segmentsIntersect(p1: number[], q1: number[], p2: number[], q2: number[
   return (o1 === 0 && onSegment(p1, p2, q1)) || (o2 === 0 && onSegment(p1, q2, q1)) || (o3 === 0 && onSegment(p2, p1, q2)) || (o4 === 0 && onSegment(p2, q1, q2));
 }
 
-// Non-adjacent edges of a closed ring must not touch or cross.
-function ringSelfIntersects(ring: number[][]): boolean {
+// Non-adjacent edges of a closed ring must not touch or cross. Consecutive duplicate positions
+// (A,B,B,C,A) are valid in OGC and are collapsed first.
+function ringSelfIntersects(input: number[][]): boolean {
+  const ring = input.filter((position, index) => index === 0 || position[0] !== input[index - 1][0] || position[1] !== input[index - 1][1]);
+  if (ring.length < 4) return true;
   const edges = ring.length - 1;
   for (let i = 0; i < edges; i += 1) {
     for (let j = i + 1; j < edges; j += 1) {

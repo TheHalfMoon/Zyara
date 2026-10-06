@@ -15,6 +15,20 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE UNIQUE INDEX IF NOT EXISTS care_services_id_tenant_branch_uidx
   ON care_services(id, tenant_id, branch_id);
 
+-- Public wayfinding text: not blank, no e-mail address, no 9+ digit run after removing
+-- separators, not an all-digit identifier. Arabic-Indic and Persian digits count as digits.
+CREATE OR REPLACE FUNCTION geo_public_text_ok(value TEXT) RETURNS BOOLEAN
+LANGUAGE sql IMMUTABLE
+SET search_path = pg_catalog
+AS $$
+  SELECT value IS NULL OR (
+    btrim(value) <> ''
+    AND translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789') !~ '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
+    AND regexp_replace(translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789'), '[[:space:]()+.-]', '', 'g') !~ '[0-9]{9,}'
+    AND btrim(translate(value, '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹', '01234567890123456789')) !~ '^[0-9]{7,}$'
+  )
+$$;
+
 CREATE TABLE IF NOT EXISTS geo_entrances (
   id TEXT NOT NULL CHECK (id ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$'),
   tenant_id TEXT NOT NULL,
@@ -49,9 +63,8 @@ CREATE TABLE IF NOT EXISTS geo_entrances (
   CHECK (supersedes_id IS NULL OR supersedes_id <> id),
   CHECK (expires_at > observed_at),
   CHECK (label_ar IS NOT NULL OR label_en IS NOT NULL),
-  -- Public wayfinding text only: no e-mail address and no 9+ digit run (after separators).
-  CHECK (concat_ws(' ', label_ar, label_en, instructions_ar, instructions_en) !~ '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'),
-  CHECK (regexp_replace(concat_ws(' ', label_ar, label_en, instructions_ar, instructions_en), '[[:space:]()+.-]', '', 'g') !~ '[0-9]{9,}'),
+  -- Public wayfinding text only, checked per field (see geo_public_text_ok).
+  CHECK (geo_public_text_ok(label_ar) AND geo_public_text_ok(label_en) AND geo_public_text_ok(instructions_ar) AND geo_public_text_ok(instructions_en)),
   -- Accessibility is never inferred: an external dataset says UNKNOWN only.
   CHECK (source_kind <> 'EXTERNAL_DATASET' OR (step_free = 'UNKNOWN' AND lift = 'UNKNOWN' AND accessible_toilet = 'UNKNOWN' AND accessible_parking = 'UNKNOWN')),
   -- Any YES comes from an attested or verified provider/Zyara source.
@@ -134,3 +147,4 @@ GRANT INSERT (id, tenant_id, branch_id, service_id, area, source_kind, source_re
 -- DROP VIEW IF EXISTS geo_current_entrances;
 -- DROP TABLE IF EXISTS geo_service_areas, geo_entrances;
 -- DROP INDEX IF EXISTS care_services_id_tenant_branch_uidx;
+-- DROP FUNCTION IF EXISTS geo_public_text_ok(TEXT);

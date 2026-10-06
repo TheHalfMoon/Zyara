@@ -24,7 +24,7 @@ GEO-01B belongs to "GEO-01 — Geo truth" with GEO-01A. It extends `@zyara/geosp
   - An `ACCESSIBLE` entrance requires `stepFree = YES` from `PROVIDER_ATTESTATION` or `ZYARA_VERIFICATION`.
   - Any `YES` fact requires a verification state of `PROVIDER_ATTESTED` or `VERIFIED`.
 - **Lifecycle.** An entrance correction appends a superseding row (one successor per entrance), within the same tenant and branch. `INACTIVE` (a closed entrance) is a superseding row too. **Current entrances** are chain heads that are `ACTIVE` and unexpired at `now`. Inactive, superseded or expired entrances are never current and never displayed.
-- **Plausibility.** `entranceNearFacility(entrance, facilityAssertion, maxMeters = 1000)` checks the entrance against the branch's current GEO-01A point (haversine). A far entrance is refused as `GEO_ENTRANCE_TOO_FAR`.
+- **Plausibility.** `validateEntrance(entrance, facilityAssertion, bounds)` checks the entrance against the branch's current GEO-01A point (haversine, 1 000 m). A disputed, hidden or unknown facility point is not usable. A far entrance is refused as `GEO_ENTRANCE_TOO_FAR`.
 
 ## Service areas (`GeoServiceArea`)
 
@@ -44,7 +44,7 @@ For home or mobile care only, linked to a branch's care service.
 
 - **Entrance distance.** With a current GEO-01A facility point (any class except `UNKNOWN` or `PRIVATE_HIDDEN`), an entrance more than 1 000 m away is refused as `GEO_ENTRANCE_TOO_FAR`. Without a usable facility point, an entrance is accepted only when its own verification state is `VERIFIED` (a site check). Otherwise it is refused as `GEO_ENTRANCE_NO_FACILITY`.
 - **Service-area plausibility.** When launch-market bounds are supplied (GEO-01A `SAUDI_ARABIA_BOUNDS`), every vertex must lie inside them. With a usable facility point, the area's bounding box must lie within 100 km of it (`GEO_SERVICE_AREA_IMPLAUSIBLE`). A service area far from its branch is a data error, not a coverage claim.
-- **Labels and instructions.** Public labels and arrival instructions are public facility wayfinding text only, and never patient data: no patient name, appointment or visit detail. They must not carry an e-mail address, a phone-like digit run (9+ digits after removing separators) or an all-digit identifier. Contact details belong to the branch contact model, not to geometry. A violation is refused as `GEO_TEXT_NOT_PUBLIC_SAFE`.
+- **Labels and instructions.** Public labels and arrival instructions are public facility wayfinding text only, and never patient data: no patient name, appointment or visit detail. They must not carry an e-mail address, a phone-like digit run (9+ digits after removing separators) or an all-digit identifier. Contact details belong to the branch contact model, not to geometry. Arabic-Indic and Persian digits count as digits, blank text is refused, and each field is checked on its own (`geo_public_text_ok` in SQL). A violation is refused as `GEO_TEXT_NOT_PUBLIC_SAFE`.
 
 ## Database (`048_geo_access_geometry.sql`, additive)
 
