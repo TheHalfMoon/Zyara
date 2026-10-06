@@ -720,7 +720,7 @@ AnalyticsQuery
   limit
 ```
 
-The server compiles it to approved SQL/materialized views.
+The server compiles it to approved SQL/materialized views. An `AnalyticsQuery` carries no tenant, branch or subject filter of its own: the server derives that scope from the requesting principal and the `DataAccessGrant`, applies it below the query layer (RLS), and rejects a filter that would widen it.
 
 The model does not select raw schemas, credentials, or arbitrary connection ids.
 
@@ -967,6 +967,8 @@ routine_definitions
 routine_trigger_instances
 work_products
 skill_bundles
+module_enablements
+skill_enablements
 data_access_grants
 analytics_query_receipts
 knowledge_source_bindings
@@ -974,6 +976,8 @@ connector_sync_receipts
 ```
 
 Reuse existing N5/C3/C4 tables and AIF session/operation/event tables rather than duplicating approvals, audit, identities, or receipts.
+
+Scope rule for every table above: `module_descriptors` and `skill_bundles` are installation-scoped catalogs with no tenant data; `provider_readiness_snapshots` rows are installation- or tenant-scoped as §5.1 states; every other table carries `tenant_id` (and `branch_id` or a recorded tenant-wide justification) with `ENABLE` + `FORCE ROW LEVEL SECURITY` keyed on the server-set tenant, following migrations 042-045.
 
 ## 27. Implementation program
 
