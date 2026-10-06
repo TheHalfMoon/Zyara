@@ -27,10 +27,10 @@ Non-goals (handoff §4): no external provider call, no model, no browser, no sec
 - `consentPurpose` — reuses `ConsentPurpose` from `@zyara/consent-boundaries` (`care` | `recall` | `analytics`) or `NOT_REQUIRED`, which is only legal when every data class is `PUBLIC` or `INTERNAL`.
 - `credentialBinding` — `{ kind: "none" }` or `{ kind: "ref", ref: "credref_<opaque>" }`. Any other shape or any secret-looking value anywhere in the definition is rejected.
 - `egressPolicy` — opaque reference `egress_<id>`; AIF-02 owns the policy content.
-- `idempotency` — `mode` (`NOT_APPLICABLE` for reads only, `CALLER_KEY` or `NATURAL_KEY`) plus `enforcedBy` (`NONE`, `ZYARA_LEDGER`, `PROVIDER`). Added after the Jev design challenge named write safety as the weakest area: Zyara-side input dedup is not external-action idempotency, so a write may retry only when the provider itself enforces the key.
+- `idempotency` — `mode` (`NOT_APPLICABLE` for reads only, `CALLER_KEY` or `NATURAL_KEY`) plus `enforcedBy` (`NONE`, `ZYARA_LEDGER`, `PROVIDER`). Added after the Jev design challenge named write safety as the weakest area: Zyara-side input dedup is not external-action idempotency, so a write may retry only when the provider itself enforces the key. `ZYARA_LEDGER` deduplicates Zyara's own dispatch; it does not prevent a duplicate side effect at the provider. `CALLER_KEY` means the caller supplies the key. `NATURAL_KEY` means the owning domain derives it from the natural identity of the effect (for example appointment id + action). Either way, every write invocation carries its key.
 - `timeoutMs` (1..300000) and `retry` (`maxAttempts` 1..5, `retryOn: TRANSIENT_ONLY`); a write without an idempotency contract cannot retry.
 - `dryRunSupport` — boolean.
-- `verification` (`VerificationContract`) — `receiptKind`, `method` (`PROVIDER_RECEIPT` | `READ_BACK` | `RECONCILIATION` | `NONE_READ_ONLY`), and `onUnknownOutcome: RECONCILE`. A write cannot use `NONE_READ_ONLY`.
+- `verification` (`VerificationContract`) — `receiptKind`, `method` (`PROVIDER_RECEIPT` | `READ_BACK` | `RECONCILIATION` | `NONE_READ_ONLY`), and `onUnknownOutcome: RECONCILE`. A write cannot use `NONE_READ_ONLY`. Once a write has been dispatched, a timeout, dropped connection or crash yields `UNKNOWN_EXTERNAL_OUTCOME`, never `FAILED`; `FAILED` is reserved for a call refused before dispatch or one whose provider proved nothing was executed. The contract cannot observe dispatch, so the dispatcher (AIF-04C) enforces this rule; the receipt shape here keeps an unknown outcome pending reconciliation.
 - `observability` — `METADATA_ONLY` | `REDACTED_PAYLOAD`; raw payload logging does not exist.
 
 Cross-field rules:
@@ -77,7 +77,9 @@ Cross-field rules:
 - the actor;
 - a normalized `parametersDigest` matching the N5/C3 `APPROVAL_PARAMETERS_DIGEST_PATTERN`;
 - a correlation id;
-- an idempotency key, which is required when the contract is `CALLER_KEY`.
+- an idempotency key, which every write requires (`CALLER_KEY` or `NATURAL_KEY`).
+
+Correlation, idempotency and invocation ids are opaque tokens: no credential shape, and no direct identifier under the N5/C3 rule (`APPROVAL_DIRECT_IDENTIFIER_PATTERNS`: an all-digit value of 7+ digits or any run of 9+ digits). A canonical lowercase UUID is accepted as opaque, because digit-run heuristics refuse about 3% of random UUIDs (15% under the earlier any-7-digit rule).
 
 `InvocationReceipt` is typed here. Invocations and receipts of a `BRANCH` capability must name their branch; a `DENIED` receipt is always `UNVERIFIED`; a capability with `NONE_READ_ONLY` can never report `VERIFIED`. An `UNKNOWN_EXTERNAL_OUTCOME` receipt can never be `VERIFIED`; it is always `PENDING_RECONCILIATION`.
 
@@ -97,7 +99,9 @@ Cross-field rules:
 - an admitted definition cannot be mutated;
 - a write without idempotency rejected;
 - a write without verification rejected;
-- an unknown outcome cannot be verified.
+- an unknown outcome cannot be verified;
+- a write invocation without an idempotency key rejected (both modes);
+- random UUIDs accepted as invocation tokens.
 
 ## Composition with `adapter-harness`
 

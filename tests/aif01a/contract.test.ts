@@ -637,6 +637,19 @@ describe("AIF-01A security-judge hardening", () => {
     );
   });
 
+  it("requires an idempotency key on every write invocation, whichever side derives it", async () => {
+    const registry = new CapabilityContractRegistry();
+    const natural = await registry.register(
+      writeDefinition({ version: "1.0.1", idempotency: { mode: "NATURAL_KEY", enforcedBy: "PROVIDER" } }),
+      RELEASE,
+    );
+    assert.equal(
+      code(() => validateInvocation(natural, invocation(natural.digest, { version: "1.0.1", idempotencyKey: null }))),
+      "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED",
+    );
+    validateInvocation(natural, invocation(natural.digest, { version: "1.0.1", idempotencyKey: "appt-a1b2:cancel" }));
+  });
+
   it("accepts random UUIDs as correlation, idempotency and invocation ids", async () => {
     // A digit-run heuristic alone refused about 15% of random UUIDs; every one must pass.
     const registry = new CapabilityContractRegistry();

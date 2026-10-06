@@ -160,6 +160,11 @@ export interface RetryPolicy {
   retryOn: "TRANSIENT_ONLY";
 }
 
+// onUnknownOutcome RECONCILE: once a write has been dispatched, a timeout, dropped
+// connection or crash yields UNKNOWN_EXTERNAL_OUTCOME, never FAILED. FAILED is reserved for
+// a call refused before dispatch or one whose provider proved nothing was executed. The
+// dispatcher that observes dispatch (AIF-04C) enforces this; the receipt shape here keeps
+// an unknown outcome pending reconciliation.
 export interface VerificationContract {
   receiptKind: string;
   method: VerificationMethod;
@@ -759,7 +764,11 @@ export function validateInvocation(admitted: AdmittedCapability, invocation: Cap
     fail("CAPABILITY_PARAMETERS_DIGEST_INVALID", "parametersDigest must be a normalized params_ digest, never raw parameters");
   }
   assertOpaqueToken(invocation.correlationId, "invocation.correlationId", "CAPABILITY_CORRELATION_REQUIRED");
-  if (admitted.definition.idempotency.mode === "CALLER_KEY" || invocation.idempotencyKey !== null) {
+  // Every write carries its key, whichever side derives it: CALLER_KEY is supplied by the
+  // caller, NATURAL_KEY is derived by the owning domain from the natural identity of the
+  // effect (for example appointment id + action). A write without a key could be neither
+  // deduplicated nor reconciled.
+  if (admitted.definition.readOrWrite === "write" || invocation.idempotencyKey !== null) {
     assertOpaqueToken(invocation.idempotencyKey, "invocation.idempotencyKey", "CAPABILITY_IDEMPOTENCY_KEY_REQUIRED");
   }
   assertInstant(invocation.requestedAt, "invocation.requestedAt");
