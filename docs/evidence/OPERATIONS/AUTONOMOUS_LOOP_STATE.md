@@ -11,12 +11,12 @@ This file keeps the loop's working state in the repository, not on any local mac
 | AIF-03A (model/prompt registry) | **PR TheHalfMoon/Zyara#126 held**: its CI workflow cannot be pushed (gate 1) | `docs/evidence/AIF/AIF-03A/`; the pending workflow is stored as `docs/evidence/AIF/AIF-03A/aif03a-ci.yml.pending` |
 | GEO-01A/B/C (geo truth) | merged, closed (#118, #127, #128, #129) | `docs/evidence/GEO/GEO-01_CLOSURE.md` |
 | GEO-09 (spatial insights) | merged, closed (#131, merge `3fe68f1b`) | `docs/evidence/GEO/GEO-09/CLOSURE.md` |
+| GEO-10 (AI / voice geo capabilities) | merged, closed (#133, merge `419dad59`) | `docs/evidence/GEO/GEO-10/CLOSURE.md` |
 | M051 consent instant comparison | merged (#122) | consent suites M051, M052, M053 and M057 are not yet run by any CI workflow (gate 1) |
 
 **Next dependency-ready slices:**
 
 - GEO-02 (MapLibre renderer; needs a released `maplibre-gl` pin after license/SBOM review, and likely a web CI workflow);
-- GEO-10 (AI/voice geo tools, after AIF-01);
 - AIF-03B onward, after AIF-03A merges.
 
 **Follow-ups:**
@@ -29,7 +29,7 @@ This file keeps the loop's working state in the repository, not on any local mac
 ## External gates
 
 1. **`workflow` token scope.** The active account `TheHalfMoon` has `gist`, `read:org` and `repo`, but not `workflow`. Any push that touches `.github/workflows/` is refused. Fix: `gh auth refresh -h github.com -s workflow`. Other logged-in accounts have the scope, but the loop does not switch identity without the founder's explicit approval.
-2. **Local machine.** On 2026-10-07 drive C: had under 1 GB free and Docker Desktop was unresponsive. The founder's instruction is not to depend on local state: the loop works from pushed branches and the GitHub API, and the PostgreSQL/PostGIS proof is CI.
+2. **Local machine.** During the GEO-10 review on 2026-10-07 drive C: had about 6.35 GB free. The founder's instruction remains not to depend on local state: the loop works from pushed branches and the GitHub API, and PostgreSQL/PostGIS proof is CI.
 3. Founder approval, production credentials, NPHIES onboarding and real clinic/patient validation remain out of scope, as always.
 
 ## Placement rule while gate 1 holds
@@ -45,7 +45,7 @@ Slices that need a genuinely new workflow wait for gate 1.
 
 - **Jev 0.3.2:** `py -3 ~/.agents/skills/jev/scripts/jev run <spec.json> --text -s @file` (or `-s -`), with `PYTHONIOENCODING=utf-8`. The `jev.exe` on PATH is a different tool. Run the design challenge on the work packet, then post-implementation on each source file paired with its tests.
 - **pstack `/ps-review`:** the interface is `~/.agents/skills/ps-review/SKILL.md`. Run fresh-context judge subagent(s) on the diff; a security trigger means one judge carries all four bars. Delta cycles are capped at 3, and the evidence goes in `PSTACK_EVIDENCE.md`.
-- **Alibaba Open Code Review (v1.12.11 on this host):** delegate mode only (`ocr delegate preview --from origin/main --to HEAD`, `ocr delegate rule <files>`). There is no LLM key, so the host applies the rules and no OCR-model verdict is claimed.
+- **Alibaba Open Code Review (v1.12.12 on this host):** delegate mode only (`ocr delegate preview --from origin/main --to HEAD`, `ocr delegate rule <files>`). There is no LLM key, so the host applies the rules and no OCR-model verdict is claimed.
 - **Graft 0.21.1:** `graft telemetry disable` and `DO_NOT_TRACK=1`, then `graft build`, `graft check`, `graft callers`, `graft skeleton`. No `--deep` and no trail.
 - CodeRabbit, Qodo and Cubic are not substitute evidence.
 
