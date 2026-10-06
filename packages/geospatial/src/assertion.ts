@@ -117,7 +117,8 @@ export type GeoContractErrorCode =
   | "GEO_INSIGHT_METRIC_INVALID"
   | "GEO_INSIGHT_SUPPRESSION_TOO_WEAK"
   | "GEO_INSIGHT_SCOPE"
-  | "GEO_INSIGHT_CELL_INVALID";
+  | "GEO_INSIGHT_CELL_INVALID"
+  | "GEO_INSIGHT_WINDOW_INVALID";
 
 export class GeoContractError extends Error {
   readonly code: GeoContractErrorCode;

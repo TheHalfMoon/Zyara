@@ -55,36 +55,55 @@ Each `SpatialMetricDefinition` has:
 - **Missing locations.** An event without a usable location is counted in `missing`; it is never dropped silently.
 - **Determinism.** The output is sorted by cell id and does not depend on input order.
 
+## Windows
+
+A window starts at UTC midnight on a multiple of `windowDays` days since the epoch, so two releases of a metric never overlap and cannot be differenced. This is enforced in TypeScript (`validateWindow`) and in the database.
+
 ## Release (`releaseSpatialCells`)
 
-- **Small cells.** A cell with a count below `minCohort` is suppressed: its value is null.
-- **Complementary suppression.** If exactly one cell is suppressed while the total is released, the smallest visible cell is also suppressed, so the hidden value cannot be derived. The same applies to `missing`.
-- **Totals.** The total is released only if it is at least `minCohort`.
-- **Ratios.** A ratio cell is suppressed when its numerator cell is suppressed. With zero supply the value is null with reason `NO_SUPPLY`; it is never infinite.
+- **Small cells.** A cell below `minCohort` is suppressed: its value is null and its reason is `SUPPRESSED_LOW_COUNT`. A missing count with 0 < missing < k is suppressed too.
+- **Complementary suppression.** While the total is released and the hidden mass (suppressed cells plus a suppressed missing count) is greater than 0 but below k, the smallest visible cell is also suppressed (`SUPPRESSED_COMPLEMENTARY`). If no visible cell is left, the total is withheld.
+- **Totals.** The total is released only if it is at least `minCohort`. `total` counts released units: a person counts once per cell and once in missing.
+- **Governance travels with the release.** A release carries `subjectKind`, `valueKind` and `minCohort`.
+- **Ratios (`releaseCapacityGap`).**
+  - Demand must be a released person count with at least the gap metric's cohort, and supply must be `SUPPLY_BY_CELL` on the same window and grid.
+  - A suppressed demand cell stays suppressed (`SUPPRESSED_NUMERATOR`).
+  - Zero supply gives `NO_SUPPLY` with a null value; it is never infinite.
+- **Only supply is facility-derived.** Every other metric is person-derived, so a person count cannot be relabelled to escape its cohort. Every event needs an opaque `subjectRef`, so duplicates never double-count.
 
 ## Export (`exportSpatialInsight`)
 
-- **What it contains.** Only the metric id, window, resolution, `{ cellId, value, suppressed, reason }` cells, the released total and the released missing count.
-- **What it never contains.** No coordinates, subjects or events. Exporting a patient-dot or raw-point layer is impossible by construction, and the test asserts it.
+- **What it contains.** Governance (metric id, subject and value kind, cohort, window, resolution), `{ cellId, value, suppressed, reason }` cells, the released total and the released missing count.
+- **Re-checks.** It validates every cell id. It refuses a person release with a cohort below 11, an unsuppressed person count below the cohort, a small total or missing count, and implicit suppression. A hand-built small count therefore cannot be exported.
+- **What it never contains.** No coordinates, subjects or events.
 
 ## Database (`050_geo_spatial_insights.sql`, additive)
 
-`geo_insight_cells` is the released aggregate store:
+- **`geo_insight_releases`** (one header per tenant, metric and window) holds:
+  - the governance: subject and value kind, numerator, denominator, source, purpose, sensitive, cohort and retention;
+  - the grid, the scope (optional branch, composite FK) and the fixed-grid window;
+  - the released `total` and `missing`.
 
-- **Rows.** One row per tenant, metric, window and cell. It is append-only (`SELECT` plus column-level `INSERT`), and `computed_at` is database time.
-- **Columns.** There is no geometry, coordinate, patient, subject, account or session column.
-- **CHECKs.** They enforce:
-  - the cell id pattern, with a prefix that matches the resolution;
-  - `suppressed = (value IS NULL)`;
-  - a `PERSON` minimum cohort of at least 11, and at least 20 plus a coarse resolution when sensitive;
-  - an unsuppressed `PERSON` `COUNT` value of at least `min_cohort`;
-  - a window of at most 366 days;
-  - `expires_at` within 400 days of `computed_at`.
-- **Integrity.** FORCE RLS on `app.current_tenant`, and a composite branch FK when the metric is branch-scoped.
+  Its CHECKs enforce:
+  - the cohort rules: person ≥ 11, and sensitive ≥ 20 on a grid of at least 0.10°;
+  - only `SUPPLY_BY_CELL` may be facility-derived;
+  - a released total or missing count is never small, and counts are integers.
+
+  A partial unique index allows **one release of a person-count numerator per window**, so it cannot be released again at another grid, scope or metric id and then differenced.
+- **`geo_insight_cells`:**
+  - One row per cell, pinned to its header by a composite FK on grid, subject kind, value kind and cohort, so a cell cannot relabel its governance.
+  - The cell id prefix must match the grid.
+  - Suppression is explicit (`suppressed` ⇔ a `SUPPRESSED_*` reason; a suppressed cell has a null value; a non-suppressed cell has a value unless the reason is `NO_SUPPLY`).
+  - An unsuppressed person count is at least the cohort.
+- **Access.**
+  - FORCE RLS on both tables; append-only (column-level `INSERT`, with `computed_at` as database time).
+  - The application has **no SELECT on the base tables**. It reads the `geo_insight_*_live` views, which filter by `app.current_tenant` and by retention (`security_barrier`), so expired rows are unreadable.
+  - `geo_purge_expired_insights()` (`SECURITY DEFINER`, pinned `search_path`, scoped to the current tenant) removes expired releases and their cells.
+- **No location columns.** Neither table has a geometry, coordinate, patient, subject, account or session column.
 
 ## Required tests (handoff)
 
-- low-count suppression, including the complementary and missingness cases, both in TypeScript and as a database CHECK;
+- low-count suppression, including the complementary (multi-cell) and missingness cases in TypeScript, and the database refusing unsuppressed small cells, totals and missing counts;
 - cross-tenant isolation: a foreign event fails closed, and in the smoke RLS hides rows and refuses cross-tenant inserts;
 - no patient dots: outputs carry cell ids only, with no finer-than-0.05° grid;
 - no raw-coordinate dashboard export: the exported JSON has no coordinates or subject references;
@@ -95,4 +114,4 @@ Plus:
 - the metric definition validation rules;
 - the ratio's `NO_SUPPLY` case and its suppression propagation;
 - the window and branch scope;
-- append-only storage and one row per cell per window (smoke).
+- fixed window grid, one release per person numerator and window, cells pinned to release governance, view-only reads, scoped retention purge and append-only storage (smoke).
