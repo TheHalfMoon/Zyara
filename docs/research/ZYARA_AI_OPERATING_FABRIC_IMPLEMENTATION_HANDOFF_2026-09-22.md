@@ -153,6 +153,8 @@ No external provider call. No model. No browser. No secret store.
 
 `CAPABILITY_CONTRACT_QUALIFIED = TRUE`
 
+WKD extension: AIF-01 (01A/01B) is extended by [WKD](../canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) §§5.2, 13 module descriptors/capability inventory; WKD-01A starts only after AIF-01A/B qualify.
+
 ## 5. AIF-01B — Registry + deny-by-default resolver
 
 ### Goal
@@ -298,6 +300,8 @@ Tests must prove:
 Exit:
 
 `MODEL_PROMPT_REGISTRY_QUALIFIED = TRUE`
+
+WKD extension: [WKD](../canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) WKD-01B `ProviderReadinessSnapshot` projects these model profiles and depends on AIF-03A; `SkillBundle` prompts live in this registry.
 
 ### AIF-03B — Decision provider qualification
 
@@ -746,6 +750,8 @@ No one-click mutation from an AI summary.
 ### Exit
 
 `ACTION_CENTER_OPERATIONAL_QUALIFIED = TRUE`
+
+WKD extension: [WKD](../canonical/ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) WKD-04/WKD-10 add interaction and work views to this Action Center and depend on AIF-07; approvals still settle only through C3.
 
 ## 13. AIF-08 — Operations Insights
 

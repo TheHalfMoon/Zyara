@@ -638,6 +638,8 @@ Exit:
 - authority narrowing is enforced;
 - synthetic and DB-backed scope tests pass.
 
+WKD extension: the [Work / Knowledge / Data Plane plan](ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) §§5.2, 13 adds module descriptors and a capability inventory on top of AIF-01; module declarations never grant capability, and AIF-01 stays authoritative.
+
 ### AIF-02 — Privacy / Egress / Secret Mediation
 
 Deliver:
@@ -679,6 +681,8 @@ Exit:
 - remote aliases such as `latest` are insufficient identity;
 - prompt edits cannot mutate historical receipts;
 - model/prompt revocation blocks new work.
+
+WKD extension: [WKD](ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) §5.1 `ProviderReadinessSnapshot` is a read-only projection over `ModelProfile`, and §21 `SkillBundle` references this prompt registry; neither is a second registry.
 
 #### AIF-03B — Decision Provider Qualification
 
@@ -876,6 +880,8 @@ Exit:
 - every action resolves to authoritative state;
 - no derived summary is the sole basis for a protected action;
 - accessibility/i18n/RTL gates pass.
+
+WKD extension: [WKD](ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_2026-09-29.md) §§11, 19 adds `InteractionRequest` and work/plan/module views to this Action Center; approvals still settle only through N5/C3, and there is no second action center.
 
 ### AIF-08 — Operations Insights
 

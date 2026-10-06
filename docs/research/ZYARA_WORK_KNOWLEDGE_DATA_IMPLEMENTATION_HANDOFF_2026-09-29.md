@@ -60,6 +60,20 @@ WKD-02..09
             +--> WKD-10 Action Center + Whole-Plane Qualification
 ```
 
+Additional required AIF prerequisite edges (canonical plan §28); a WKD slice may not start until each listed AIF package is qualified:
+
+```text
+AIF-03A Model + Prompt Registry             --> WKD-01B Provider Readiness
+AIF-02  Privacy/Egress + Secrets            --> WKD-02B Plan Compiler
+AIF-04B Context Builder + Tool Translation  --> WKD-02B Plan Compiler
+AIF-04A Durable Session + Input Substrate   --> WKD-03 Work/Liveness
+AIF-04C Operation Manager + Recovery        --> WKD-03 Work/Liveness
+AIF-03D Permission-first Retrieval / RAG    --> WKD-06 Knowledge/Connector Binding
+AIF-08  Operations Insights                 --> WKD-07 Curated Data Gateway
+AIF-02  Privacy/Egress + Secrets            --> WKD-09 Sidecar/Plugin Integrity
+AIF-07  Action Center                       --> WKD-10 Action Center + Whole-Plane Qualification
+```
+
 The overall AIF first leaf remains `AIF-01A`.
 
 ## 3. WKD-01A — Integration module descriptor
@@ -255,9 +269,13 @@ WAITING_HUMAN
 WAITING_EXTERNAL
 BLOCKED
 IN_REVIEW
+UNKNOWN_EXTERNAL_OUTCOME
 DONE
 CANCELLED
+EXPIRED
 ```
+
+State mapping onto AIF terminal states follows canonical plan §8; `UNKNOWN_EXTERNAL_OUTCOME` can never close as `DONE` without an AIF reconciliation receipt.
 
 ### Required dimensions
 
@@ -356,7 +374,9 @@ Implement:
 - kinds: QUESTION/CONFIRMATION/APPROVAL/PERMISSION/MISSING_CONFIGURATION/HUMAN_HANDOFF/REVIEW;
 - addressee;
 - options;
-- parameter digest;
+- parameter digest (mandatory for APPROVAL/CONFIRMATION);
+- tenant/branch scope inherited from the work item;
+- APPROVAL/CONFIRMATION: mandatory `approval_ref` to an existing N5/C3 approval plus AIF §12C.9 human-intent binding fields; no separate settlement;
 - expiry;
 - terminal statuses;
 - result;

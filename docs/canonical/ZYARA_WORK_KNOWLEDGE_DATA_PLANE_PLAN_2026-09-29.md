@@ -4,7 +4,9 @@
 **Mode:** PLAN-ONLY  
 **Planning base:** `56eb66d8b828b4d9412047c1cd64dec0c64b7d76`  
 **Program:** cross-cutting `WKD` amendment to AIF + N9  
-**Purpose:** make Zyara's agent work coordination, model/knowledge routing, integrations, and analytics/data exploration implementable without creating a second authority plane or exposing raw healthcare data to agents.
+**Purpose:** make Zyara's agent work coordination, model/knowledge routing, integrations, and analytics/data exploration implementable without creating a second authority plane or exposing raw healthcare data to agents.  
+**AIF precedence:** this plan extends [`ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md`](ZYARA_AI_OPERATING_FABRIC_PLAN_2026-09-22.md); on any conflict AIF wins. WKD creates no second approval system, prompt registry, memory store, or action center.  
+**Co-authoritative addendum:** [`../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md`](../research/ZYARA_WORK_KNOWLEDGE_DATA_FINAL_HARDENING_2026-09-29.md) (H01-H28). Where the addendum is stricter or more specific than this plan, the addendum wins; neither overrides AIF.
 
 ## 1. Product and architecture thesis
 
@@ -189,6 +191,7 @@ Minimum state:
 ```text
 provider_id
 provider_profile_id
+model_profile_id          # AIF §12A.1 ModelProfile; source of admission/data/task classes
 configured
 credential_present
 credential_validated_at
@@ -204,10 +207,13 @@ health_observed_at
 stale_after
 failure_reason_code
 kill_switch_state
+incident_state            # AIF §12C.14: HEALTHY | DEGRADED | QUARANTINED | SUSPENDED | REVOKED
 ```
 
 Rules:
 
+- the snapshot is a read-only projection over the AIF §12A.1 `ModelProfile`; `allowed_data_classes`, `allowed_task_classes` and `admission_state` are copied from it and never written by WKD;
+- `incident_state` is the AIF §12C.14 state; only `HEALTHY` (or `DEGRADED` where the ModelProfile policy allows it) is usable for new work, and `QUARANTINED`/`SUSPENDED`/`REVOKED` never are;
 - configuration, health, and authorization are separate;
 - `healthy` does not override task/data admission;
 - an unavailable provider is not shown as usable for new work;
@@ -257,6 +263,8 @@ It must pass a deterministic compiler before any node can become an AIF `Operati
 
 ```text
 plan_id
+tenant_id                 # server-derived, never body-supplied
+branch_id?                # from the requesting work context; null only for an explicitly tenant-wide request
 schema_version
 planner_profile
 prompt_version
@@ -381,9 +389,24 @@ WAITING_HUMAN
 WAITING_EXTERNAL
 BLOCKED
 IN_REVIEW
+UNKNOWN_EXTERNAL_OUTCOME
 DONE
 CANCELLED
+EXPIRED
 ```
+
+Mapping onto AIF §6 standard terminal states of the linked operation(s):
+
+```text
+AIF SUCCEEDED                -> DONE (only when every linked operation SUCCEEDED and verification passed)
+AIF FAILED_TERMINAL          -> BLOCKED with a routable unblock descriptor (owner + repair path), or CANCELLED by an authorized actor
+AIF CANCELLED                -> CANCELLED
+AIF EXPIRED                  -> EXPIRED
+AIF NEEDS_HUMAN              -> WAITING_HUMAN
+AIF UNKNOWN_EXTERNAL_OUTCOME -> UNKNOWN_EXTERNAL_OUTCOME
+```
+
+`UNKNOWN_EXTERNAL_OUTCOME` can never close as `DONE`; it leaves that state only through an AIF reconciliation receipt that proves the external outcome, and is never converted into success to close a queue.
 
 A clinical domain status is never copied into this state machine as authority.
 
@@ -441,6 +464,8 @@ REVIEW
 
 ```text
 interaction_id
+tenant_id                 # equals the linked work item's tenant
+branch_id?                # equals the linked work item's branch; null only when that work item is explicitly tenant-wide
 work_item_id
 run_id
 kind
@@ -448,7 +473,8 @@ addressee_type
 addressee_id
 prompt/summary
 options[]?
-parameter_digest?
+parameter_digest?         # MANDATORY for APPROVAL and CONFIRMATION
+approval_ref?             # MANDATORY for APPROVAL and CONFIRMATION: existing N5/C3 approval record
 authority_scope
 expires_at
 status
@@ -457,6 +483,21 @@ created_at
 settled_at?
 publication_receipts[]
 ```
+
+APPROVAL and CONFIRMATION kinds additionally carry the AIF §12C.9 human-intent binding fields:
+
+```text
+human_actor
+action_summary            # human-readable summary actually shown
+parameter_digest          # normalized parameters digest (mandatory)
+data_recipient_scope
+expires_at
+use_semantics             # ONE_TIME | REUSABLE
+capability_id + capability_version
+ui_prompt_version         # where material
+```
+
+An APPROVAL/CONFIRMATION `InteractionRequest` is only a presentation and collection surface for the referenced N5/C3 approval. It has no separate settlement: the decision is recorded by the N5/C3 approval, and the interaction mirrors that outcome. Creating one without a valid `approval_ref` is rejected, and a material parameter change invalidates it per AIF §12C.9.
 
 ### 11.3 Settlement rules
 
@@ -479,6 +520,8 @@ Define `RoutineDefinition`:
 
 ```text
 routine_id
+tenant_id                 # server-derived, never body-supplied
+branch_id?                # null only for an explicitly tenant-wide routine; the justification is recorded on the definition
 workflow_version
 trigger_type
 schedule/webhook/event
@@ -565,6 +608,7 @@ Define `KnowledgeSourceBinding`:
 binding_id
 module_id
 tenant_id
+branch_scope              # branch_id, or TENANT_WIDE only with a recorded justification
 subject_scope
 source_type
 credential_binding_ref
@@ -763,6 +807,8 @@ Agent-generated outputs are first-class `WorkProduct` records only when useful.
 
 ```text
 work_product_id
+tenant_id                 # equals the linked work item's tenant
+branch_id?                # equals the linked work item's branch; null only when that work item is explicitly tenant-wide
 work_item_id
 run_id
 kind
@@ -781,7 +827,8 @@ Rules:
 - screenshots/files inherit data classification;
 - final authoritative write occurs through the owning domain capability;
 - work products can be superseded without erasing history;
-- exports include provenance where appropriate.
+- exports include provenance where appropriate;
+- persistent run/task context and any memory derived from a WorkProduct is stored only as an authoritative domain record or an AIF §12C.12 governed `MemoryObject`; WKD defines no separate memory store.
 
 ## 21. Skill / instruction injection
 
@@ -796,13 +843,14 @@ digest
 publisher/source
 allowed_agent_classes
 required_capabilities
-prompt/instruction refs
+prompt_registry_refs[]    # AIF §12A.2 prompt/template id + version; not a parallel registry
 data classes
 admission/evaluation refs
 ```
 
 Rules:
 
+- skill prompts/instructions live in the AIF §12A.2 prompt/policy/schema registry; `SkillBundle` only groups references to them and is not a second prompt registry;
 - runtime cannot self-modify an admitted skill;
 - skill cannot widen capability or egress;
 - skill version is part of the run/receipt context;
@@ -1039,6 +1087,20 @@ WKD-02..09
             +--> WKD-10 Action Center/Hardening
 ```
 
+Additional required AIF prerequisite edges (slice ids as in the implementation handoff; a WKD slice may not start until each listed AIF package is qualified):
+
+```text
+AIF-03A Model + Prompt Registry             --> WKD-01B Provider Readiness
+AIF-02  Privacy/Egress + Secrets            --> WKD-02B PlanGraph Compiler
+AIF-04B Context Builder + Tool Translation  --> WKD-02B PlanGraph Compiler
+AIF-04A Durable Session + Input Substrate   --> WKD-03 Work/Liveness
+AIF-04C Operation Manager + Recovery        --> WKD-03 Work/Liveness
+AIF-03D Permission-first Retrieval / RAG    --> WKD-06 Knowledge/Connectors
+AIF-08  Operations Insights                 --> WKD-07 Curated Data Gateway
+AIF-02  Privacy/Egress + Secrets            --> WKD-09 Plugin/Sidecar Integrity
+AIF-07  Action Center                       --> WKD-10 Action Center/Hardening
+```
+
 AIF-03/AIF-04 remain the model/runtime substrate. WKD does not replace them.
 
 ## 29. First executable leaves
@@ -1050,6 +1112,8 @@ The repository-wide first AIF leaf remains:
 The first WKD-specific leaf after AIF-01A/B is canonical:
 
 `WKD-01A — IntegrationModuleDescriptor + ProviderReadinessSnapshot contracts`
+
+Only the descriptor portion (handoff WKD-01A) depends solely on AIF-01A/B; the `ProviderReadinessSnapshot` portion (handoff WKD-01B) also waits for AIF-03A per §28.
 
 It requires:
 
@@ -1106,6 +1170,6 @@ This amendment is implementation-ready only when:
 - local/private/no-egress behavior fails closed;
 - observability, recovery, security, privacy and retention are explicit;
 - first implementation leaf is bounded and dependency-correct;
-- readiness checklist has no known uncovered architecture item.
+- the readiness checklist (dimensions 1-204) and the co-authoritative final-hardening addendum (H01-H28, dimensions 205-232) both pass; the base checklist alone is not sufficient, and any later-found gap reopens readiness until it is closed in one of them.
 
 `ZYARA_WORK_KNOWLEDGE_DATA_PLANE_PLAN_COMPLETE = YES`

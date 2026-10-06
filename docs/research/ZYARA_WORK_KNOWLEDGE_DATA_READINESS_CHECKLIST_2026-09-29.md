@@ -206,7 +206,7 @@ Legend:
 | 191 | Failure preserves evidence/no fake completion | COVERED | §25 |
 | 192 | Additive data-model delta defined | COVERED | §26 |
 | 193 | Existing approvals/audit/identities reused | COVERED | §26 |
-| 194 | WKD implementation slices dependency-ordered | COVERED | §§27-28 |
+| 194 | WKD implementation slices dependency-ordered, including explicit AIF prerequisite edges (AIF-02, 03A, 03D, 04A, 04B, 04C, 07, 08) | COVERED | §§27-28; handoff §2 |
 | 195 | First WKD leaf bounded/no PHI/no credentials | COVERED | §29 |
 | 196 | Production provider credentials | EXTERNAL_GATE | §30 |
 | 197 | Production PHI model/provider approval | EXTERNAL_GATE | §30 |
