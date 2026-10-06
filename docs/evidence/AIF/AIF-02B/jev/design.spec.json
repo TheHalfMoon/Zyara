@@ -1,0 +1,12 @@
+{
+  "description": "AIF-02B credential mediation: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "secret_reaches_model": {"type": "noul", "instructions": "A resolved secret could reach a model, agent, tool payload, prompt or any serialized output.", "criteria": {"true": "Some path lets the secret value be serialized or handed to a model or tool", "false": "The secret is only reachable inside the adapter boundary and every serialization fails"}},
+    "secret_in_logs": {"type": "noul", "instructions": "A secret value or vault handle could appear in a receipt, error message, log or health report.", "criteria": {"true": "Some output can contain the value or handle", "false": "Outputs carry only opaque refs and metadata"}},
+    "scope_bypass": {"type": "noul", "instructions": "A credential could be used by another tenant, another branch, another provider, with insufficient scopes, or chosen by a model.", "criteria": {"true": "Some scope check can be bypassed", "false": "Tenant, branch, provider, scope and server-derived identity are all enforced"}},
+    "stale_credential": {"type": "noul", "instructions": "An expired, not-yet-valid, revoked or rotated-away credential could still be resolved or used after its lease.", "criteria": {"true": "Some stale credential can be used", "false": "Expiry, not-before, revocation, rotation and lease expiry are all enforced"}},
+    "residual_risk": {"type": "score", "instructions": "How much risk remains in this design?", "criteria": ["none", "low", "moderate", "high"]},
+    "weakest_area": {"type": "choice", "instructions": "Which area is weakest?", "criteria": {"boundary": "Adapter boundary and secret handling", "logging": "Receipts, errors and health", "scope": "Tenant, branch, provider and scope", "lifecycle": "Expiry, rotation and lease", "completeness": "Missing rules or tests"}}
+  }
+}
