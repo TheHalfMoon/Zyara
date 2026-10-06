@@ -325,7 +325,7 @@ function evaluate(request: EgressRequest, deps: EgressDependencies, nowIso: stri
 async function minimize(
   field: Classified,
   rule: ClassRule,
-  key: CryptoKey | null,
+  key: CryptoKey,
 ): Promise<{ sent: PayloadField | null; transform: Minimization }> {
   switch (rule.minimization) {
     case "DROP":
@@ -333,8 +333,7 @@ async function minimize(
     case "REDACT":
       return { sent: { path: field.path, value: REDACTED_VALUE }, transform: "REDACT" };
     case "PSEUDONYMIZE": {
-      // The key is always resolved when a PSEUDONYMIZE rule is present (see decideEgress).
-      if (field.value === null || key === null) return { sent: { path: field.path, value: null }, transform: "PSEUDONYMIZE" };
+      if (field.value === null) return { sent: { path: field.path, value: null }, transform: "PSEUDONYMIZE" };
       const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`pseudonym:${field.path}:${JSON.stringify(field.value)}`));
       return { sent: { path: field.path, value: `pseu_${hex(mac).slice(0, 32)}` }, transform: "PSEUDONYMIZE" };
     }
@@ -352,11 +351,17 @@ async function minimize(
 function snapshotRequest(input: EgressRequest): EgressRequest {
   let text: string | undefined;
   try {
-    text = JSON.stringify(input);
+    // Non-finite numbers would serialise as null; they are invalid payload, not absent.
+    text = JSON.stringify(input, (_key, value: unknown) => {
+      if (typeof value === "number" && !Number.isFinite(value)) throw new Unavailable("non-finite number");
+      return value;
+    });
   } catch {
     text = undefined;
   }
-  const plain = (text === undefined ? {} : JSON.parse(text)) as Partial<EgressRequest>;
+  const parsed: unknown = text === undefined ? null : JSON.parse(text);
+  // A non-object request (null, a number, an array) becomes an empty one and is denied.
+  const plain = (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) ? parsed : {}) as Partial<EgressRequest>;
   return {
     tenantId: plain.tenantId as string,
     policy: plain.policy as VersionedRef,
@@ -435,10 +440,16 @@ export async function decideEgress(requestInput: EgressRequest, deps: EgressDepe
   return Object.freeze({ receipt, payload: allow ? Object.freeze(sent) : null });
 }
 
+// A request value is echoed into a receipt only when it is an opaque id that does not look like
+// a direct identifier (a phone or national id typed into an id field).
+function echoable(value: unknown): value is string {
+  return typeof value === "string" && OPAQUE.test(value) && !looksLikeDirectIdentifier(value);
+}
+
 function safeRef(value: unknown): VersionedRef | null {
   if (typeof value !== "object" || value === null) return null;
   const { id, version } = value as Record<string, unknown>;
-  return typeof id === "string" && OPAQUE.test(id) && typeof version === "string" && OPAQUE.test(version) ? { id, version } : null;
+  return echoable(id) && echoable(version) ? { id, version } : null;
 }
 
 function safeZone(value: unknown): TrustZone | null {
@@ -458,10 +469,10 @@ async function buildReceipt(
   const body: Omit<EgressReceipt, "receiptDigest"> = {
     decision: allow ? "ALLOW" : "DENY",
     reasons: evaluation.reasons,
-    tenantId: typeof request.tenantId === "string" && OPAQUE.test(request.tenantId) ? request.tenantId : "invalid",
+    tenantId: echoable(request.tenantId) ? request.tenantId : "invalid",
     policy: safeRef(request.policy),
     schema: safeRef(request.schema),
-    providerId: typeof request.providerId === "string" && OPAQUE.test(request.providerId) ? request.providerId : null,
+    providerId: echoable(request.providerId) ? request.providerId : null,
     manifestVersion: evaluation.manifest?.version ?? null,
     sourceZone: safeZone(request.sourceZone),
     destinationZone: evaluation.manifest?.trustZone ?? null,

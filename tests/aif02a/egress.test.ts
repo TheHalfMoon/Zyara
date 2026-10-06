@@ -48,9 +48,9 @@ const POLICY: EgressPolicy = {
 };
 
 const PROVIDERS: Record<string, ProviderManifest> = {
-  "llm-ksa": { providerId: "llm-ksa", version: "1", trustZone: "QUALIFIED_PROVIDER", location: "KSA", dataClassCeiling: ["PUBLIC", "INTERNAL", "PII", "CREDENTIAL"], approvedPurposes: ["recall", "care"], retentionDays: 7, status: "ACTIVE" },
-  "llm-global": { providerId: "llm-global", version: "1", trustZone: "EXTERNAL", location: "OTHER", dataClassCeiling: ["PUBLIC"], approvedPurposes: ["recall"], retentionDays: 30, status: "ACTIVE" },
-  "local-model": { providerId: "local-model", version: "1", trustZone: "TENANT_DEVICE", location: "KSA", dataClassCeiling: ["PUBLIC", "INTERNAL", "PII", "PHI"], approvedPurposes: ["care", "recall"], retentionDays: 0, status: "ACTIVE" },
+  "llm-ksa": { providerId: "llm-ksa", version: "1", trustZone: "QUALIFIED_PROVIDER", dataClassCeiling: ["PUBLIC", "INTERNAL", "PII", "CREDENTIAL"], approvedPurposes: ["recall", "care"], retentionDays: 7, status: "ACTIVE" },
+  "llm-global": { providerId: "llm-global", version: "1", trustZone: "EXTERNAL", dataClassCeiling: ["PUBLIC"], approvedPurposes: ["recall"], retentionDays: 30, status: "ACTIVE" },
+  "local-model": { providerId: "local-model", version: "1", trustZone: "TENANT_DEVICE", dataClassCeiling: ["PUBLIC", "INTERNAL", "PII", "PHI"], approvedPurposes: ["care", "recall"], retentionDays: 0, status: "ACTIVE" },
 };
 
 const RECALL_CONSENT: ConsentGrant = { patientId: "p-1", purpose: "recall", granted: true, atUtc: "2026-09-01T00:00:00.000Z", revokedAtUtc: null };
@@ -317,5 +317,36 @@ describe("AIF-02A panel hardening", () => {
     assert.deepEqual((await decideEgress(request({ sourceZone: "MARS" as unknown as "ZYARA_CORE" }), await deps())).receipt.reasons, ["EGRESS_PAYLOAD_INVALID"]);
     const jwt = `eyJhbGciOiJIUzI1NiJ9.eyJ${"a".repeat(1200)}.signature`;
     assert.deepEqual((await decideEgress(request({ payload: [{ path: "slotLabel", value: jwt }] }), await deps())).receipt.reasons, ["EGRESS_CREDENTIAL_REFUSED"]);
+  });
+});
+
+describe("AIF-02A delta-1 hardening", () => {
+  it("denies a non-object request instead of throwing", async () => {
+    for (const bad of [null, undefined, 5, "x", []]) {
+      const decision = await decideEgress(bad as unknown as EgressRequest, await deps());
+      assert.deepEqual([decision.receipt.decision, decision.receipt.reasons, decision.payload], ["DENY", ["EGRESS_PAYLOAD_INVALID"], null]);
+    }
+  });
+
+  it("denies a non-finite number instead of sending it as null", async () => {
+    const decision = await decideEgress(request({ payload: [{ path: "slotLabel", value: Number.NaN }] }), await deps());
+    assert.deepEqual([decision.receipt.decision, decision.payload], ["DENY", null]);
+  });
+
+  it("never echoes an identifier-shaped provider or policy id into a receipt", async () => {
+    const decision = await decideEgress(request({ providerId: "0501234567", policy: { id: "1012345678", version: "1.0.0" } }), await deps());
+    assert.equal(decision.receipt.decision, "DENY");
+    assert.deepEqual([decision.receipt.providerId, decision.receipt.policy], [null, null]);
+    assert.ok(!JSON.stringify(decision.receipt).includes("0501234567"));
+  });
+
+  it("binds a pseudonym to its field path", async () => {
+    const decision = await decideEgress(
+      request({ payload: [{ path: "patientName", value: "Same Value" }, { path: "patientPhone", value: "Same Value" }] }),
+      await deps(),
+    );
+    assert.equal(decision.receipt.decision, "ALLOW");
+    const [name, phone] = ["patientName", "patientPhone"].map((path) => decision.payload?.find((field) => field.path === path)?.value);
+    assert.notEqual(name, phone);
   });
 });
