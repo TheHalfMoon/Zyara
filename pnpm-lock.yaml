@@ -168,12 +168,21 @@ importers:
 
   packages/capability-gateway:
     dependencies:
+      '@zyara/adapter-harness':
+        specifier: workspace:*
+        version: link:../adapter-harness
+      '@zyara/authorization':
+        specifier: workspace:*
+        version: link:../authorization
       '@zyara/collaboration':
         specifier: workspace:*
         version: link:../collaboration
       '@zyara/consent-boundaries':
         specifier: workspace:*
         version: link:../consent-boundaries
+      '@zyara/identity':
+        specifier: workspace:*
+        version: link:../identity
 
   packages/care-modalities:
     dependencies:
@@ -507,6 +516,28 @@ importers:
       '@zyara/capability-gateway':
         specifier: workspace:*
         version: link:../../packages/capability-gateway
+    devDependencies:
+      tsx:
+        specifier: 4.19.2
+        version: 4.19.2
+      typescript:
+        specifier: 5.6.3
+        version: 5.6.3
+
+  tests/aif01b:
+    dependencies:
+      '@zyara/adapter-harness':
+        specifier: workspace:*
+        version: link:../../packages/adapter-harness
+      '@zyara/authorization':
+        specifier: workspace:*
+        version: link:../../packages/authorization
+      '@zyara/capability-gateway':
+        specifier: workspace:*
+        version: link:../../packages/capability-gateway
+      '@zyara/collaboration':
+        specifier: workspace:*
+        version: link:../../packages/collaboration
     devDependencies:
       tsx:
         specifier: 4.19.2
