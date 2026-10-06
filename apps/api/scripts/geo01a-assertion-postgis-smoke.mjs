@@ -178,4 +178,87 @@ if (patientColumns.rows.length !== 0) fail(`patient or user location columns mus
 console.log(
   "GEO-01A geo assertion PostGIS smoke PASS: SRID 4326 and range enforced, mandatory provenance, precision rules, one append-only chain per branch, branch FK integrity, GIST proximity index, tenant isolation, no patient location",
 );
+
+// ---------------------------------------------------------------------------
+// GEO-01B: entrances and service-area geometry (migration 048), same GEO-01 smoke.
+// ---------------------------------------------------------------------------
+await client.query(`RESET ROLE`);
+await client.query(`DROP VIEW IF EXISTS geo_current_entrances`);
+await client.query(`DROP TABLE IF EXISTS geo_service_areas, geo_entrances CASCADE`);
+await client.query(readFileSync(new URL("048_geo_access_geometry.sql", migrations), "utf8"));
+await client.query(readFileSync(new URL("048_geo_access_geometry.sql", migrations), "utf8"));
+await client.query(
+  `INSERT INTO care_services(id,tenant_id,branch_id) VALUES ('svc-1','t1','b1'),('svc-b1b','t1','b1b'),('svc-t2','t2','b2') ON CONFLICT DO NOTHING`,
+);
+await client.query(`SET app.current_tenant='t1'`);
+
+const NEAR = "ST_SetSRID(ST_MakePoint(46.6755, 24.7138), 4326)";
+const E = (id, options = {}) => {
+  const {
+    tenant = "t1", branch = "b1", kind = "MAIN", point = NEAR, labelEn = "'Main entrance'", instructions = "NULL",
+    stepFree = "YES", lift = "UNKNOWN", toilet = "UNKNOWN", parking = "UNKNOWN", sourceKind = "PROVIDER_ATTESTATION",
+    state = "PROVIDER_ATTESTED", status = "ACTIVE", supersedes = "NULL", expires = "now() + interval '1 year'",
+  } = options;
+  return `INSERT INTO geo_entrances(id,tenant_id,branch_id,kind,point,label_en,instructions_en,step_free,lift,accessible_toilet,
+     accessible_parking,source_kind,source_ref,source_revision,verification_state,observed_at,expires_at,status,supersedes_id)
+   VALUES ('${id}','${tenant}','${branch}','${kind}',${point},${labelEn},${instructions},'${stepFree}','${lift}','${toilet}',
+     '${parking}','${sourceKind}','src-1','r1','${state}',now() - interval '1 day',${expires},'${status}',${supersedes})`;
+};
+const SQUARE = "ST_SetSRID(ST_GeomFromText('POLYGON((46.665 24.704,46.685 24.704,46.685 24.722,46.665 24.722,46.665 24.704))'), 4326)";
+const SA = (id, options = {}) => {
+  const { tenant = "t1", branch = "b1", service = "svc-1", area = SQUARE, supersedes = "NULL" } = options;
+  return `INSERT INTO geo_service_areas(id,tenant_id,branch_id,service_id,area,source_kind,source_ref,source_revision,observed_at,expires_at,status,supersedes_id)
+   VALUES ('${id}','${tenant}','${branch}','${service}',${area},'PROVIDER_ATTESTATION','src-2','r1',now() - interval '1 day',now() + interval '1 year','ACTIVE',${supersedes})`;
+};
+
+await client.query(E("ent-1"));
+await expectDbError(() => client.query(E("ent-ext", { sourceKind: "EXTERNAL_DATASET", state: "UNVERIFIED" })), "23514", "an external dataset cannot assert accessibility");
+await expectDbError(() => client.query(E("ent-unver", { state: "UNVERIFIED" })), "23514", "an accessibility YES needs an attested or verified source");
+await expectDbError(() => client.query(E("ent-acc", { kind: "ACCESSIBLE", stepFree: "NO" })), "23514", "an ACCESSIBLE entrance needs step-free access");
+await expectDbError(() => client.query(E("ent-phone", { labelEn: "'Call 050 123 4567'" })), "23514", "labels must not carry phone numbers");
+await expectDbError(() => client.query(E("ent-mail", { instructions: "'ask ahmad@example.test'" })), "23514", "instructions must not carry e-mail addresses");
+await expectDbError(() => client.query(E("ent-nolabel", { labelEn: "NULL" })), "23514", "an entrance needs a public label");
+await expectDbError(() => client.query(E("ent-arphone", { labelEn: "'اتصل ٠٥٠١٢٣٤٥٦٧'" })), "23514", "Arabic-Indic digits must not carry a phone number");
+await expectDbError(() => client.query(E("ent-blank", { labelEn: "'   '" })), "23514", "a blank label must be refused");
+await expectDbError(() => client.query(E("ent-tabs", { labelEn: "E'\\t\\n'" })), "23514", "a whitespace-only label must be refused");
+await expectDbError(() => client.query(E("ent-nbsp", { labelEn: "'Call 050' || chr(160) || '123' || chr(160) || '4567'" })), "23514", "no-break spaces must not hide a phone number");
+await client.query(E("ent-floors", { labelEn: "'Gate 3'", instructions: "'Level 2, room 12345'", supersedes: "NULL", kind: "SERVICE", stepFree: "NO" }));
+await expectDbError(() => client.query(E("ent-srid", { point: "ST_SetSRID(ST_MakePoint(46.6755, 24.7138), 3857)" })), "23514", "an entrance point must be SRID 4326");
+await expectDbError(() => client.query(E("ent-xb", { branch: "b2" })), "23503", "an entrance cannot reference another tenant's branch");
+
+// Inactive and superseded entrances are history, never current.
+await client.query(E("ent-2", { supersedes: "'ent-1'" }));
+await client.query(E("ent-3", { kind: "PARKING", stepFree: "NO" }));
+await client.query(E("ent-4", { kind: "PARKING", stepFree: "NO", supersedes: "'ent-3'", status: "INACTIVE" }));
+await expectDbError(() => client.query(E("ent-fork", { supersedes: "'ent-1'" })), "23505", "an entrance has at most one successor");
+await expectDbError(() => client.query(E("ent-xbranch", { branch: "b1b", supersedes: "'ent-2'" })), "23503", "entrance supersession cannot cross branches");
+const currentE = await client.query(`SELECT id FROM geo_current_entrances ORDER BY id`);
+if (JSON.stringify(currentE.rows.map((r) => r.id)) !== JSON.stringify(["ent-2", "ent-floors"])) fail(`current entrances must be [ent-2, ent-floors], got ${JSON.stringify(currentE.rows)}`);
+const allE = await client.query(`SELECT count(*)::int AS n FROM geo_entrances`);
+if (allE.rows[0].n !== 5) fail("entrance history must be preserved");
+
+// Service areas: validity and same-branch linkage.
+await client.query(SA("area-1"));
+const BOWTIE = "ST_SetSRID(ST_GeomFromText('POLYGON((46.66 24.70,46.68 24.72,46.68 24.70,46.66 24.72,46.66 24.70))'), 4326)";
+await expectDbError(() => client.query(SA("area-bowtie", { area: BOWTIE })), "23514", "a self-intersecting polygon must be refused");
+await expectDbError(() => client.query(SA("area-line", { area: "ST_SetSRID(ST_GeomFromText('LINESTRING(46.66 24.70,46.68 24.72)'), 4326)" })), "23514", "a non-polygon area must be refused");
+await expectDbError(() => client.query(SA("area-srid", { area: "ST_SetSRID(ST_GeomFromText('POLYGON((46.665 24.704,46.685 24.704,46.685 24.722,46.665 24.704))'), 0)" })), "23514", "an area without SRID 4326 must be refused");
+await expectDbError(() => client.query(SA("area-huge", { area: "ST_SetSRID(ST_MakeEnvelope(35, 17, 55, 32), 4326)" })), "23514", "an area over 50 000 km2 must be refused");
+await expectDbError(() => client.query(SA("area-xbranch", { service: "svc-b1b" })), "23503", "a service of another branch must be refused");
+await expectDbError(() => client.query(SA("area-xtenant", { service: "svc-t2" })), "23503", "a service of another tenant must be refused");
+
+await client.query(`SET ROLE zyara_app`);
+await client.query(`SET app.current_tenant='t1'`);
+await client.query(E("ent-5", { kind: "EMERGENCY", stepFree: "NO" }));
+await expectDbError(() => client.query(`UPDATE geo_entrances SET step_free='YES' WHERE id='ent-3'`), "42501", "entrances are append-only (no UPDATE)", "permission denied");
+await expectDbError(() => client.query(`DELETE FROM geo_service_areas WHERE id='area-1'`), "42501", "service areas are append-only (no DELETE)", "permission denied");
+await expectDbError(() => client.query(SA("area-t2", { tenant: "t2", branch: "b2", service: "svc-t2" })), "42501", "a cross-tenant service area must be refused by RLS", "row-level security");
+await client.query(`SET app.current_tenant='t2'`);
+const foreignAccess = await client.query(`SELECT (SELECT count(*) FROM geo_entrances) + (SELECT count(*) FROM geo_service_areas) + (SELECT count(*) FROM geo_current_entrances) AS n`);
+if (Number(foreignAccess.rows[0].n) !== 0) fail("tenant read isolation failed for entrances or service areas");
+await client.query(`RESET ROLE`);
+
+console.log(
+  "GEO-01B access geometry PostGIS smoke PASS: entrance kinds and accessibility never inferred, public-safe labels, current entrances exclude inactive and superseded, valid same-branch service areas, append-only, tenant isolation",
+);
 await client.end();
