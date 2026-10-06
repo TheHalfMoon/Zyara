@@ -10,12 +10,12 @@ This file keeps the loop's working state in the repository, not on any local mac
 | AIF-02A/B (privacy egress + credential mediation) | merged, closed | `docs/evidence/AIF/AIF-02A/CLOSURE.md`, `AIF-02B/CLOSURE.md` |
 | AIF-03A (model/prompt registry) | **PR TheHalfMoon/Zyara#126 held**: its CI workflow cannot be pushed (gate 1) | `docs/evidence/AIF/AIF-03A/`; the pending workflow is stored as `docs/evidence/AIF/AIF-03A/aif03a-ci.yml.pending` |
 | GEO-01A/B/C (geo truth) | merged, closed (#118, #127, #128, #129) | `docs/evidence/GEO/GEO-01_CLOSURE.md` |
+| GEO-09 (spatial insights) | merged, closed (#131, merge `3fe68f1b`) | `docs/evidence/GEO/GEO-09/CLOSURE.md` |
 | M051 consent instant comparison | merged (#122) | consent suites M051, M052, M053 and M057 are not yet run by any CI workflow (gate 1) |
 
 **Next dependency-ready slices:**
 
 - GEO-02 (MapLibre renderer; needs a released `maplibre-gl` pin after license/SBOM review, and likely a web CI workflow);
-- GEO-09 (spatial insights);
 - GEO-10 (AI/voice geo tools, after AIF-01);
 - AIF-03B onward, after AIF-03A merges.
 
