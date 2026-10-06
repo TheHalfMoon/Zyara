@@ -614,7 +614,7 @@ await client.query(`RESET ROLE`);
 const insightColumns = await client.query(
   `SELECT column_name FROM information_schema.columns
    WHERE table_name = 'geo_insight_cells'
-     AND (udt_name = 'geometry' OR column_name ~ '(lat|lon|point|coord|patient|subject|account|session|user|device)')`,
+     AND (udt_name IN ('geometry', 'geography') OR column_name ~ '(^|_)(lat|lon|lng|latitude|longitude|point|geom|coord|coordinates|patient|subject_ref|subject_id|account|session|user|device)(_|$)')`,
 );
 if (insightColumns.rows.length !== 0) fail(`insight cells must carry no location or person columns: ${JSON.stringify(insightColumns.rows)}`);
 
