@@ -1,6 +1,7 @@
 // GEO-01A geo assertion persistence smoke: real PostgreSQL + PostGIS proof of SRID and range
 // enforcement, mandatory provenance, precision rules, one append-only supersession chain per
-// branch, branch FK integrity and tenant isolation.
+// branch, branch FK integrity and tenant isolation; then GEO-01B access geometry (048) and
+// GEO-01C conflation (049).
 // Requires DATABASE_URL pointing at PostgreSQL with the PostGIS extension available; skips
 // otherwise.
 import { readFileSync } from "node:fs";
@@ -260,5 +261,287 @@ await client.query(`RESET ROLE`);
 
 console.log(
   "GEO-01B access geometry PostGIS smoke PASS: entrance kinds and accessibility never inferred, public-safe labels, current entrances exclude inactive and superseded, valid same-branch service areas, append-only, tenant isolation",
+);
+
+// ---------------------------------------------------------------------------
+// GEO-01C: external spatial identity and conflation (migration 049), same GEO-01 smoke.
+// ---------------------------------------------------------------------------
+await client.query(`RESET ROLE`);
+await client.query(`DROP VIEW IF EXISTS geo_open_coordinate_conflicts, geo_active_external_links`);
+await client.query(
+  `DROP TABLE IF EXISTS geo_coordinate_conflict_resolutions, geo_coordinate_conflicts, geo_coordinate_corrections,
+     geo_external_links, geo_external_observations, geo_external_namespaces CASCADE`,
+);
+await client.query(readFileSync(new URL("049_geo_conflation.sql", migrations), "utf8"));
+await client.query(readFileSync(new URL("049_geo_conflation.sql", migrations), "utf8"));
+await client.query(`INSERT INTO branch_locations(id,tenant_id,organization_id) VALUES ('b1c','t1','org-1') ON CONFLICT DO NOTHING`);
+
+// Reference data: geocoder namespaces are never linkable; patterns are anchored.
+await client.query(`INSERT INTO geo_external_namespaces VALUES ('geocoder-x', 'GEOCODER', '^[a-z0-9]{6,40}$', FALSE)`);
+await expectDbError(() => client.query(`INSERT INTO geo_external_namespaces VALUES ('geocoder-y', 'GEOCODER', '^[a-z]+$', TRUE)`), "23514", "a geocoder namespace cannot be linkable");
+await expectDbError(() => client.query(`INSERT INTO geo_external_namespaces VALUES ('loose-ns', 'OPEN_DATA', '[0-9]+', TRUE)`), "23514", "a namespace pattern must be anchored");
+
+const FAR_PT = "ST_SetSRID(ST_MakePoint(46.725, 24.7136), 4326)";
+const MOVE_81 = "ST_SetSRID(ST_MakePoint(46.6761, 24.7136), 4326)";
+const OBS = (id, options = {}) => {
+  const { tenant = "t1", ns = "osm-node", ext = "123456789", presence = "PRESENT", point = NEAR, name = "'Al Noor Clinic'" } = options;
+  return `INSERT INTO geo_external_observations(id,tenant_id,namespace,external_id,presence,point,name,source_revision,observed_at)
+   VALUES ('${id}','${tenant}','${ns}','${ext}','${presence}',${point},${name},'osm-r1',now())`;
+};
+const LINK = (id, options = {}) => {
+  const {
+    branch = "b1", ns = "osm-node", ext = "123456789", action = "LINK", unlinks = "NULL", basis = "REVIEWED_EVIDENCE",
+    actorKind = "ZYARA_ADMIN", actor = "admin-1",
+  } = options;
+  return `INSERT INTO geo_external_links(id,tenant_id,branch_id,namespace,external_id,action,unlinks_id,basis,actor_kind,actor_ref,evidence_ref,reason_code)
+   VALUES ('${id}','t1','${branch}','${ns}','${ext}','${action}',${unlinks},'${basis}','${actorKind}','${actor}','evidence-7','site_review')`;
+};
+const CORR = (id, from, to, options = {}) => {
+  const { branch = "b1", actorKind = "ZYARA_ADMIN", actor = "admin-1", reviewer = "NULL" } = options;
+  return `INSERT INTO geo_coordinate_corrections(id,tenant_id,branch_id,from_assertion_id,to_assertion_id,actor_kind,actor_ref,reviewer_ref,evidence_ref,reason_code)
+   VALUES ('${id}','t1','${branch}','${from}','${to}','${actorKind}','${actor}',${reviewer},'evidence-8','site_visit_correction')`;
+};
+const CONFLICT = (id, assertionId, observationId, kind = "COORDINATE_MISMATCH") =>
+  `INSERT INTO geo_coordinate_conflicts(id,tenant_id,branch_id,assertion_id,observation_id,kind) VALUES ('${id}','t1','b1','${assertionId}','${observationId}','${kind}')`;
+const RESOLVE = (id, conflict, resolution, corrected = "NULL", actorKind = "ZYARA_ADMIN") =>
+  `INSERT INTO geo_coordinate_conflict_resolutions(id,tenant_id,branch_id,resolves_id,resolution,corrected_assertion_id,actor_kind,actor_ref,evidence_ref,reason_code)
+   VALUES ('${id}','t1','b1','${conflict}','${resolution}',${corrected},'${actorKind}','admin-1','evidence-9','conflict_review')`;
+async function tx(...statements) {
+  await client.query("BEGIN");
+  try {
+    for (const statement of statements) await client.query(statement);
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  }
+}
+
+await client.query(`SET ROLE zyara_app`);
+await client.query(`SET app.current_tenant='t1'`);
+await expectDbError(() => client.query(`INSERT INTO geo_external_namespaces VALUES ('app-ns', 'OPEN_DATA', '^[0-9]+$', TRUE)`), "42501", "the application cannot add namespaces", "permission denied");
+
+// Observations are evidence only, with namespace-bound ids and public names.
+await client.query(OBS("obs-near"));
+await client.query(OBS("obs-far", { point: FAR_PT }));
+await client.query(OBS("obs-gone", { presence: "ABSENT", point: "NULL", name: "NULL" }));
+await client.query(OBS("obs-other", { ext: "555", point: FAR_PT }));
+await expectDbError(() => client.query(OBS("obs-badid", { ext: "0123" })), "23514", "an external id must match its namespace pattern");
+await expectDbError(() => client.query(OBS("obs-unknown-ns", { ns: "google-place", ext: "abc" })), "23514", "an unknown namespace must be refused (guard trigger, before the foreign key)");
+await expectDbError(() => client.query(OBS("obs-absent-pt", { presence: "ABSENT" })), "23514", "an absent observation has no point");
+await expectDbError(() => client.query(OBS("obs-phone", { name: "'Call 0501234567'" })), "23514", "an external name must be public-safe");
+
+// Canonical links: namespace-bound, one active link per id and per branch/namespace.
+await expectDbError(() => client.query(LINK("link-geo", { ns: "geocoder-x", ext: "abc123def" })), "23514", "a geocoder id can never be linked");
+await expectDbError(() => client.query(LINK("link-sys-review", { actorKind: "SYSTEM", actor: "conflation-service" })), "23514", "the automated actor cannot link on reviewed evidence");
+await client.query(LINK("link-1"));
+await expectDbError(() => client.query(LINK("link-dup-id", { branch: "b1b" })), "23514", "an external id has one active link", "already has an active link");
+await expectDbError(() => client.query(LINK("link-dup-branch", { ext: "987654321" })), "23514", "a branch has one active link per namespace", "already has an active");
+await client.query(LINK("link-sys", { branch: "b1b", ns: "osm-way", ext: "777", basis: "DETERMINISTIC_ID", actorKind: "SYSTEM", actor: "conflation-service" }));
+await expectDbError(
+  () => client.query(LINK("unlink-sys", { branch: "b1b", ns: "osm-way", ext: "777", action: "UNLINK", unlinks: "'link-sys'", basis: "DETERMINISTIC_ID", actorKind: "SYSTEM", actor: "conflation-service" })),
+  "23514",
+  "the automated actor never unlinks",
+);
+
+// Conflicts: measured by the database, never overwrite the assertion.
+await client.query(CONFLICT("conflict-1", "geo-4", "obs-far"));
+const conflictRow = await client.query(`SELECT distance_m FROM geo_open_coordinate_conflicts WHERE id='conflict-1'`);
+if (!(conflictRow.rows[0]?.distance_m > 4000)) fail(`the conflict distance must be measured by the database, got ${JSON.stringify(conflictRow.rows)}`);
+await expectDbError(() => client.query(CONFLICT("conflict-agree", "geo-4", "obs-near")), "23514", "agreement within tolerance is not a conflict");
+await expectDbError(() => client.query(CONFLICT("conflict-old", "geo-3", "obs-far")), "23514", "a conflict is raised against the current assertion");
+await expectDbError(() => client.query(CONFLICT("conflict-unlinked", "geo-4", "obs-other")), "23514", "an unlinked external id cannot raise a conflict");
+await expectDbError(
+  () => client.query(`INSERT INTO geo_coordinate_conflicts(id,tenant_id,branch_id,assertion_id,observation_id,kind,distance_m) VALUES ('conflict-forged','t1','b1','geo-4','obs-far','COORDINATE_MISMATCH',1)`),
+  "42501",
+  "a conflict distance cannot be supplied by the client",
+  "permission denied",
+);
+await client.query(CONFLICT("conflict-2", "geo-4", "obs-gone", "EXTERNAL_ABSENT"));
+const headAfterConflict = await client.query(`SELECT id, ST_X(point) AS x FROM geo_current_location_assertions WHERE branch_id='b1'`);
+if (headAfterConflict.rows[0]?.id !== "geo-4" || Math.abs(headAfterConflict.rows[0].x - 46.6753) > 1e-9) fail("external data must not overwrite the assertion");
+const activeAfterAbsent = await client.query(`SELECT count(*)::int AS n FROM geo_active_external_links WHERE branch_id='b1'`);
+if (activeAfterAbsent.rows[0].n !== 1) fail("external disappearance must not delete the link");
+
+// Unlink preserves history.
+await client.query(LINK("unlink-1", { action: "UNLINK", unlinks: "'link-1'" }));
+await expectDbError(() => client.query(LINK("unlink-again", { action: "UNLINK", unlinks: "'link-1'" })), "23505", "a link is ended once");
+await expectDbError(() => client.query(LINK("unlink-mismatch", { action: "UNLINK", unlinks: "'link-sys'" })), "23503", "an unlink must match the link it ends");
+const linkHistory = await client.query(`SELECT count(*)::int AS n FROM geo_external_links WHERE namespace='osm-node' AND external_id='123456789'`);
+const linkActive = await client.query(`SELECT count(*)::int AS n FROM geo_active_external_links WHERE namespace='osm-node' AND external_id='123456789'`);
+if (linkHistory.rows[0].n !== 2 || linkActive.rows[0].n !== 0) fail("unlink must end the link and keep its history");
+await client.query(LINK("link-2"));
+
+// Supersession authority: a low-authority external feed cannot overwrite verified truth.
+const EXTERNAL_AREA = { ...UNVERIFIED, precision: "APPROXIMATE_AREA", accuracy: "500", sourceKind: "EXTERNAL_DATASET", sourceRef: "'osm-123456789'", visibility: "TENANT_INTERNAL" };
+await expectDbError(() => client.query(A("geo-ext", { ...EXTERNAL_AREA, supersedes: "'geo-4'" })), "23514", "an external dataset cannot supersede a verified assertion");
+await expectDbError(
+  () => client.query(A("geo-prov", { supersedes: "'geo-4'", precision: "PROVIDER_ATTESTED_POINT", state: "PROVIDER_ATTESTED", method: "NULL", evidence: "NULL", sourceKind: "PROVIDER_ATTESTATION" })),
+  "23514",
+  "a provider point cannot replace a Zyara-verified point",
+);
+
+// A material move records evidence and actor; the database measures it.
+await expectDbError(() => client.query(A("geo-5", { supersedes: "'geo-4'", point: MOVE_81 })), "23514", "a material move without a correction record must not commit", "correction record");
+await expectDbError(() => tx(A("geo-5", { supersedes: "'geo-4'", point: MOVE_81 }), CORR("corr-sys", "geo-4", "geo-5", { actorKind: "SYSTEM" })), "23514", "the automated actor cannot correct coordinates");
+await expectDbError(
+  () => client.query(`INSERT INTO geo_coordinate_corrections(id,tenant_id,branch_id,from_assertion_id,to_assertion_id,actor_kind,actor_ref,evidence_ref,reason_code,moved_m) VALUES ('corr-forged','t1','b1','geo-4','geo-4','ZYARA_ADMIN','admin-1','e','x_y',0)`),
+  "42501",
+  "a moved distance cannot be supplied by the client",
+  "permission denied",
+);
+await tx(A("geo-5", { supersedes: "'geo-4'", point: MOVE_81 }), CORR("corr-1", "geo-4", "geo-5"));
+const corr1 = await client.query(`SELECT moved_m, actor_ref, evidence_ref FROM geo_coordinate_corrections WHERE id='corr-1'`);
+if (!(corr1.rows[0]?.moved_m > 50 && corr1.rows[0].moved_m < 100) || corr1.rows[0].actor_ref !== "admin-1" || corr1.rows[0].evidence_ref !== "evidence-8") {
+  fail(`the correction must record actor, evidence and the measured move, got ${JSON.stringify(corr1.rows)}`);
+}
+
+// A large move needs an independent reviewer.
+await expectDbError(() => tx(A("geo-6", { supersedes: "'geo-5'", point: FAR_PT }), CORR("corr-2", "geo-5", "geo-6")), "23514", "a large move needs a reviewer", "independent reviewer");
+await expectDbError(() => tx(A("geo-6", { supersedes: "'geo-5'", point: FAR_PT }), CORR("corr-2", "geo-5", "geo-6", { reviewer: "'admin-1'" })), "23514", "the reviewer must differ from the actor");
+await tx(A("geo-6", { supersedes: "'geo-5'", point: FAR_PT }), CORR("corr-2", "geo-5", "geo-6", { reviewer: "'admin-2'" }));
+
+// A detour through UNKNOWN is measured from the last known point.
+await client.query(A("geo-7", { ...UNVERIFIED, supersedes: "'geo-6'", point: "NULL", accuracy: "NULL", precision: "UNKNOWN", visibility: "TENANT_INTERNAL" }));
+await expectDbError(() => client.query(A("geo-8", { supersedes: "'geo-7'", point: RIYADH })), "23514", "a move after UNKNOWN still needs a correction", "correction record");
+await expectDbError(() => tx(A("geo-8", { supersedes: "'geo-7'", point: RIYADH }), CORR("corr-3", "geo-7", "geo-8")), "23514", "a large move after UNKNOWN still needs a reviewer", "independent reviewer");
+await tx(A("geo-8", { supersedes: "'geo-7'", point: RIYADH }), CORR("corr-3", "geo-7", "geo-8", { reviewer: "'admin-2'" }));
+
+// A dispute flags without moving; a disputed head is resolved by Zyara verification only.
+const PROVIDER_POINT = { precision: "PROVIDER_ATTESTED_POINT", method: "NULL", evidence: "NULL", sourceKind: "PROVIDER_ATTESTATION" };
+await expectDbError(
+  () => tx(A("geo-9", { ...PROVIDER_POINT, state: "DISPUTED", visibility: "TENANT_INTERNAL", supersedes: "'geo-8'", point: FAR_PT }), CORR("corr-9", "geo-8", "geo-9", { actorKind: "PROVIDER", actor: "provider-1", reviewer: "'admin-2'" })),
+  "23514",
+  "a dispute cannot move the point",
+);
+await client.query(A("geo-9", { ...PROVIDER_POINT, state: "DISPUTED", visibility: "TENANT_INTERNAL", supersedes: "'geo-8'" }));
+await expectDbError(() => client.query(A("geo-10", { ...PROVIDER_POINT, state: "PROVIDER_ATTESTED", supersedes: "'geo-9'" })), "23514", "a provider cannot resolve a dispute of a verified point");
+await client.query(A("geo-10", { supersedes: "'geo-9'" }));
+
+// Small unaudited steps accumulate from the audited anchor (geo-8, a correction target).
+const STEP_45 = "ST_SetSRID(ST_MakePoint(46.67575, 24.7136), 4326)";
+const STEP_91 = "ST_SetSRID(ST_MakePoint(46.6762, 24.7136), 4326)";
+await client.query(A("geo-11", { supersedes: "'geo-10'", point: STEP_45 }));
+await expectDbError(() => client.query(A("geo-12", { supersedes: "'geo-11'", point: STEP_91 })), "23514", "small steps must not walk a facility without a correction", "correction record");
+await tx(A("geo-12", { supersedes: "'geo-11'", point: STEP_91 }), CORR("corr-12", "geo-11", "geo-12"));
+const corr12 = await client.query(`SELECT moved_m FROM geo_coordinate_corrections WHERE id='corr-12'`);
+if (!(corr12.rows[0]?.moved_m > 85 && corr12.rows[0].moved_m < 100)) fail(`the correction must measure from the audited anchor, got ${JSON.stringify(corr12.rows)}`);
+
+// Without any audited point (UNKNOWN root), the oldest point is the anchor; and audited moves
+// without review cannot add up past 1 000 m from the last reviewed point.
+const STEP_900 = "ST_SetSRID(ST_MakePoint(46.6842, 24.7136), 4326)";
+const STEP_1800 = "ST_SetSRID(ST_MakePoint(46.6931, 24.7136), 4326)";
+const B1C = { branch: "b1c" };
+await client.query(A("geo-c-root", { ...UNVERIFIED, ...B1C, point: "NULL", accuracy: "NULL", precision: "UNKNOWN", visibility: "TENANT_INTERNAL" }));
+await client.query(A("geo-c-1", { ...B1C, supersedes: "'geo-c-root'" }));
+await expectDbError(() => client.query(A("geo-c-far", { ...B1C, supersedes: "'geo-c-1'", point: FAR_PT })), "23514", "a move after an UNKNOWN root needs a correction", "correction record");
+await tx(A("geo-c-2", { ...B1C, supersedes: "'geo-c-1'", point: STEP_900 }), CORR("corr-c-2", "geo-c-1", "geo-c-2", { branch: "b1c", actor: "admin-3" }));
+await expectDbError(
+  () => tx(A("geo-c-3", { ...B1C, supersedes: "'geo-c-2'", point: STEP_1800 }), CORR("corr-c-3", "geo-c-2", "geo-c-3", { branch: "b1c", actor: "admin-3" })),
+  "23514",
+  "unreviewed audited moves cannot add up past 1 000 m",
+  "independent reviewer",
+);
+await tx(A("geo-c-3", { ...B1C, supersedes: "'geo-c-2'", point: STEP_1800 }), CORR("corr-c-3", "geo-c-2", "geo-c-3", { branch: "b1c", actor: "admin-3", reviewer: "'admin-2'" }));
+
+// Conflict resolution: reviewed, once, CORRECTED only with an audited correction.
+await expectDbError(() => client.query(RESOLVE("res-sys", "conflict-1", "KEEP_ZYARA", "NULL", "SYSTEM")), "23514", "the automated actor cannot close a conflict");
+await expectDbError(() => client.query(RESOLVE("res-bad", "conflict-1", "CORRECTED", "'geo-6'")), "23514", "CORRECTED needs a correction of the conflicted assertion");
+await client.query(RESOLVE("res-1", "conflict-1", "CORRECTED", "'geo-5'"));
+await client.query(RESOLVE("res-2", "conflict-2", "KEEP_ZYARA"));
+await expectDbError(() => client.query(RESOLVE("res-again", "conflict-2", "EXTERNAL_ERROR")), "23505", "a conflict is resolved once");
+const openConflicts = await client.query(`SELECT count(*)::int AS n FROM geo_open_coordinate_conflicts`);
+const allConflicts = await client.query(`SELECT count(*)::int AS n FROM geo_coordinate_conflicts`);
+if (openConflicts.rows[0].n !== 0 || allConflicts.rows[0].n !== 2) fail("resolved conflicts leave the open view and stay in history");
+
+// Bulk control: an eleventh correction by one actor in 24 hours needs a reviewer.
+const BULK_AREA = { ...UNVERIFIED, precision: "APPROXIMATE_AREA", accuracy: "400", branch: "b1b", visibility: "TENANT_INTERNAL" };
+let previous = "geo-b1b-root";
+for (let i = 1; i <= 10; i += 1) {
+  await tx(A(`geo-bulk-${i}`, { ...BULK_AREA, supersedes: `'${previous}'` }), CORR(`corr-bulk-${i}`, previous, `geo-bulk-${i}`, { branch: "b1b", actor: "bulk-actor" }));
+  previous = `geo-bulk-${i}`;
+}
+await expectDbError(
+  () => tx(A("geo-bulk-11", { ...BULK_AREA, supersedes: `'${previous}'` }), CORR("corr-bulk-11", previous, "geo-bulk-11", { branch: "b1b", actor: "bulk-actor" })),
+  "23514",
+  "bulk corrections beyond the limit need a reviewer",
+  "independent reviewer",
+);
+await tx(A("geo-bulk-11", { ...BULK_AREA, supersedes: `'${previous}'` }), CORR("corr-bulk-11", previous, "geo-bulk-11", { branch: "b1b", actor: "bulk-actor", reviewer: "'admin-2'" }));
+
+// Concurrency: two sessions linking the same external id; the second must fail.
+const other = new Client({ connectionString: url });
+await other.connect();
+await other.query(`SET ROLE zyara_app`);
+await other.query(`SET app.current_tenant='t1'`);
+await other.query("BEGIN");
+await other.query(LINK("link-race-1", { ns: "osm-relation", ext: "4242" }));
+const racing = client.query(LINK("link-race-2", { branch: "b1b", ns: "osm-relation", ext: "4242" })).then(
+  () => null,
+  (error) => error,
+);
+// Prove the second session is actually blocked on the advisory lock before the first commits.
+let waiting = 0;
+for (let attempt = 0; attempt < 50 && waiting === 0; attempt += 1) {
+  await new Promise((resolve) => setTimeout(resolve, 100));
+  const locks = await other.query(`SELECT count(*)::int AS n FROM pg_locks WHERE locktype = 'advisory' AND NOT granted`);
+  waiting = locks.rows[0].n;
+}
+if (waiting === 0) fail("the concurrent link must wait on the advisory lock");
+await other.query("COMMIT");
+const raceError = await racing;
+if (raceError?.code !== "23514") fail(`a concurrent second link must be refused, got ${raceError?.code ?? "success"}`);
+await other.end();
+// A snapshot older than the lock could miss a concurrent write: the guards accept READ
+// COMMITTED only.
+for (const level of ["REPEATABLE READ", "SERIALIZABLE"]) {
+  for (const [statement, label] of [
+    [LINK("link-iso", { ns: "osm-relation", ext: "4343" }), "link"],
+    [CORR("corr-iso", "geo-b1b-root", "geo-bulk-1", { branch: "b1b", actor: "iso-actor" }), "correction"],
+  ]) {
+    await expectDbError(
+      async () => {
+        await client.query(`BEGIN ISOLATION LEVEL ${level}`);
+        try {
+          await client.query(statement);
+        } finally {
+          await client.query("ROLLBACK");
+        }
+      },
+      "25000",
+      `${label} writes refuse ${level}`,
+    );
+  }
+}
+
+// Append-only and tenant isolation.
+for (const [statement, label] of [
+  [`UPDATE geo_external_links SET branch_id='b1b' WHERE id='link-2'`, "update links"],
+  [`DELETE FROM geo_external_links WHERE id='link-1'`, "delete links"],
+  [`DELETE FROM geo_coordinate_corrections WHERE id='corr-1'`, "delete corrections"],
+  [`UPDATE geo_coordinate_conflicts SET kind='EXTERNAL_ABSENT' WHERE id='conflict-1'`, "update conflicts"],
+  [`DELETE FROM geo_external_observations WHERE id='obs-far'`, "delete observations"],
+]) {
+  await expectDbError(() => client.query(statement), "42501", `the application role must not ${label}`, "permission denied");
+}
+await expectDbError(() => client.query(OBS("obs-t2", { tenant: "t2" })), "42501", "a cross-tenant observation must be refused by RLS", "row-level security");
+await client.query(`SET app.current_tenant='t2'`);
+const foreignConflation = await client.query(
+  `SELECT (SELECT count(*) FROM geo_external_observations) + (SELECT count(*) FROM geo_external_links)
+        + (SELECT count(*) FROM geo_coordinate_corrections) + (SELECT count(*) FROM geo_coordinate_conflicts)
+        + (SELECT count(*) FROM geo_coordinate_conflict_resolutions) + (SELECT count(*) FROM geo_active_external_links)
+        + (SELECT count(*) FROM geo_open_coordinate_conflicts) AS n`,
+);
+if (Number(foreignConflation.rows[0].n) !== 0) fail("tenant read isolation failed for conflation tables");
+await client.query(`RESET ROLE`);
+const conflationPersonal = await client.query(
+  `SELECT table_name, column_name FROM information_schema.columns
+   WHERE table_name IN ('geo_external_observations','geo_external_links','geo_coordinate_corrections','geo_coordinate_conflicts','geo_coordinate_conflict_resolutions')
+     AND column_name ~ '(patient|account|session|user|device)'`,
+);
+if (conflationPersonal.rows.length !== 0) fail(`patient or user columns must not exist: ${JSON.stringify(conflationPersonal.rows)}`);
+
+console.log(
+  "GEO-01C conflation PostGIS smoke PASS: namespace-bound external ids, no automated reviewed links or unlinks, one active link per id under concurrency, unlink keeps history, conflicts measured and never overwrite, low-authority supersession refused, material moves audited, large and bulk moves need a reviewer, append-only, tenant isolation",
 );
 await client.end();
