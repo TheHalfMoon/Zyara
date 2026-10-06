@@ -124,6 +124,8 @@ Normalized names are compared for equality only. There is no fuzzy score that co
 - **Provider-declared ids.** The database lets the `SYSTEM` actor link only with basis `DETERMINISTIC_ID` and a mandatory `evidence_ref`. Checking that the id was declared by the provider for that branch is enforced in the application (`assessLinkCandidates` / `validateLinkEvent`), because Provider Graph has no declared-external-id store yet. Forward requirement: when Provider Graph records declared external ids, the link guard checks them.
 - **Reviewer identity.** `reviewer_ref` must be present and differ from `actor_ref`, which the database enforces. Proving that the reviewer is a real, authorized second person is not yet possible in the database. Forward requirement: when the GEO coordinate-correction admin command is built, `reviewer_ref` must bind to an approved `approval_requests` row (new approvals action type, requester ≠ approver), as AIF-01B binds approval claims.
 - **Actor identity.** `actor_ref` is supplied by the trusted service, which must derive it from the authenticated principal. The per-actor bulk count is only as strong as that binding.
+- **Reviewed anchor.** Only a correction with a reviewer, or the chain root, resets the reviewed anchor. A Zyara re-verification recorded without one does not, so total drift above 1 000 m always needs a reviewer. This is deliberately conservative.
+- **Isolation.** The link and correction guards refuse REPEATABLE READ (SQLSTATE 25000). They are exact under READ COMMITTED and SERIALIZABLE.
 
 ## Required tests (handoff)
 

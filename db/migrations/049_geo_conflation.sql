@@ -139,6 +139,12 @@ AS $$
 DECLARE
   target_action TEXT;
 BEGIN
+  -- Under REPEATABLE READ the transaction snapshot predates a concurrent commit, so the checks
+  -- below could miss it after the lock; refuse rather than fail open (READ COMMITTED takes a
+  -- fresh snapshot per statement, SERIALIZABLE detects the conflict).
+  IF current_setting('transaction_isolation') = 'repeatable read' THEN
+    RAISE EXCEPTION 'this write requires READ COMMITTED or SERIALIZABLE isolation' USING ERRCODE = '25000';
+  END IF;
   IF NOT public.geo_external_id_ok(NEW.namespace, NEW.external_id, TRUE) THEN
     RAISE EXCEPTION 'namespace % is not linkable or the external id does not match it', NEW.namespace USING ERRCODE = '23514';
   END IF;
@@ -259,6 +265,12 @@ DECLARE
   drift DOUBLE PRECISION;
   recent INTEGER;
 BEGIN
+  -- Under REPEATABLE READ the transaction snapshot predates a concurrent commit, so the checks
+  -- below could miss it after the lock; refuse rather than fail open (READ COMMITTED takes a
+  -- fresh snapshot per statement, SERIALIZABLE detects the conflict).
+  IF current_setting('transaction_isolation') = 'repeatable read' THEN
+    RAISE EXCEPTION 'this write requires READ COMMITTED or SERIALIZABLE isolation' USING ERRCODE = '25000';
+  END IF;
   from_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id, FALSE);
   reviewed_point := public.geo_anchor_point(NEW.from_assertion_id, NEW.tenant_id, TRUE);
   SELECT a.supersedes_id INTO to_supersedes FROM public.geo_location_assertions a
