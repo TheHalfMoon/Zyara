@@ -138,13 +138,6 @@ export function initializeGeo02aRenderer(
     return { status: "starting", reason: null, cleanup };
   } catch (error) {
     cleanup();
-    if (map) {
-      try {
-        map.remove();
-      } catch {
-        // Preserve the original initialization failure classification.
-      }
-    }
     return {
       status: "unavailable",
       reason: runtime.isGpuInitializationError(error) ? "webgl2-unavailable" : "initialization-failed",

@@ -16,7 +16,7 @@ import {
   type Geo02aMapOptions,
 } from "../../apps/web/app/[locale]/map/renderer-contract";
 
-function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
+function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean; subscribeFail?: boolean } = {}) {
   let workerUrl = "";
   let created: Geo02aMapOptions | null = null;
   let removes = 0;
@@ -48,6 +48,7 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
         return {
           remove: () => { removes += 1; },
           onReady: (listener: () => void) => {
+            if (options.subscribeFail) throw new Error("listener registration failed");
             readyListener = listener;
             return () => { unsubscribes += 1; readyListener = null; };
           },
@@ -97,6 +98,13 @@ test("GEO-02A fails closed for WebGL2/GPU and general initialization failures", 
   const generic = fakeRuntime({ fail: true });
   const genericResult = initializeGeo02aRenderer(generic.runtime, {}, "https://zyara.example");
   assert.deepEqual([genericResult.status, genericResult.reason], ["unavailable", "initialization-failed"]);
+});
+
+test("GEO-02A listener registration failures remove the map exactly once", () => {
+  const fake = fakeRuntime({ subscribeFail: true });
+  const result = initializeGeo02aRenderer(fake.runtime, {}, "https://zyara.example");
+  assert.deepEqual([result.status, result.reason], ["unavailable", "initialization-failed"]);
+  assert.equal(fake.state.removes, 1);
 });
 
 test("GEO-02A runtime errors fail closed and release renderer resources", () => {
