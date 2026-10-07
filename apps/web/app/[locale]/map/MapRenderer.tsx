@@ -8,7 +8,7 @@ import {
   type Geo02aRendererState,
 } from "./renderer-contract";
 
-type UiState = "loading" | Geo02aRendererState["status"];
+type UiState = "loading" | "ready" | Geo02aRendererState["status"];
 
 export function MapRenderer({ locale }: { locale: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
