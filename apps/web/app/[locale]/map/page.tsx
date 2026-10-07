@@ -1,5 +1,6 @@
 import { isSupportedLocale } from "@zyara/domain";
 import { NEARBY_PLACES, directionsUrl } from "../discovery-data";
+import { MapRenderer } from "./MapRenderer";
 
 export default async function MapPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -31,6 +32,7 @@ export default async function MapPage({ params }: { params: Promise<{ locale: st
         </header>
 
         <div className="zyara-map-panel" style={{ minHeight: 720, position: "relative", top: "auto" }} role="application" aria-label="Nearby care map" data-renderer="maplibre" data-fallback="list">
+          <MapRenderer locale={active} />
           <div className="zyara-map-grid" aria-hidden="true" />
           <div className="zyara-map-road" aria-hidden="true" />
           <div className="zyara-map-road second" aria-hidden="true" />

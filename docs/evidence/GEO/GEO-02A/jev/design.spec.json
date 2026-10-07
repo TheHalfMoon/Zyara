@@ -1,0 +1,62 @@
+{
+  "description": "GEO-02A MapLibre renderer qualification: design challenge and exact-diff review",
+  "threshold": 0.5,
+  "questions": {
+    "remote_egress": {
+      "type": "noul",
+      "instructions": "The renderer could contact an unqualified remote tile/style/glyph/sprite/CDN/worker origin, or a later provider could be smuggled into GEO-02A without a separate admission.",
+      "criteria": {
+        "true": "Some renderer path permits unqualified remote egress",
+        "false": "GEO-02A has zero remote renderer origins and uses same-origin worker plus inline empty style only"
+      }
+    },
+    "fallback_failure": {
+      "type": "noul",
+      "instructions": "A WebGL2/GPU/renderer initialization failure could crash or hide the care-discovery experience instead of degrading to the complete accessible list.",
+      "criteria": {
+        "true": "A renderer failure can remove or block the list experience",
+        "false": "All renderer failures degrade explicitly while the independent accessible list remains usable"
+      }
+    },
+    "lifecycle_leak": {
+      "type": "noul",
+      "instructions": "The client renderer could create duplicate maps/workers/listeners across re-renders or fail to call map.remove() on unmount.",
+      "criteria": {
+        "true": "Renderer lifecycle can leak or duplicate resources",
+        "false": "Initialization is single-owner and cleanup deterministically removes the map"
+      }
+    },
+    "accessibility_regression": {
+      "type": "noul",
+      "instructions": "MapLibre could become the only usable interface, trap keyboard users, remove RTL semantics, or add map-only actions with no list/text equivalent.",
+      "criteria": {
+        "true": "The renderer creates an accessibility/localization regression",
+        "false": "The map is supplementary, RTL/list/keyboard fallbacks remain intact, and no map-only required action is introduced"
+      }
+    },
+    "dependency_integrity": {
+      "type": "noul",
+      "instructions": "MapLibre could be floating/unreleased, have unrecorded license/notice obligations, or be copied/forked instead of using the exact released dependency and lockfile inventory.",
+      "criteria": {
+        "true": "Dependency provenance or license/inventory is incomplete",
+        "false": "Exact released version, license/notices and lockfile inventory are recorded and renderer source is not copied"
+      }
+    },
+    "bundle_unbounded": {
+      "type": "noul",
+      "instructions": "The renderer could add an unmeasured or unenforced JS/CSS/worker footprint to the patient web bundle.",
+      "criteria": {
+        "true": "No measured baseline/ceiling protects the renderer footprint",
+        "false": "Exact installed artifacts are measured and an explicit budget is tested"
+      }
+    },
+    "untested_requirement": {
+      "type": "noul",
+      "instructions": "A GEO-02A handoff requirement (init, no-map fallback, RTL, keyboard/list, CSP/network allowlist, WebGL fallback, bundle budget, cleanup/unmount) lacks deterministic qualification coverage.",
+      "criteria": {
+        "true": "At least one required behavior is untested",
+        "false": "Every required behavior has deterministic qualification coverage"
+      }
+    }
+  }
+}
