@@ -68,6 +68,8 @@ export interface Geo02aMapOptions {
 
 export interface Geo02aMapHandle {
   remove(): void;
+  onReady(listener: () => void): () => void;
+  onError(listener: () => void): () => void;
 }
 
 export interface Geo02aRuntime {
@@ -76,22 +78,36 @@ export interface Geo02aRuntime {
   isGpuInitializationError(error: unknown): boolean;
 }
 
+export type Geo02aUnavailableReason =
+  | "webgl2-unavailable"
+  | "initialization-failed"
+  | "runtime-error";
+
 export type Geo02aRendererState =
-  | { readonly status: "ready"; readonly reason: null; readonly cleanup: () => void }
+  | { readonly status: "starting"; readonly reason: null; readonly cleanup: () => void }
   | {
       readonly status: "unavailable";
-      readonly reason: "webgl2-unavailable" | "initialization-failed";
+      readonly reason: Geo02aUnavailableReason;
       readonly cleanup: () => void;
     };
+
+export interface Geo02aLifecycleCallbacks {
+  readonly onReady?: () => void;
+  readonly onUnavailable?: (reason: Geo02aUnavailableReason) => void;
+}
 
 export function initializeGeo02aRenderer(
   runtime: Geo02aRuntime,
   container: unknown,
   pageOrigin: string,
+  callbacks: Geo02aLifecycleCallbacks = {},
 ): Geo02aRendererState {
+  let map: Geo02aMapHandle | null = null;
+  let cleanup: () => void = () => undefined;
+
   try {
     runtime.setWorkerUrl(GEO02A_WORKER_URL);
-    const map = runtime.createMap({
+    map = runtime.createMap({
       container,
       style: GEO02A_EMPTY_STYLE,
       center: [46.6753, 24.7136],
@@ -103,16 +119,32 @@ export function initializeGeo02aRenderer(
     });
 
     let removed = false;
-    return {
-      status: "ready",
-      reason: null,
-      cleanup: () => {
-        if (removed) return;
-        removed = true;
-        map.remove();
-      },
+    let offReady: () => void = () => undefined;
+    let offError: () => void = () => undefined;
+    cleanup = () => {
+      if (removed) return;
+      removed = true;
+      offReady();
+      offError();
+      map?.remove();
     };
+
+    offReady = map.onReady(() => callbacks.onReady?.());
+    offError = map.onError(() => {
+      callbacks.onUnavailable?.("runtime-error");
+      cleanup();
+    });
+
+    return { status: "starting", reason: null, cleanup };
   } catch (error) {
+    cleanup();
+    if (map) {
+      try {
+        map.remove();
+      } catch {
+        // Preserve the original initialization failure classification.
+      }
+    }
     return {
       status: "unavailable",
       reason: runtime.isGpuInitializationError(error) ? "webgl2-unavailable" : "initialization-failed",

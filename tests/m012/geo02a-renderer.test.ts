@@ -20,6 +20,9 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
   let workerUrl = "";
   let created: Geo02aMapOptions | null = null;
   let removes = 0;
+  let unsubscribes = 0;
+  let readyListener: (() => void) | null = null;
+  let errorListener: (() => void) | null = null;
   const gpuError = new Error("webgl2 unavailable");
 
   return {
@@ -27,6 +30,9 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
       get workerUrl() { return workerUrl; },
       get created() { return created; },
       get removes() { return removes; },
+      get unsubscribes() { return unsubscribes; },
+      triggerReady() { readyListener?.(); },
+      triggerError() { errorListener?.(); },
       gpuError,
     },
     runtime: {
@@ -39,7 +45,17 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
       createMap(value: Geo02aMapOptions) {
         created = value;
         if (options.fail) throw options.gpuFailure ? gpuError : new Error("init failed");
-        return { remove: () => { removes += 1; } };
+        return {
+          remove: () => { removes += 1; },
+          onReady: (listener: () => void) => {
+            readyListener = listener;
+            return () => { unsubscribes += 1; readyListener = null; };
+          },
+          onError: (listener: () => void) => {
+            errorListener = listener;
+            return () => { unsubscribes += 1; errorListener = null; };
+          },
+        };
       },
     },
   };
@@ -48,9 +64,13 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean } = {}) {
 test("GEO-02A initializes the exact renderer shell and cleans up once", () => {
   const fake = fakeRuntime();
   const container = {};
-  const result = initializeGeo02aRenderer(fake.runtime, container, "https://zyara.example");
+  let uiState = "loading";
+  const result = initializeGeo02aRenderer(fake.runtime, container, "https://zyara.example", {
+    onReady: () => { uiState = "ready"; },
+    onUnavailable: () => { uiState = "unavailable"; },
+  });
 
-  assert.equal(result.status, "ready");
+  assert.equal(result.status, "starting");
   assert.equal(fake.state.workerUrl, GEO02A_WORKER_URL);
   assert.equal(fake.state.created?.container, container);
   assert.equal(fake.state.created?.style, GEO02A_EMPTY_STYLE);
@@ -59,10 +79,14 @@ test("GEO-02A initializes the exact renderer shell and cleans up once", () => {
   assert.equal(fake.state.created?.keyboard, true);
   assert.equal(fake.state.created?.interactive, true);
   assert.equal(fake.state.created?.attributionControl, false);
+  assert.equal(uiState, "loading");
+  fake.state.triggerReady();
+  assert.equal(uiState, "ready");
 
   result.cleanup();
   result.cleanup();
   assert.equal(fake.state.removes, 1);
+  assert.equal(fake.state.unsubscribes, 2);
 });
 
 test("GEO-02A fails closed for WebGL2/GPU and general initialization failures", () => {
@@ -73,6 +97,20 @@ test("GEO-02A fails closed for WebGL2/GPU and general initialization failures", 
   const generic = fakeRuntime({ fail: true });
   const genericResult = initializeGeo02aRenderer(generic.runtime, {}, "https://zyara.example");
   assert.deepEqual([genericResult.status, genericResult.reason], ["unavailable", "initialization-failed"]);
+});
+
+test("GEO-02A runtime errors fail closed and release renderer resources", () => {
+  const fake = fakeRuntime();
+  let reason = "";
+  const result = initializeGeo02aRenderer(fake.runtime, {}, "https://zyara.example", {
+    onUnavailable: (value) => { reason = value; },
+  });
+
+  assert.equal(result.status, "starting");
+  fake.state.triggerError();
+  assert.equal(reason, "runtime-error");
+  assert.equal(fake.state.removes, 1);
+  assert.equal(fake.state.unsubscribes, 2);
 });
 
 test("GEO-02A admits same-origin renderer requests and denies remote origins", () => {

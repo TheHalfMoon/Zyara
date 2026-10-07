@@ -38,15 +38,34 @@ export function MapRenderer({ locale }: { locale: string }) {
                 attributionControl: options.attributionControl,
                 transformRequest: (url) => options.transformRequest(url),
               });
-              return { remove: () => map.remove() };
+              return {
+                remove: () => map.remove(),
+                onReady: (listener) => {
+                  map.on("load", listener);
+                  return () => map.off("load", listener);
+                },
+                onError: (listener) => {
+                  const handler = () => listener();
+                  map.on("error", handler);
+                  return () => map.off("error", handler);
+                },
+              };
             },
           },
           containerRef.current,
           window.location.origin,
+          {
+            onReady: () => {
+              if (!disposed) setState("ready");
+            },
+            onUnavailable: () => {
+              if (!disposed) setState("unavailable");
+            },
+          },
         );
 
         cleanup = result.cleanup;
-        if (!disposed) setState(result.status);
+        if (!disposed && result.status === "unavailable") setState("unavailable");
       })
       .catch(() => {
         if (!disposed) setState("unavailable");
