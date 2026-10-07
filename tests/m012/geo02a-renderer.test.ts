@@ -202,6 +202,9 @@ test("GEO-02A route keeps RTL and the independent accessible list", () => {
   assert.ok(page.includes('aria-label="branch-list"'));
   assert.ok(page.includes("<MapRenderer locale={active} />"));
   assert.ok(renderer.includes("complete list below remains available"));
+  assert.ok(renderer.includes('role="group"'));
+  assert.ok(renderer.includes("Supplementary interactive map"));
+  assert.ok(!renderer.includes('aria-hidden="true"'), "focusable MapLibre canvas must not be hidden from assistive technology");
   assert.ok(!renderer.includes("setRTLTextPlugin"));
   assert.ok(!renderer.includes("http://") && !renderer.includes("https://"));
 });
