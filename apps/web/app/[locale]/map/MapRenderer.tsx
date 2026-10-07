@@ -40,6 +40,7 @@ export function MapRenderer({ locale }: { locale: string }) {
               });
               return {
                 remove: () => map.remove(),
+                isReady: () => map.loaded(),
                 onReady: (listener) => {
                   map.on("load", listener);
                   return () => map.off("load", listener);

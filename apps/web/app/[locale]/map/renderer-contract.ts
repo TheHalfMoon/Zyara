@@ -68,6 +68,7 @@ export interface Geo02aMapOptions {
 
 export interface Geo02aMapHandle {
   remove(): void;
+  isReady(): boolean;
   onReady(listener: () => void): () => void;
   onError(listener: () => void): () => void;
 }
@@ -129,11 +130,23 @@ export function initializeGeo02aRenderer(
       map?.remove();
     };
 
-    offReady = map.onReady(() => callbacks.onReady?.());
+    let announcedReady = false;
+    const notifyReady = () => {
+      if (announcedReady) return;
+      announcedReady = true;
+      callbacks.onReady?.();
+    };
+
     offError = map.onError(() => {
       callbacks.onUnavailable?.("runtime-error");
       cleanup();
     });
+    offReady = map.onReady(notifyReady);
+
+    // An empty style can become loaded before the listener is attached.
+    // Query the renderer after registration so that fast initialization
+    // cannot leave the UI permanently in the starting state.
+    if (map.isReady()) notifyReady();
 
     return { status: "starting", reason: null, cleanup };
   } catch (error) {

@@ -16,7 +16,7 @@ import {
   type Geo02aMapOptions,
 } from "../../apps/web/app/[locale]/map/renderer-contract";
 
-function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean; subscribeFail?: boolean } = {}) {
+function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean; subscribeFail?: boolean; initiallyReady?: boolean } = {}) {
   let workerUrl = "";
   let created: Geo02aMapOptions | null = null;
   let removes = 0;
@@ -47,6 +47,7 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean; subscribeF
         if (options.fail) throw options.gpuFailure ? gpuError : new Error("init failed");
         return {
           remove: () => { removes += 1; },
+          isReady: () => options.initiallyReady === true,
           onReady: (listener: () => void) => {
             if (options.subscribeFail) throw new Error("listener registration failed");
             readyListener = listener;
@@ -98,6 +99,20 @@ test("GEO-02A fails closed for WebGL2/GPU and general initialization failures", 
   const generic = fakeRuntime({ fail: true });
   const genericResult = initializeGeo02aRenderer(generic.runtime, {}, "https://zyara.example");
   assert.deepEqual([genericResult.status, genericResult.reason], ["unavailable", "initialization-failed"]);
+});
+
+test("GEO-02A observes an already-loaded renderer without missing the ready transition", () => {
+  const fake = fakeRuntime({ initiallyReady: true });
+  let readyCalls = 0;
+  const result = initializeGeo02aRenderer(fake.runtime, {}, "https://zyara.example", {
+    onReady: () => { readyCalls += 1; },
+  });
+
+  assert.equal(result.status, "starting");
+  assert.equal(readyCalls, 1);
+  fake.state.triggerReady();
+  assert.equal(readyCalls, 1, "ready must be announced at most once");
+  result.cleanup();
 });
 
 test("GEO-02A listener registration failures remove the map exactly once", () => {
