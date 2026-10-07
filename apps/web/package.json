@@ -4,7 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare:maplibre-worker": "node scripts/copy-maplibre-worker.mjs",
+    "predev": "pnpm run prepare:maplibre-worker",
     "dev": "next dev -p 3100",
+    "prebuild": "pnpm run prepare:maplibre-worker",
     "build": "next build",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint app",
@@ -15,6 +18,7 @@
     "@zyara/domain": "workspace:*",
     "@zyara/i18n": "workspace:*",
     "@zyara/ui": "workspace:*",
+    "maplibre-gl": "6.12.0",
     "next": "15.5.25",
     "react": "19.3.0",
     "react-dom": "19.3.0"

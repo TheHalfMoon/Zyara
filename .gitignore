@@ -10,3 +10,6 @@ coverage/
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/
+
+# GEO-02A build-time self-hosted MapLibre worker/shared/license assets.
+/apps/web/public/maplibre/

@@ -989,3 +989,12 @@ a {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* GEO-02A renderer shell: supplementary to the independent accessible list. */
+.zyara-maplibre-shell {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}

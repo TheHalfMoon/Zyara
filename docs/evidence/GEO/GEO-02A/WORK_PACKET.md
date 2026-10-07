@@ -14,10 +14,12 @@ The renderer must fail closed to the existing accessible list when the browser c
 ## Upstream dependency decision
 
 - Package: `maplibre-gl`.
-- Exact released version candidate: `6.11.2`.
-- License: BSD-3-Clause with embedded third-party notices in the distributed license file.
+- Exact released version candidate: `6.12.0` (published upstream release; tag/package inspected on 2026-10-07).
+- npm integrity: `sha512-DwgganVi2BhNxOpD7ob3lJC0dQQz4HfJfuQQV3XxCY3XdOzFrMqp9ylMXhRzryRsOnIezdZcklWXIIs/Q8JPjA==`.
+- License: BSD-3-Clause with embedded notices for MapLibre contributors, mapbox-gl-js v1.13 and earlier, glfx.js and d3-color in the distributed `LICENSE.txt`.
 - Adoption mode: **DEPENDENCY**, not copied/forked renderer source.
 - Package is pinned exactly, never `latest` or a floating range.
+- Runtime artifact baseline measured from the published package: 1,216,681 raw bytes across the ESM bundle, CSS, worker and shared module; qualification ceiling 1,300,000 raw / 340,000 gzip bytes.
 - The pnpm lockfile is the dependency inventory for this grain; the package license/notice is inspected from the exact installed package.
 - Tile, style, geocoder, router and data rights remain separately gated.
 
