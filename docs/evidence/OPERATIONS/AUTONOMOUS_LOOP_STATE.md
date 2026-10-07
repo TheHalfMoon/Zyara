@@ -2,7 +2,7 @@
 
 This file keeps the loop's working state in the repository, not on any local machine. Every slice's evidence lives under `docs/evidence/`. All work is on pushed branches; no local worktree, temp file or memory is needed to resume. Update this file at each checkpoint.
 
-## Live frontier (2026-10-07)
+## Live frontier (2026-10-08)
 
 | Area | State | Record |
 | --- | --- | --- |
@@ -12,11 +12,12 @@ This file keeps the loop's working state in the repository, not on any local mac
 | GEO-01A/B/C (geo truth) | merged, closed (#118, #127, #128, #129) | `docs/evidence/GEO/GEO-01_CLOSURE.md` |
 | GEO-09 (spatial insights) | merged, closed (#131, merge `3fe68f1b`) | `docs/evidence/GEO/GEO-09/CLOSURE.md` |
 | GEO-10 (AI / voice geo capabilities) | merged, closed (#133, merge `419dad59`) | `docs/evidence/GEO/GEO-10/CLOSURE.md` |
+| GEO-02A (MapLibre renderer) | merged, closed (#135, merge `feb820ab`) | `docs/evidence/GEO/GEO-02A/CLOSURE.md` |
 | M051 consent instant comparison | merged (#122) | consent suites M051, M052, M053 and M057 are not yet run by any CI workflow (gate 1) |
 
 **Next dependency-ready slices:**
 
-- GEO-02 (MapLibre renderer; needs a released `maplibre-gl` pin after license/SBOM review, and likely a web CI workflow);
+- GEO-02B (provider-neutral basemap contract; OpenFreeMap preflight PR #136 is draft, and no provider is admitted);
 - AIF-03B onward, after AIF-03A merges.
 
 **Follow-ups:**
