@@ -106,7 +106,8 @@ export function MapRenderer({ locale }: { locale: string }) {
       <div
         ref={containerRef}
         className="zyara-maplibre-canvas"
-        aria-hidden="true"
+        role="group"
+        aria-label={ar ? "خريطة تفاعلية إضافية، والقائمة أدناه بديل كامل" : "Supplementary interactive map; the list below is the complete alternative"}
         data-worker="/maplibre/maplibre-gl-worker.mjs"
       />
       {state === "unavailable" ? (
