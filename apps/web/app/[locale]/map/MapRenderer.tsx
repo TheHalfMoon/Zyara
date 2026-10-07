@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   initializeGeo02aRenderer,
+  createGeo02aLoadDeadline,
   type Geo02aMapOptions,
   type Geo02aRendererState,
 } from "./renderer-contract";
@@ -18,6 +19,25 @@ export function MapRenderer({ locale }: { locale: string }) {
   useEffect(() => {
     let disposed = false;
     let cleanup: () => void = () => undefined;
+    const deadline = createGeo02aLoadDeadline(
+      {
+        schedule: (callback, delayMs) => window.setTimeout(callback, delayMs),
+        cancel: (handle) => window.clearTimeout(handle as number),
+      },
+      () => {
+        if (disposed) return;
+        disposed = true;
+        cleanup();
+        setState("unavailable");
+      },
+    );
+    const unavailable = () => {
+      if (disposed) return;
+      deadline.complete();
+      disposed = true;
+      cleanup();
+      setState("unavailable");
+    };
 
     void import("maplibre-gl")
       .then((maplibre) => {
@@ -57,23 +77,26 @@ export function MapRenderer({ locale }: { locale: string }) {
           window.location.origin,
           {
             onReady: () => {
-              if (!disposed) setState("ready");
+              if (disposed) return;
+              deadline.complete();
+              setState("ready");
             },
-            onUnavailable: () => {
-              if (!disposed) setState("unavailable");
-            },
+            onUnavailable: unavailable,
           },
         );
 
         cleanup = result.cleanup;
-        if (!disposed && result.status === "unavailable") setState("unavailable");
+        if (disposed) {
+          result.cleanup();
+        } else if (result.status === "unavailable") {
+          unavailable();
+        }
       })
-      .catch(() => {
-        if (!disposed) setState("unavailable");
-      });
+      .catch(unavailable);
 
     return () => {
       disposed = true;
+      deadline.complete();
       cleanup();
     };
   }, []);

@@ -55,6 +55,35 @@ export function allowSameOriginRendererRequest(url: string, pageOrigin: string):
   return { url: parsed.toString() };
 }
 
+
+export const GEO02A_LOAD_TIMEOUT_MS = 12_000;
+
+export interface Geo02aDeadlineClock {
+  schedule(callback: () => void, delayMs: number): unknown;
+  cancel(handle: unknown): void;
+}
+
+// A renderer that never emits load/error must not leave the supplementary map
+// stuck in a loading state. Completion and cancellation are both idempotent.
+export function createGeo02aLoadDeadline(
+  clock: Geo02aDeadlineClock,
+  onTimeout: () => void,
+): { complete: () => void } {
+  let active = true;
+  const handle = clock.schedule(() => {
+    if (!active) return;
+    active = false;
+    onTimeout();
+  }, GEO02A_LOAD_TIMEOUT_MS);
+  return {
+    complete: () => {
+      if (!active) return;
+      active = false;
+      clock.cancel(handle);
+    },
+  };
+}
+
 export interface Geo02aMapOptions {
   readonly container: unknown;
   readonly style: typeof GEO02A_EMPTY_STYLE;

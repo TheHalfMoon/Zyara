@@ -10,6 +10,8 @@ import {
   GEO02A_REMOTE_ORIGINS,
   GEO02A_RENDERER_ARTIFACTS,
   GEO02A_WORKER_URL,
+  GEO02A_LOAD_TIMEOUT_MS,
+  createGeo02aLoadDeadline,
   Geo02aRendererBoundaryError,
   allowSameOriginRendererRequest,
   initializeGeo02aRenderer,
@@ -62,6 +64,44 @@ function fakeRuntime(options: { gpuFailure?: boolean; fail?: boolean; subscribeF
     },
   };
 }
+
+test("GEO-02A fail-closes when the renderer never signals load or error", () => {
+  let scheduled: (() => void) | null = null;
+  let delay = -1;
+  let cancelled = 0;
+  let unavailable = 0;
+  const clock = {
+    schedule(callback: () => void, ms: number) {
+      scheduled = callback;
+      delay = ms;
+      return 17;
+    },
+    cancel(handle: unknown) {
+      assert.equal(handle, 17);
+      cancelled += 1;
+    },
+  };
+
+  const stuck = createGeo02aLoadDeadline(clock, () => { unavailable += 1; });
+  assert.equal(delay, GEO02A_LOAD_TIMEOUT_MS);
+  assert.ok(scheduled);
+  scheduled?.();
+  scheduled?.();
+  assert.equal(unavailable, 1);
+  stuck.complete();
+  assert.equal(cancelled, 0, "expired deadline is already inactive");
+
+  const ready = createGeo02aLoadDeadline(clock, () => { unavailable += 1; });
+  ready.complete();
+  ready.complete();
+  scheduled?.();
+  assert.equal(unavailable, 1, "a completed renderer must not become unavailable");
+  assert.equal(cancelled, 1);
+
+  const renderer = readFileSync(new URL("../../apps/web/app/[locale]/map/MapRenderer.tsx", import.meta.url), "utf8");
+  assert.ok(renderer.includes("createGeo02aLoadDeadline("));
+  assert.ok(renderer.includes("result.cleanup();"));
+});
 
 test("GEO-02A initializes the exact renderer shell and cleans up once", () => {
   const fake = fakeRuntime();
