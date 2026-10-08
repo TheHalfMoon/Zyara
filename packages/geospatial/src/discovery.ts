@@ -206,16 +206,20 @@ export function buildSharedDiscoveryProjection(
   const selectedId = selected.some(x=>x.branch.branchId===state.selectedBranchId)
     ? state.selectedBranchId : null;
 
-  const list: DiscoveryListItem[] = selected.map(({branch,locationStatus})=>({
-    branchId:branch.branchId,
-    label:branch.labels[locale] ?? branch.labels.ar ?? branch.labels.en ?? branch.branchId,
-    bookingMode:branch.bookingMode,
-    wheelchairAccess:branch.wheelchairAccess,
-    locationDisclosure: locationStatus === "precise" && hasQualifiedPin(
-      selected.find(x=>x.branch.branchId===branch.branchId)!
-    ) ? "precise" : locationStatus === "approximate" ? "approximate" : "unknown",
-    selected:branch.branchId===selectedId,
-  }));
+  const list: DiscoveryListItem[] = selected.map((record) => {
+    const { branch, locationStatus } = record;
+    const disclosure: DiscoveryLocationStatus =
+      hasQualifiedPin(record) ? "precise" :
+      locationStatus === "approximate" ? "approximate" : "unknown";
+    return {
+      branchId: branch.branchId,
+      label: branch.labels[locale] ?? branch.labels.ar ?? branch.labels.en ?? branch.branchId,
+      bookingMode: branch.bookingMode,
+      wheelchairAccess: branch.wheelchairAccess,
+      locationDisclosure: disclosure,
+      selected: branch.branchId === selectedId,
+    };
+  });
 
   const pins: DiscoveryMapPin[] = [];
   const suppressedPinIds: string[] = [];
