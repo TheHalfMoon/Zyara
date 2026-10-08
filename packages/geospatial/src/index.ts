@@ -70,3 +70,6 @@ export * from "./insights.js";
 
 // GEO-10: AI and voice geo capabilities (AIF-01 typed tools).
 export * from "./ai-tools.js";
+
+// GEO-02B: fail-closed provider-neutral basemap policy (no provider admitted).
+export * from "./basemap.js";
