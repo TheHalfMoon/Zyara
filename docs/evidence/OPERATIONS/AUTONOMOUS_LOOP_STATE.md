@@ -13,11 +13,13 @@ This file keeps the loop's working state in the repository, not on any local mac
 | GEO-09 (spatial insights) | merged, closed (#131, merge `3fe68f1b`) | `docs/evidence/GEO/GEO-09/CLOSURE.md` |
 | GEO-10 (AI / voice geo capabilities) | merged, closed (#133, merge `419dad59`) | `docs/evidence/GEO/GEO-10/CLOSURE.md` |
 | GEO-02A (MapLibre renderer) | merged, closed (#135, merge `feb820ab`) | `docs/evidence/GEO/GEO-02A/CLOSURE.md` |
+| GEO-02B contract (basemap provider-neutral policy) | merged, contract closed (#138, merge `0d791238`); **live provider not admitted** | `docs/evidence/GEO/GEO-02B/CLOSURE.md`, `GEO-02B/PREFLIGHT.md` |
 | M051 consent instant comparison | merged (#122) | consent suites M051, M052, M053 and M057 are not yet run by any CI workflow (gate 1) |
 
 **Next dependency-ready slices:**
 
-- GEO-02B (provider-neutral basemap contract; OpenFreeMap preflight PR #136 is draft, and no provider is admitted);
+- GEO-03A (shared synthetic map/list discovery contract; PR #139 implementation underway);
+- GEO-02B provider admission (external privacy/terms/license/reliability gate; not implied by contract closure);
 - AIF-03B onward, after AIF-03A merges.
 
 **Follow-ups:**
