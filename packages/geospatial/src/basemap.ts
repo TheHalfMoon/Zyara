@@ -164,27 +164,45 @@ export function createBasemapController(
   environment: "development" | "production",
 ): BasemapController {
   validateBasemapDescriptor(descriptor);
+  // Pin a defensive snapshot. Mutating the caller's configuration after
+  // admission must not expand provider origins, change status or raise limits.
+  const policy = Object.freeze({
+    ...descriptor,
+    style: Object.freeze({ ...descriptor.style }),
+    policy: Object.freeze({ ...descriptor.policy }),
+    attribution: Object.freeze({
+      ...descriptor.attribution,
+      licenseUrls: Object.freeze([...descriptor.attribution.licenseUrls]),
+    }),
+    origins: Object.freeze({
+      style: Object.freeze([...descriptor.origins.style]),
+      tile: Object.freeze([...descriptor.origins.tile]),
+      glyph: Object.freeze([...descriptor.origins.glyph]),
+      sprite: Object.freeze([...descriptor.origins.sprite]),
+      asset: Object.freeze([...descriptor.origins.asset]),
+    }),
+  });
   let killed = false;
   let health: BasemapHealth = "unknown";
   let requests = 0;
 
   function decide(): BasemapDecision {
-    const attribution = descriptor.attribution.label;
-    if (killed || descriptor.admission === "disabled") {
+    const attribution = policy.attribution.label;
+    if (killed || policy.admission === "disabled") {
       return { available: false, reason: "disabled", attribution };
     }
-    if (descriptor.admission === "development_only" && environment !== "development") {
+    if (policy.admission === "development_only" && environment !== "development") {
       return { available: false, reason: "development-only", attribution };
     }
-    if (descriptor.admission !== "admitted" && descriptor.admission !== "development_only") {
+    if (policy.admission !== "admitted" && policy.admission !== "development_only") {
       return { available: false, reason: "not-admitted", attribution };
     }
     if (health === "unavailable") return { available: false, reason: "provider-unavailable", attribution };
     if (health !== "healthy") return { available: false, reason: "provider-unhealthy", attribution };
-    if (requests >= descriptor.policy.maxRequestsPerView) {
+    if (requests >= policy.policy.maxRequestsPerView) {
       return { available: false, reason: "request-budget-exhausted", attribution };
     }
-    return { available: true, styleUrl: descriptor.style.url, attribution };
+    return { available: true, styleUrl: policy.style.url, attribution };
   }
 
   function guardAsset(kind: BasemapAssetKind, raw: string): string {
@@ -197,11 +215,11 @@ export function createBasemapController(
       }
       deny("BASEMAP_NOT_ADMITTED", "provider not admitted in this environment");
     }
-    if (!Object.prototype.hasOwnProperty.call(descriptor.origins, kind)) {
+    if (!Object.prototype.hasOwnProperty.call(policy.origins, kind)) {
       deny("BASEMAP_REQUEST_INVALID", "unknown asset kind");
     }
     const parsed = verifiedHttpsUrl(raw);
-    if (!descriptor.origins[kind].includes(parsed.origin)) {
+    if (!policy.origins[kind].includes(parsed.origin)) {
       deny("BASEMAP_ORIGIN_DENIED", "asset origin is not in the explicit kind-specific allowlist");
     }
     requests += 1;
