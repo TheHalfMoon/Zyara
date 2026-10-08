@@ -174,6 +174,43 @@ describe("GEO-02B provider-neutral basemap contract", () => {
     code(()=>inspectBasemapStyleReferences({version:8,sources:{},layers:null},c),"BASEMAP_STYLE_UNVERIFIED");
   });
 
+  it("pins an immutable admission snapshot against caller-side mutations", () => {
+    const input = descriptor({admission:"development_only"});
+    const controller = createBasemapController(input,"development");
+    controller.setHealth("healthy");
+
+    const oldUrl = input.style.url;
+    // A framework may pass structurally typed, mutable runtime objects.
+    (input as {admission: string}).admission = "disabled";
+    (input.origins.tile as string[]).push("https://malicious.example.org");
+    (input.policy as {maxRequestsPerView:number}).maxRequestsPerView = 200;
+    (input.style as {url:string}).url = "https://malicious.example.org/changed";
+    (input.attribution as {label:string}).label = "forged";
+
+    assert.deepEqual(controller.decide(),{
+      available:true,styleUrl:oldUrl,attribution:"Synthetic Map | Synthetic Data",
+    });
+    code(()=>controller.guardAsset("tile","https://malicious.example.org/1/2/3"),
+      "BASEMAP_ORIGIN_DENIED");
+    assert.equal(controller.requestCount(),0);
+  });
+
+  it("denies relative style asset URLs instead of silently resolving them", () => {
+    const c=createBasemapController(descriptor({
+      admission:"development_only",policy:{...descriptor().policy,maxRequestsPerView:20},
+    }),"development");
+    c.setHealth("healthy");
+    code(()=>inspectBasemapStyleReferences({
+      version:8, sources:{base:{type:"vector",tiles:["/relative/tiles/{z}/{x}/{y}.pbf"]}},
+      layers:[],
+    },c),"BASEMAP_REQUEST_INVALID");
+    code(()=>inspectBasemapStyleReferences({
+      version:8, sources:{base:{type:"vector",url:"./source.json"}},
+      layers:[],
+    },c),"BASEMAP_REQUEST_INVALID");
+    assert.equal(c.requestCount(),0);
+  });
+
   it("never accepts unknown asset kinds or invalid health transitions", () => {
     const c=createBasemapController(descriptor({admission:"development_only"}),"development");
     c.setHealth("healthy");
