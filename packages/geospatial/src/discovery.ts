@@ -225,7 +225,7 @@ export function buildSharedDiscoveryProjection(
   const suppressedPinIds: string[] = [];
   for (const record of selected) {
     const { branch } = record;
-    if (hasQualifiedPin(record)) {
+    if (hasQualifiedPin(record) && branch.accuracyM !== null) {
       if (state.mapAvailable) pins.push({
         branchId:branch.branchId,
         lat:branch.lat,
