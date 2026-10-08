@@ -73,3 +73,6 @@ export * from "./ai-tools.js";
 
 // GEO-02B: fail-closed provider-neutral basemap policy (no provider admitted).
 export * from "./basemap.js";
+
+// GEO-03A: synthetic-first shared map/list result projection.
+export * from "./discovery.js";
