@@ -151,6 +151,8 @@ export type BasemapDecision =
 
 export interface BasemapController {
   readonly decide: () => BasemapDecision;
+  /** Validate a potential style/asset URL without counting it as an HTTP request. */
+  readonly inspectAsset: (kind: BasemapAssetKind, url: string) => string;
   readonly guardAsset: (kind: BasemapAssetKind, url: string) => string;
   /** Call on *every* redirect hop; automatic redirects must be disabled upstream. */
   readonly guardRedirect: (kind: BasemapAssetKind, url: string) => string;
@@ -205,7 +207,7 @@ export function createBasemapController(
     return { available: true, styleUrl: policy.style.url, attribution };
   }
 
-  function guardAsset(kind: BasemapAssetKind, raw: string): string {
+  function inspectAsset(kind: BasemapAssetKind, raw: string): string {
     const decision = decide();
     if (!decision.available) {
       if (decision.reason === "disabled") deny("BASEMAP_PROVIDER_DISABLED", "provider disabled by kill switch or admission");
@@ -222,12 +224,18 @@ export function createBasemapController(
     if (!policy.origins[kind].includes(parsed.origin)) {
       deny("BASEMAP_ORIGIN_DENIED", "asset origin is not in the explicit kind-specific allowlist");
     }
-    requests += 1;
     return parsed.toString();
+  }
+
+  function guardAsset(kind: BasemapAssetKind, raw: string): string {
+    const allowed = inspectAsset(kind, raw);
+    requests += 1;
+    return allowed;
   }
 
   return {
     decide,
+    inspectAsset,
     guardAsset,
     guardRedirect: guardAsset,
     setKilled(value) { killed = value; },
@@ -275,7 +283,7 @@ export function inspectBasemapStyleReferences(
           : parentKey === "url" && insideSource ? "tile"
           : parentKey === "url" ? "asset"
           : "asset";
-        controller.guardAsset(kind, value);
+        controller.inspectAsset(kind, value);
         count += 1;
       }
       return;
