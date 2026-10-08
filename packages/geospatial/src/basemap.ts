@@ -71,6 +71,15 @@ function verifiedHttpsUrl(value: string): URL {
       parsed.hash || parsed.search || /%0[ad]/i.test(value)) {
     return deny("BASEMAP_REQUEST_INVALID", "basemap URLs must be clean HTTPS URLs");
   }
+  // Wildcards, numeric hosts and local/private host aliases cannot be
+  // admitted by an origin policy, even if the URL parser accepts them.
+  const host = parsed.hostname;
+  if (!/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i.test(host) ||
+      /^\\d+(?:\\.\\d+){3}$/.test(host) ||
+      host.endsWith(".local") || host.endsWith(".internal") ||
+      host.endsWith(".localhost")) {
+    return deny("BASEMAP_REQUEST_INVALID", "explicit public DNS host required");
+  }
   return parsed;
 }
 
