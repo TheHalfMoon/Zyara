@@ -169,6 +169,7 @@ describe("GEO-02B provider-neutral basemap contract", () => {
       layers:[],
     };
     assert.equal(inspectBasemapStyleReferences(style,c),3);
+    assert.equal(c.requestCount(),0, "offline style audit is not provider egress");
     const withEgress={...style,glyphs:"https://unexpected.example.org/fonts"};
     code(()=>inspectBasemapStyleReferences(withEgress,c),"BASEMAP_ORIGIN_DENIED");
     code(()=>inspectBasemapStyleReferences({version:8,sources:{},layers:null},c),"BASEMAP_STYLE_UNVERIFIED");
