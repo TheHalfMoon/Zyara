@@ -94,6 +94,15 @@ function inBounds(lat: number, lng: number, bounds: DiscoveryBounds): boolean {
     lng >= bounds.west && lng <= bounds.east;
 }
 
+/** Precise pins require public attestation and a verified <=100 m coordinate. */
+function hasQualifiedPin(record: DiscoveryRecord): boolean {
+  const { branch, locationStatus } = record;
+  return locationStatus === "precise" &&
+    branch.verifiedScope !== null && branch.accuracyM !== null &&
+    Number.isFinite(branch.accuracyM) && branch.accuracyM >= 0 &&
+    branch.accuracyM <= 100 && coordinateValid(branch.lat, branch.lng);
+}
+
 /** Distance for optional local filtering only; not a drive-time/route ETA. */
 function straightLineKm(aLat: number, aLng: number, bLat: number, bLng: number): number {
   const r = Math.PI / 180;
@@ -160,6 +169,9 @@ export function buildSharedDiscoveryProjection(
     }
     if (seen.has(id)) throw new DiscoveryContractError("DISCOVERY_DUPLICATE_ID", "duplicate result entity");
     seen.add(id);
+    if (!["precise","approximate","unknown"].includes(item.locationStatus)) {
+      throw new DiscoveryContractError("DISCOVERY_INVALID_INPUT", "invalid location disclosure");
+    }
     if (item.publicStatus === "public") publicRecords.push(item);
     else if (item.publicStatus !== "hidden" && item.publicStatus !== "disputed") {
       throw new DiscoveryContractError("DISCOVERY_INVALID_INPUT", "invalid publication status");
@@ -175,16 +187,16 @@ export function buildSharedDiscoveryProjection(
   }
 
   const selected = publicRecords
-    .filter(({branch, specialties, insurers}) => {
+    .filter((record) => {
+      const { branch, specialties, insurers, locationStatus } = record;
       if (filter.accessibleOnly && !branch.wheelchairAccess) return false;
       if (filter.specialty && !specialties.some(s=>s.toLocaleLowerCase()===filter.specialty?.toLocaleLowerCase())) return false;
       if (filter.insurer && !insurers.some(s=>s.toLocaleLowerCase()===filter.insurer?.toLocaleLowerCase())) return false;
-      if (filter.near && (!coordinateValid(branch.lat,branch.lng) ||
+      if (filter.near && (!hasQualifiedPin(record) ||
           straightLineKm(branch.lat,branch.lng,filter.near.lat,filter.near.lng)>filter.near.radiusKm)) return false;
       // An explicit viewport search can narrow mapped branches; branches with
       // unknown coordinates remain listed for their non-map access channel.
-      if (state.searchedViewport && branch.accuracyM !== null &&
-          coordinateValid(branch.lat,branch.lng) &&
+      if (state.searchedViewport && hasQualifiedPin(record) &&
           !inBounds(branch.lat,branch.lng,state.searchedViewport)) return false;
       return true;
     })
@@ -199,17 +211,17 @@ export function buildSharedDiscoveryProjection(
     label:branch.labels[locale] ?? branch.labels.ar ?? branch.labels.en ?? branch.branchId,
     bookingMode:branch.bookingMode,
     wheelchairAccess:branch.wheelchairAccess,
-    locationDisclosure:locationStatus,
+    locationDisclosure: locationStatus === "precise" && hasQualifiedPin(
+      selected.find(x=>x.branch.branchId===branch.branchId)!
+    ) ? "precise" : locationStatus === "approximate" ? "approximate" : "unknown",
     selected:branch.branchId===selectedId,
   }));
 
   const pins: DiscoveryMapPin[] = [];
   const suppressedPinIds: string[] = [];
-  for (const {branch, locationStatus} of selected) {
-    if (locationStatus === "precise" &&
-        branch.verifiedScope !== null && branch.accuracyM !== null &&
-        Number.isFinite(branch.accuracyM) && branch.accuracyM >= 0 &&
-        branch.accuracyM <= 100 && coordinateValid(branch.lat,branch.lng)) {
+  for (const record of selected) {
+    const { branch } = record;
+    if (hasQualifiedPin(record)) {
       if (state.mapAvailable) pins.push({
         branchId:branch.branchId,
         lat:branch.lat,
