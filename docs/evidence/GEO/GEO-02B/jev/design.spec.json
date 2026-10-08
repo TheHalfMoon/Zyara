@@ -1,0 +1,62 @@
+{
+  "description": "GEO-02B provider-neutral basemap contract, synthetic pre-admission and egress guard qualification",
+  "threshold": 0.5,
+  "questions": {
+    "unadmitted_egress": {
+      "type": "noul",
+      "instructions": "Could a basemap provider or external network origin be contacted without explicit admission, environment gate or per-request policy?",
+      "criteria": {
+        "true": "An unadmitted provider or origin can be requested",
+        "false": "No provider I/O is executed and all guard operations fail closed absent valid admission and health"
+      }
+    },
+    "mutable_style": {
+      "type": "noul",
+      "instructions": "Could a mutable style, unpinned version/digest or post-validation policy mutation widen an origin allowlist?",
+      "criteria": {
+        "true": "Mutable or unverified inputs can change admission",
+        "false": "Immutable versioned style SHA and defensive policy snapshot are enforced"
+      }
+    },
+    "privacy_leak": {
+      "type": "noul",
+      "instructions": "Could patient, visit, session, exact GPS or care intent be passed in provider URLs, query strings, headers or logs?",
+      "criteria": {
+        "true": "Context can leak to a basemap origin",
+        "false": "No patient context is accepted; URLs reject query and credential fields, and no egress occurs"
+      }
+    },
+    "redirect_escape": {
+      "type": "noul",
+      "instructions": "Could a wildcard, subdomain lookalike, redirect, relative asset URL or unsupported protocol evade an explicit asset-kind origin policy?",
+      "criteria": {
+        "true": "An unsafe URL bypass is possible",
+        "false": "Exact HTTPS public DNS host and per-kind allowlist, manual redirect validation and relative denial are proven"
+      }
+    },
+    "availability_fallback": {
+      "type": "noul",
+      "instructions": "Could a provider kill switch, health failure, development-only gate or request exhaustion silently make an unavailable basemap look healthy?",
+      "criteria": {
+        "true": "Degraded/unadmitted provider appears available",
+        "false": "Unknown, unhealthy and exhausted statuses return explicit unavailable states with attribution"
+      }
+    },
+    "attribution_terms": {
+      "type": "noul",
+      "instructions": "Could the contract omit mandatory attribution, provider terms/privacy references or data-retention governance?",
+      "criteria": {
+        "true": "Provider provenance is missing",
+        "false": "Descriptor must provide attribution, license refs, terms, privacy, and retention review"
+      }
+    },
+    "incomplete_tests": {
+      "type": "noul",
+      "instructions": "Is any GEO-02B contract requirement missing deterministic synthetic qualification, including immutability, kill switch, redirects, style assets, query leakage and failure?",
+      "criteria": {
+        "true": "A requirement is untested",
+        "false": "All relevant contract boundaries have synthetic tests; real provider admission is explicitly excluded"
+      }
+    }
+  }
+}
