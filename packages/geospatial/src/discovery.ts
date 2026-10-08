@@ -188,7 +188,7 @@ export function buildSharedDiscoveryProjection(
 
   const selected = publicRecords
     .filter((record) => {
-      const { branch, specialties, insurers, locationStatus } = record;
+      const { branch, specialties, insurers } = record;
       if (filter.accessibleOnly && !branch.wheelchairAccess) return false;
       if (filter.specialty && !specialties.some(s=>s.toLocaleLowerCase()===filter.specialty?.toLocaleLowerCase())) return false;
       if (filter.insurer && !insurers.some(s=>s.toLocaleLowerCase()===filter.insurer?.toLocaleLowerCase())) return false;
