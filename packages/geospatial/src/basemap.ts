@@ -262,6 +262,12 @@ export function inspectBasemapStyleReferences(
   let count = 0;
   function visit(value: unknown, parentKey: string, insideSource: boolean): void {
     if (typeof value === "string") {
+      // Relative asset references would silently resolve under the hosting
+      // style URL and must be inspected/rewritten by a future adapter first.
+      if (["url", "tiles", "glyphs", "sprite"].includes(parentKey) &&
+          !/^(?:https?:|data:|blob:|javascript:|\/\/)/i.test(value)) {
+        deny("BASEMAP_REQUEST_INVALID", "relative or unresolved style asset reference");
+      }
       if (/^(?:https?:|data:|blob:|javascript:|\/\/)/i.test(value)) {
         const kind: BasemapAssetKind = parentKey === "glyphs" ? "glyph"
           : parentKey === "sprite" ? "sprite"
