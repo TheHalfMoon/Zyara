@@ -78,7 +78,7 @@ describe("GEO-03A shared synthetic discovery contract",()=>{
     const committed=searchDiscoveryArea(pending);
     assert.equal(buildSharedDiscoveryProjection(branches,{},committed).hasPendingAreaSearch,false);
     assert.deepEqual(ids(buildSharedDiscoveryProjection(branches,{},committed).list),
-      ["b1","b2","b-unknown"]);
+      ["b1","b2","b-approx","b-unknown"]);
     assert.deepEqual(ids(buildSharedDiscoveryProjection(branches,{},committed).pins),["b1","b2"]);
     assert.equal(searchDiscoveryArea(INITIAL_DISCOVERY_VIEW),INITIAL_DISCOVERY_VIEW);
   });
@@ -126,6 +126,20 @@ describe("GEO-03A shared synthetic discovery contract",()=>{
       "DISCOVERY_INVALID_INPUT");
     invalid(()=>buildSharedDiscoveryProjection(branches,{near:{lat:95,lng:46,radiusKm:2}}),
       "DISCOVERY_INVALID_INPUT");
+  });
+
+  it("never accepts a claimed precise pin without attested <=100m accuracy",()=>{
+    const bad=fixture("unverified",24.71,46.67,0,{branch:{
+      ...fixture("unverified",24.71,46.67,0).branch,
+      accuracyM:150,verifiedScope:null,
+    }});
+    const view=buildSharedDiscoveryProjection([bad],{});
+    assert.deepEqual(view.pins,[]);
+    assert.deepEqual(view.suppressedPinIds,["unverified"]);
+    assert.equal(view.list[0].locationDisclosure,"unknown");
+    assert.deepEqual(buildSharedDiscoveryProjection([bad],{
+      near:{lat:24.71,lng:46.67,radiusKm:2},
+    }).list,[]);
   });
 
   it("optional local straight-line radius is explicitly not an ETA",()=>{
