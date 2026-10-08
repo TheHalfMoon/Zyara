@@ -1,0 +1,62 @@
+{
+  "description": "GEO-03A shared map/list discovery projection (pure, synthetic-first) exact-head challenge",
+  "threshold": 0.5,
+  "questions": {
+    "parity": {
+      "type": "noul",
+      "instructions": "Could the map display a branch absent from the authoritative accessible list or use divergent filters and ranking?",
+      "criteria": {
+        "true": "Map/list entity parity can be violated",
+        "false": "Every map pin originates in a selected list entity with shared deterministic filtering"
+      }
+    },
+    "precision": {
+      "type": "noul",
+      "instructions": "Could hidden, disputed, unknown, unverified or approximate coordinates become precise pins or misleading location claims?",
+      "criteria": {
+        "true": "Unreliable coordinates can appear precise",
+        "false": "Only valid attested <=100m public coordinates become pins; other results are clearly disclosed and remain listable"
+      }
+    },
+    "viewport": {
+      "type": "noul",
+      "instructions": "Could panning silently change search results or ranking without explicit Search this area?",
+      "criteria": {
+        "true": "Viewport pan silently filters or reranks",
+        "false": "Pending viewport has no effect before explicit area-search commit; ranks are source-stable"
+      }
+    },
+    "selection": {
+      "type": "noul",
+      "instructions": "Could map and list selections diverge or retain a selected ID absent from filtered results?",
+      "criteria": {
+        "true": "Selection can become inconsistent",
+        "false": "Selection is shared by stable branch ID and clears if absent"
+      }
+    },
+    "fallback": {
+      "type": "noul",
+      "instructions": "Could map rendering fail and hide or disable the independent accessible discovery list?",
+      "criteria": {
+        "true": "Map availability couples to list usability",
+        "false": "Map availability changes only pins while the full accessible list remains"
+      }
+    },
+    "geo_egress": {
+      "type": "noul",
+      "instructions": "Could GPS precision or patient context be required or transmitted by this contract?",
+      "criteria": {
+        "true": "Precise context is required or egressed",
+        "false": "All computations are pure in memory with optional near filter and no I/O"
+      }
+    },
+    "incomplete_tests": {
+      "type": "noul",
+      "instructions": "Do GEO-03A contract requirements lack synthetic tests (parity, filter, ranking, viewport, selection, suppressed pins, clustering, fallback)?",
+      "criteria": {
+        "true": "At least one contract acceptance dimension lacks a regression test",
+        "false": "All contract requirements have deterministic synthetic coverage"
+      }
+    }
+  }
+}
